@@ -11,9 +11,9 @@ c. DAD Twitter https://twitter.com/dad_chain<br/>
 # Press
 The following are some press articles that cover DAD’s most recent achievements and directions:
 
-a. <DAD Aiming at Redefining Digital Advertising Through Distributed Trust Advertising Ecosystem> http://markets.financialcontent.com/bostonherald/news/read/36650075<br/>
-b. <DAD - After Five Years of Digital Advertising, What Else are We Trying to Do?> https://www.yahoo.com/news/dad-five-years-digital-advertising-181000625.html<br/>
-c. <10 Million DAD Token Released-Inviting Users to Build a New Ecosystem of Blockchain Advertising> https://www.reuters.com/brandfeatures/venture-capital/article?id=44751<br/>
+a. <DAD Aiming at Redefining Digital Advertising Through Distributed Trust Advertising Ecosystem><br/>http://markets.financialcontent.com/bostonherald/news/read/36650075 <br/>
+b. <DAD - After Five Years of Digital Advertising, What Else are We Trying to Do?><br/>https://www.yahoo.com/news/dad-five-years-digital-advertising-181000625.html<br/>
+c. <10 Million DAD Token Released-Inviting Users to Build a New Ecosystem of Blockchain Advertising><br/>https://www.reuters.com/brandfeatures/venture-capital/article?id=44751<br/>
 
 # Mail
 For tech discussing or patch submit, please send email to dev@dad.one
