@@ -1,7 +1,7 @@
 package main
 
 import (
-	"dad-go/httpjsonrpc"
+	"dad-go/core/net/httpjsonrpc"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
