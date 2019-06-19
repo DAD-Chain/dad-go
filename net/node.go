@@ -4,6 +4,7 @@ package net
 	"log"
 	"strconv"
 	"net"
+	"io"
 	"sync"
 	"time"
 	"runtime"
@@ -22,14 +23,14 @@ const (
 	INACTIVITY = 4
 )
 
- // The node capability flag
+// The node capability flag
 const (
 	RELAY  = 0x01
 	SERVER = 0x02
 	NODESERVICES = 0x01
 )
 
- type node struct {
+type node struct {
 	state		uint		// node status
 	id		string		// The nodes's id, MAC or IP?
 	addr		string 		// The address of the node
@@ -49,31 +50,31 @@ const (
 	private		*uint		// Reserver for future using
 }
 
- type nodeMap struct {
+type nodeMap struct {
 	node *node
 	lock sync.RWMutex
 	list map[string]*node
 }
 
- var nodes nodeMap
+var nodes nodeMap
 
- func newNode() (*node) {
+func newNode() (*node) {
 	node := node{
 		state: INIT,
 		chF: make(chan func()),
 	}
 
- 	// Update nonce
+	// Update nonce
 	runtime.SetFinalizer(&node, rmNode)
 	go node.backend()
 	return &node
 }
 
- func rmNode(node *node) {
+func rmNode(node *node) {
 	log.Printf("Remove node %s", node.addr)
 }
 
- // TODO pass pointer to method only need modify it
+// TODO pass pointer to method only need modify it
 func (node *node) backend() {
 	common.Trace()
 	for f := range node.chF {
@@ -81,62 +82,86 @@ func (node *node) backend() {
 	}
 }
 
- func (node *node) getID() string {
+func (node node) getID() string {
 	return node.id
 }
 
- func (node *node) getState() uint {
+func (node node) getState() uint {
 	return node.state
 }
 
- func (node *node) setState(state uint) {
+func (node node) getConn() net.Conn {
+	return node.conn
+}
+
+func (node *node) setState(state uint) {
 	node.state = state
 }
 
- func (node *node) getHandshakeTime() (time.Time) {
+func (node node) getHandshakeTime() (time.Time) {
 	return node.handshakeTime
 }
 
- func (node *node) setHandshakeTime(t time.Time) {
+func (node *node) setHandshakeTime(t time.Time) {
 	node.handshakeTime = t
 }
 
- func (node *node) getHandshakeRetry() uint32 {
+func (node node) getHandshakeRetry() uint32 {
 	return atomic.LoadUint32(&(node.handshakeRetry))
 }
 
- func (node *node) setHandshakeRetry(r uint32) {
+func (node *node) setHandshakeRetry(r uint32) {
 	node.handshakeRetry = r
 	atomic.StoreUint32(&(node.handshakeRetry), r)
 }
 
- func (node *node) updateTime(t time.Time) {
+func (node node) getHeight() uint64 {
+	return node.height
+}
+
+func (node *node) updateTime(t time.Time) {
 	node.time = t
 }
 
- func (node *node) rx() {
+func (node *node) rx() error {
+	conn := node.getConn()
+	from := conn.RemoteAddr().String()
 	// TODO using select instead of for loop
 	for {
 		buf := make([]byte, MAXBUFLEN)
-		len, err := node.conn.Read(buf)
-		if err != nil {
-			log.Println("Error reading", err.Error())
-			return
-		}
+		len, err := conn.Read(buf[0:(MAXBUFLEN - 1)])
+		buf[MAXBUFLEN - 1] = 0 //Prevent overflow
 
- 		msg := new(Msg)
-		log.Printf("Message len %d", unsafe.Sizeof(*msg))
-		err = msg.deserialization(buf[0:len])
-		if err != nil {
-			log.Println("Deserilization buf to message failure")
-			return
+		switch err {
+		case nil:
+			msg := new(Msg)
+			log.Printf("Message len %d", unsafe.Sizeof(*msg))
+			err = msg.deserialization(buf[0:len])
+			if err != nil {
+				log.Println("Deserilization buf to message failure")
+				return err
+			}
+
+			log.Printf("Received data: %v", string(buf[:len]))
+			go handleNodeMsg(node, msg)
+			break
+		case io.EOF:
+			//log.Println("Reading EOF of network conn")
+			break
+		default:
+			log.Printf("read error", err)
+			goto DISCONNECT
 		}
-		log.Printf("Received data: %v", string(buf[:len]))
-		go handleNodeMsg(node, msg)
 	}
+
+DISCONNECT:
+	err := conn.Close()
+	node.setState(INACTIVITY)
+	log.Printf("Close connection", from)
+	return err
 }
 
- // Init the server port, should be run in another thread
+// Init the server port, should be run in another thread
 func (node *node) initRx () {
 	listener, err := net.Listen("tcp", "localhost:" + strconv.Itoa(NODETESTPORT))
 	if err != nil {
@@ -144,7 +169,7 @@ func (node *node) initRx () {
 		return
 	}
 
- 	for {
+	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Println("Error accepting", err.Error())
@@ -165,7 +190,7 @@ func (node *node) initRx () {
 	//TODO When to free the net listen resouce?
 }
 
- func (node *node) connect(nodeAddr string)  {
+func (node *node) connect(nodeAddr string)  {
 	node.chF <- func() {
 		common.Trace()
 		conn, err := net.Dial("tcp", nodeAddr)
@@ -174,12 +199,14 @@ func (node *node) initRx () {
 			return
 		}
 
- 		node := newNode()
+		node := newNode()
 		node.conn = conn
 		node.id = conn.RemoteAddr().String()
 		node.addr = conn.RemoteAddr().String()
+		// FixMe Only for testing
+		node.height = 1000
 
- 		log.Printf("Connect node %s connect with %s with %s",
+		log.Printf("Connect node %s connect with %s with %s",
 			conn.LocalAddr().String(), conn.RemoteAddr().String(),
 			conn.RemoteAddr().Network())
 		// TODO Need lock
@@ -188,7 +215,7 @@ func (node *node) initRx () {
 	}
 }
 
- func (node node) tx(buf []byte) {
+func (node node) tx(buf []byte) {
 	node.chF <- func() {
 		common.Trace()
 		_, err := node.conn.Write(buf)
@@ -199,7 +226,7 @@ func (node *node) initRx () {
 	}
 }
 
- func (nodes *nodeMap) broadcast(buf []byte) {
+func (nodes *nodeMap) broadcast(buf []byte) {
 	// TODO lock the map
 	// TODO Check whether the node existed or not
 	for _, node := range nodes.list {
@@ -209,7 +236,7 @@ func (node *node) initRx () {
 	}
 }
 
- func (nodes *nodeMap) add(node *node) {
+func (nodes *nodeMap) add(node *node) {
 	//TODO lock the node Map
 	// TODO check whether the node existed or not
 	// TODO dupicate IP address nodes issue
@@ -217,23 +244,23 @@ func (node *node) initRx () {
 	// Unlock the map
 }
 
- func (nodes *nodeMap) delNode(node *node) {
+func (nodes *nodeMap) delNode(node *node) {
 	//TODO lock the node Map
 	delete(nodes.list, node.id)
 	// Unlock the map
 }
 
- func InitNodes() {
+func InitNodes() {
 	// TODO write lock
 	n := newNode()
 
- 	n.version = PROTOCOLVERSION
+	n.version = PROTOCOLVERSION
 	n.services = NODESERVICES
 	n.port = NODETESTPORT
 	n.relay = true
 	rand.Seed(time.Now().UTC().UnixNano())
 	n.nonce = rand.Uint32()
 
- 	nodes.node = n
+	nodes.node = n
 	nodes.list = make(map[string]*node)
 }
