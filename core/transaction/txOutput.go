@@ -1,12 +1,11 @@
 package transaction
 
- import (
+import (
 	"dad-go/common"
-	"dad-go/core/contract"
 )
 
- type TxOutput struct {
+type TxOutput struct {
 	AssetID common.Uint256
 	Value common.Fixed8
-	Address contract.Address
-} 
+	ProgramHash common.Uint160
+}
