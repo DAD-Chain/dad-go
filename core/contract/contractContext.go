@@ -3,6 +3,8 @@ package contract
  import (
 	"dad-go/common"
 	sig "dad-go/core/signature"
+	"dad-go/crypto"
+ 	"dad-go/core/contract/program"
 )
 
  type ContractContext struct {
@@ -13,8 +15,33 @@ package contract
 	Parameters [][][]byte
 }
 
+func NewContractContext(data sig.SignableData) *ContractContext {
+	programHashes,_ := data.GetProgramHashes() //TODO: check error
+ 	hashLen := len(programHashes)
 
- func NewContractContext(data sig.SignableData) *ContractContext {
-	//TODO: implement NewContractContext
-	return nil
-} 
+ 	return &ContractContext{
+		Data: data,
+		ProgramHashes: programHashes,
+		Programs: make([][]byte,hashLen),
+		Parameters: make([][][]byte,hashLen),
+	}
+}
+
+ func (cxt *ContractContext) AddContract(contract *Contract, pubkey crypto.PubKey,paramenter []byte ) error {
+	//TODO: implement AddContract()
+
+ 	//TODO: check contract type for diff building
+
+ 	return  nil
+
+ }
+
+
+ func (cxt *ContractContext) GetPrograms() ([]*program.Program,error) {
+	//TODO: implement GetProgram()
+
+ 	return  []*program.Program{},nil
+
+ }
+
+

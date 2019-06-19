@@ -1,11 +1,11 @@
 package contract
 
  import (
-	"dad-go/common"
+	"dad-go/crypto"
 )
 
  //create a Single Singature contract for owner  。
-func CreateSignatureContract(ownerPubKey common.ECPoint) (*Contract,error){
+func CreateSignatureContract(ownerPubKey crypto.PubKey) (*Contract,error){
 	//TODO: implement func CreateSignatureContract
 	return nil,nil
 }
