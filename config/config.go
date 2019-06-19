@@ -24,7 +24,7 @@ type ProtocolFile struct {
 	ProtocolConfig ProtocolConfiguration `json:"ProtocolConfiguration"`
 }
 
-func SeedNodes() []string {
+func SeedNodes() ([]string, error) {
 	file, e := ioutil.ReadFile("./config/protocol.json")
 	if e != nil {
 		log.Fatalf("File error: %v\n", e)
@@ -39,7 +39,7 @@ func SeedNodes() []string {
 		log.Fatalf("Unmarshal json file erro %v", e)
 	}
 	log.Printf("Protocol configuration: %v\n", config)
-	return config.ProtocolConfig.SeedList
+	return config.ProtocolConfig.SeedList, e
 }
 
 // filesExists reports whether the named file or directory exists.

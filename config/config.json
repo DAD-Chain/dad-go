@@ -1,8 +1,17 @@
 {
   "ApplicationConfiguration": {
     "DataDirectoryPath": ".\\Chain",
+    "HttpsJsonPort": 10331,
+    "HttpJsonPort": 10332,
     "NodePort": 10333,
-    "UriPrefix": [ "http://*:10332" ],
+    "NodeWebSocketPort": 10334,
+    "HttpsJsonTestPort": 203331,
+    "HttpJsonTestPort": 203332,
+    "NodeTestPort": 20333,
+    "NodeWebSocketTestPort": 20334,
+    "UriPrefix": [
+      "http://*:10332"
+    ],
     "SslCert": "",
     "SslCertPassword": ""
   }
