@@ -1,6 +1,6 @@
 package net
 
- import (
+import (
 	"log"
 	"strconv"
 	"net"
@@ -14,7 +14,7 @@ package net
 	"dad-go/common"
 )
 
- // The node state
+// The node state
 const (
 	INIT = 0
 	HANDSHAKEING = 1

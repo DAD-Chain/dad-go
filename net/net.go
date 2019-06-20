@@ -1,4 +1,5 @@
-pacakge net
+package net
+
 import (
 	"log"
 	"time"

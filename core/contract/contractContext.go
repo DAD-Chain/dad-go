@@ -1,13 +1,13 @@
 package contract
 
- import (
+import (
 	"dad-go/common"
 	sig "dad-go/core/signature"
 	"dad-go/crypto"
- 	"dad-go/core/contract/program"
+	"dad-go/core/contract/program"
 )
 
- type ContractContext struct {
+type ContractContext struct {
 	//TODO: define ContractContext。
 	Data sig.SignableData
 	ProgramHashes []common.Uint160
@@ -15,11 +15,13 @@ package contract
 	Parameters [][][]byte
 }
 
-func NewContractContext(data sig.SignableData) *ContractContext {
-	programHashes,_ := data.GetProgramHashes() //TODO: check error
- 	hashLen := len(programHashes)
 
- 	return &ContractContext{
+func NewContractContext(data sig.SignableData) *ContractContext {
+
+	programHashes,_ := data.GetProgramHashes() //TODO: check error
+	hashLen := len(programHashes)
+
+	return &ContractContext{
 		Data: data,
 		ProgramHashes: programHashes,
 		Programs: make([][]byte,hashLen),
@@ -27,21 +29,19 @@ func NewContractContext(data sig.SignableData) *ContractContext {
 	}
 }
 
- func (cxt *ContractContext) AddContract(contract *Contract, pubkey crypto.PubKey,paramenter []byte ) error {
+func (cxt *ContractContext) AddContract(contract *Contract, pubkey crypto.PubKey,paramenter []byte ) error {
 	//TODO: implement AddContract()
 
- 	//TODO: check contract type for diff building
-
- 	return  nil
-
- }
+	//TODO: check contract type for diff building
+	return  nil
+}
 
 
- func (cxt *ContractContext) GetPrograms() ([]*program.Program,error) {
+func (cxt *ContractContext) GetPrograms() ([]*program.Program,error) {
 	//TODO: implement GetProgram()
 
- 	return  []*program.Program{},nil
+	return  []*program.Program{},nil
 
- }
+}
 
 
