@@ -1,17 +1,17 @@
 package signature
 
- import (
-	"dad-go/common"
+import (
+	"dad-go/crypto"
 )
 
- //Signer is the abstract interface of user's information(Keys) for signing data.
+//Signer is the abstract interface of user's information(Keys) for signing data.
 type Signer interface {
 
- 	//get signer's private key
+	//get signer's private key
 	PrivKey() []byte
 
- 	//get signer's public key
-	PubKey() common.ECPoint
+	//get signer's public key
+	PubKey() *crypto.PubKey
 
- }
+}
 
