@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 	"runtime"
-	"dad-go/net"
-	"dad-go/net/httpjsonrpc"
+	"dad-go/node"
+	"dad-go/node/httpjsonrpc"
 )
 
 const (
