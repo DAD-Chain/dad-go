@@ -1,23 +1,23 @@
 package payload
 
 import (
-	"dad-go/core/asset"
 	"dad-go/common"
+	"dad-go/core/asset"
 	"dad-go/crypto"
 	"io"
 )
 
 type AssetRegistration struct {
-	Asset *asset.Asset
-	Amount *common.Fixed64
-	Precision byte
-	Issuer crypto.PubKey
+	Asset      *asset.Asset
+	Amount     *common.Fixed64
+	Precision  byte
+	Issuer     *crypto.PubKey
 	Controller *common.Uint160
 }
 
 func (a *AssetRegistration) Data() []byte {
 	//TODO: implement AssetRegistration.Data()
-	return  []byte{0}
+	return []byte{0}
 
 }
 
@@ -41,9 +41,10 @@ func (a *AssetRegistration) Deserialize(r io.Reader) error {
 	//TransactionsRoot
 	amount := new(common.Fixed64)
 	err := amount.Deserialize(r)
-	if err != nil {	return err}
+	if err != nil {
+		return err
+	}
 	a.Amount = amount
-
 
 	return nil
 }
