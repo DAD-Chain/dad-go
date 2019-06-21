@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 	"runtime"
-	"unsafe"
 	"math/rand"
 	"sync/atomic"
 	"dad-go/common"
@@ -126,7 +125,7 @@ func (node *node) updateTime(t time.Time) {
 func (node *node) rx() error {
 	conn := node.getConn()
 	from := conn.RemoteAddr().String()
-	// TODO using select instead of for loop
+
 	for {
 		buf := make([]byte, MAXBUFLEN)
 		len, err := conn.Read(buf[0:(MAXBUFLEN - 1)])
@@ -134,16 +133,7 @@ func (node *node) rx() error {
 
 		switch err {
 		case nil:
-			msg := new(Msg)
-			log.Printf("Message len %d", unsafe.Sizeof(*msg))
-			err = msg.deserialization(buf[0:len])
-			if err != nil {
-				log.Println("Deserilization buf to message failure")
-				return err
-			}
-
-			log.Printf("Received data: %v", string(buf[:len]))
-			go handleNodeMsg(node, msg)
+			go handleNodeMsg(node, buf, len)
 			break
 		case io.EOF:
 			//log.Println("Reading EOF of network conn")
@@ -215,6 +205,7 @@ func (node *node) connect(nodeAddr string)  {
 	}
 }
 
+// TODO construct a TX channel and other application just drop the message to the channel
 func (node node) tx(buf []byte) {
 	node.chF <- func() {
 		common.Trace()
