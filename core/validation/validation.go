@@ -1,14 +1,14 @@
 package validation
 
 import (
-	"dad-go/core/signature"
+	sig "dad-go/core/signature"
 	"dad-go/crypto"
 	. "dad-go/errors"
 	"dad-go/vm"
 	"errors"
 )
 
-func VerifySignableData(signableData signature.SignableData) error {
+func VerifySignableData(signableData sig.SignableData) error {
 
 	hashes, err := signableData.GetProgramHashes()
 	if err != nil {
@@ -43,7 +43,7 @@ func VerifySignableData(signableData signature.SignableData) error {
 	return nil
 }
 
-func VerifySignature(signableData signature.SignableData,pubkey *crypto.PubKey,signature []byte) error {
+func VerifySignature(signableData sig.SignableData,pubkey *crypto.PubKey,signature []byte) error {
 	//TODO: VerifySignature
 	return nil
 }
