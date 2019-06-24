@@ -8,6 +8,7 @@ import (
 	"errors"
 	"dad-go/net"
 	pl "dad-go/net/payload"
+	inv "dad-go/net/inventory"
 	tx "dad-go/core/transaction"
 	va "dad-go/core/validation"
 	sig "dad-go/core/signature"
@@ -69,7 +70,7 @@ func (ds *DbftService) AddTransaction(TX *tx.Transaction) error{
 		if minerAddress == ds.context.NextMiner{
 			//TODO: add log "send prepare response"
 			ds.context.State |= SignatureSent
-			sig.Sign(ds.context.MakeHeader(),ds.Client.GetAccount(ds.context.Miners[ds.context.MinerIndex]))
+			sig.SignBySigner(ds.context.MakeHeader(),ds.Client.GetAccount(ds.context.Miners[ds.context.MinerIndex]))
 			ds.SignAndRelay(ds.context.MakePerpareResponse(ds.context.Signatures[ds.context.MinerIndex]))
 			ds.CheckSignatures()
 		} else {
@@ -193,13 +194,13 @@ func (ds *DbftService) InitializeConsensus(viewNum byte) error  {
 }
 
 func (ds *DbftService) LocalNodeNewInventory(v interface{}){
-	if inventory,ok := v.(pl.Inventory);ok {
-		if inventory.InvertoryType() == pl.Consensus {
+	if inventory,ok := v.(inv.Inventory);ok {
+		if inventory.InvertoryType() == inv.Consensus {
 			payload, isConsensusPayload := inventory.(*pl.ConsensusPayload)
 			if isConsensusPayload {
 				ds.NewConsensusPayload(payload)
 			}
-		} else if inventory.InvertoryType() == pl.Transaction  {
+		} else if inventory.InvertoryType() == inv.Transaction  {
 			transaction, isTransaction := inventory.(*tx.Transaction)
 			if isTransaction{
 				ds.NewTransactionPayload(transaction)
@@ -404,7 +405,7 @@ func (ds *DbftService) Timeout() {
 
 			block := ds.context.MakeHeader()
 			account := ds.Client.GetAccount(ds.context.Miners[ds.context.MinerIndex])
-			ds.context.Signatures[ds.context.MinerIndex],_ = sig.Sign(block,account)
+			ds.context.Signatures[ds.context.MinerIndex] = sig.SignBySigner(block,account)
 		}
 		ds.SignAndRelay(ds.context.MakePerpareRequest())
 		time.AfterFunc(SecondsPerBlock << (ds.timeView + 1), ds.Timeout) //TODO: double check change timer
