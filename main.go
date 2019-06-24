@@ -3,8 +3,9 @@ package main
 import (
 	"time"
 	"runtime"
-	"dad-go/node"
-	"dad-go/node/httpjsonrpc"
+	"dad-go/net"
+	"dad-go/net/node"
+	"dad-go/net/httpjsonrpc"
 	"dad-go/common/log"
 )
 
@@ -25,7 +26,7 @@ func main() {
 	time.Sleep(2 * time.Second)
 
 	node.InitNodes()
-	node.StartProtocol()
+	net.StartProtocol()
 	httpjsonrpc.StartClient()
 
 	// Modules start sample
@@ -33,6 +34,6 @@ func main() {
 	//consensus.Start(net.NetToConsensusCh <-chan *Msg, net.ConsensusToNetCh chan<- *Msg)
 
 	for {
-
+		time.Sleep(2 * time.Second)
 	}
 }
