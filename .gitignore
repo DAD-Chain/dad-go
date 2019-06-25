@@ -6,3 +6,7 @@ temp/
 idea/
 .idea/
 dad-go.iml
+.DS_Store
+*.orig
+*.rej
+Log
