@@ -7,7 +7,7 @@ import (
 	tx "dad-go/core/transaction"
 	"dad-go/crypto"
 	. "dad-go/errors"
-	pl "dad-go/net/payload"
+	msg "dad-go/net/message"
 	"io"
 )
 
@@ -91,8 +91,8 @@ func (b *Block) Verify() error {
 	return nil
 }
 
-func (b *Block) InvertoryType() pl.InventoryType {
-	return pl.Block
+func (b *Block) InvertoryType() msg.InventoryType {
+	return msg.BLOCK
 }
 
 func (bc *Blockchain) GetBlock(height uint32) (*Block, error) {
