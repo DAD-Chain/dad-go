@@ -2,8 +2,9 @@ package protocol
 
 import (
 	"dad-go/common"
-	"dad-go/events"
 	"dad-go/core/transaction"
+	"dad-go/core/ledger"
+	"dad-go/events"
 	"time"
 )
 
@@ -53,6 +54,7 @@ type Noder interface {
 	LocalNode() Noder
 	GetHeight() uint64
 	GetConnectionCnt() uint
+	GetLedger() *ledger.Ledger
 	GetTxnPool() map[common.Uint256]*transaction.Transaction
 	AppendTxnPool(*transaction.Transaction) bool
 	ExistedID(id common.Uint256) bool
@@ -61,6 +63,7 @@ type Noder interface {
 	Connect(nodeAddr string)
 	//Xmit(inv Inventory) error // The transmit interface
 	Tx(buf []byte)
+	GetAddrs() ([]string, uint)
 }
 
 type Tmper interface {
@@ -75,5 +78,5 @@ type JsonNoder interface {
 	GetConnectionCnt() uint
 	GetTxnPool() map[common.Uint256]*transaction.Transaction
 	Xmit(common.Inventory) error
-	GetTransaction(hash common.Uint256) *transaction.Transaction	
+	GetTransaction(hash common.Uint256) *transaction.Transaction
 }
