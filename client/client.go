@@ -6,6 +6,7 @@ import (
 	. "dad-go/common"
 	"sync"
 	sig "dad-go/core/signature"
+	. "dad-go/errors"
 	"dad-go/core/ledger"
 	"time"
 )
@@ -77,8 +78,12 @@ func NewClient(path string,passwordKey []byte,store ClientStore,create bool) *Cl
 	return newClient
 }
 
-func (cl *Client) GetAccount(pubKey *crypto.PubKey) *Account{
-	return cl.GetAccountByKeyHash(ToCodeHash(pubKey.EncodePoint(true)))
+func (cl *Client) GetAccount(pubKey *crypto.PubKey) (*Account,error){
+	temp,err := pubKey.EncodePoint(true)
+	if err !=nil{
+		return nil,NewDetailErr(err, ErrNoCode, "[Contract],CreateSignatureContract failed.")
+	}
+	return cl.GetAccountByKeyHash(ToCodeHash(temp)),nil
 }
 
 func (cl *Client) GetAccountByKeyHash(publicKeyHash Uint160) *Account{
