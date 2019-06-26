@@ -6,6 +6,7 @@ import (
 	. "dad-go/common"
 	"sync"
 	sig "dad-go/core/signature"
+	. "dad-go/errors"
 	"dad-go/core/ledger"
 	"time"
 )
@@ -77,8 +78,16 @@ func NewClient(path string,passwordKey []byte,store ClientStore,create bool) *Cl
 	return newClient
 }
 
-func (cl *Client) GetAccount(pubKey *crypto.PubKey) *Account{
-	return cl.GetAccountByKeyHash(ToCodeHash(pubKey.EncodePoint(true)))
+func (cl *Client) GetAccount(pubKey *crypto.PubKey) (*Account,error){
+	temp,err := pubKey.EncodePoint(true)
+	if err !=nil{
+		return nil,NewDetailErr(err, ErrNoCode, "[Contract],CreateSignatureContract failed.")
+	}
+	hash,err :=ToCodeHash(temp)
+	if err !=nil{
+		return nil,NewDetailErr(err, ErrNoCode, "[Contract],CreateSignatureContract failed.")
+	}
+	return cl.GetAccountByKeyHash(hash),nil
 }
 
 func (cl *Client) GetAccountByKeyHash(publicKeyHash Uint160) *Account{
@@ -156,7 +165,7 @@ func (cl *Client) ProcessBlocks() {
 
 			cl.mu.Lock()
 
-			block ,_:= ledger.DefaultLedger.Blockchain.GetBlockWithHeight(cl.currentHeight)
+			block ,_:= ledger.DefaultLedger.GetBlockWithHeight(cl.currentHeight)
 			if block != nil{
 				cl.ProcessNewBlock(block)
 			}
@@ -184,7 +193,10 @@ func (cl *Client) Sign(context *ct.ContractContext) bool{
 		account := cl.GetAccountByProgramHash(hash)
 		if account == nil {continue}
 
-		signature := sig.SignBySigner(context.Data,account)
+		signature,errx:= sig.SignBySigner(context.Data,account)
+		if errx != nil{
+			return false
+		}
 		err := context.AddContract(contract,account.PublicKey,signature)
 
 		if err != nil {
