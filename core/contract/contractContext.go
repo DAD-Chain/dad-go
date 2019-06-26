@@ -6,6 +6,7 @@ import (
 	"dad-go/crypto"
 	pg "dad-go/core/contract/program"
 	"errors"
+	. "dad-go/errors"
 	"math/big"
 	"sort"
 )
@@ -68,9 +69,12 @@ func (cxt *ContractContext) AddContract(contract *Contract, pubkey *crypto.PubKe
 		}
 
 		pkParaArray := cxt.MultiPubkeyPara[index]
-
+		temp, err := pubkey.EncodePoint(true)
+		if err !=nil{
+			return NewDetailErr(err, ErrNoCode, "[Contract],AddContract failed.")
+		}
 		pubkeyPara := PubkeyParameter{
-			PubKey: ToHexString(pubkey.EncodePoint(true)),
+			PubKey: ToHexString(temp),
 			Parameter: ToHexString(parameter),
 		}
 		pkParaArray = append(pkParaArray,pubkeyPara)
