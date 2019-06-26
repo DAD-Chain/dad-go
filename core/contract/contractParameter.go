@@ -1,12 +1,13 @@
 package contract
 
- //parameter defined type.
+//parameter defined type.
 type ContractParameterType byte
 
- const (
+const (
 	Signature ContractParameterType = iota
 	Integer
 	Hash160
 	Hash256
 	ByteArray
 )
+

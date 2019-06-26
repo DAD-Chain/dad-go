@@ -1,6 +1,6 @@
 package common
 
- // Define common error process and const
+// Define common error process and const
 const (
 	HANDSHARKFAIL = -1
 )

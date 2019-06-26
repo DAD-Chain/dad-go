@@ -105,3 +105,4 @@ func (bc *Blockchain) GetMiners() []*crypto.PubKey {
 func (bc *Blockchain) CurrentBlockHash() Uint256 {
 	return DefaultLedger.Store.GetCurrentBlockHash()
 }
+
