@@ -10,7 +10,6 @@ import (
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/core/store"
-	"dad-go/crypto"
 	"dad-go/client"
 )
 
@@ -34,7 +33,6 @@ func main() {
 	ledger.DefaultLedger.Store = store.NewLedgerStore()
 	ledger.DefaultLedger.Store.InitLedgerStore(ledger.DefaultLedger)
 	transaction.TxStore =ledger.DefaultLedger.Store
-	crypto.Init()
 	fmt.Println("  Client set completed. Test Start...")
 
 	fmt.Println("//**************************************************************************")
