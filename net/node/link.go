@@ -4,6 +4,7 @@ import (
 	"dad-go/common"
 	. "dad-go/net/message"
 	. "dad-go/net/protocol"
+	. "dad-go/config"
 	"errors"
 	"fmt"
 	"io"
@@ -107,7 +108,7 @@ func printIPAddr() {
 // Init the server port, should be run in another thread
 func (n *node) initConnection() {
 	common.Trace()
-	listener, err := net.Listen("tcp", ":"+strconv.Itoa(NODETESTPORT))
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(Parameters.NodePort))
 	if err != nil {
 		fmt.Println("Error listening\n", err.Error())
 		return
