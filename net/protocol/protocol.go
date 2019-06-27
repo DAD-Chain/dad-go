@@ -79,9 +79,9 @@ type Noder interface {
 	Connect(nodeAddr string)
 	//Xmit(inv Inventory) error // The transmit interface
 	Tx(buf []byte)
-	GetAddress() [16]byte
+	GetAddress() ([16]byte, error)
 	GetTime() int64
-	GetAddrs() ([]NodeAddr, uint64)
+	GetNeighborAddrs() ([]NodeAddr, uint64)
 }
 
 type Tmper interface {
@@ -106,4 +106,16 @@ func (msg *NodeAddr) Deserialization(p []byte) error {
 	buf := bytes.NewBuffer(p)
 	err := binary.Read(buf, binary.LittleEndian, msg)
 	return err
+}
+
+func (msg NodeAddr) Serialization() ([]byte, error) {
+	var buf bytes.Buffer
+	fmt.Printf("The size of messge is %d in serialization\n",
+		uint32(unsafe.Sizeof(msg)))
+	err := binary.Write(&buf, binary.LittleEndian, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), err
 }
