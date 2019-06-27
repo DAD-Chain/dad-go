@@ -5,6 +5,7 @@ import (
 	"dad-go/core/ledger"
 	tx "dad-go/core/transaction"
 	. "dad-go/net/protocol"
+	. "dad-go/config"
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
@@ -324,7 +325,7 @@ func StartServer() {
 	HandleFunc("getrawtransaction", getRawTransaction)
 	HandleFunc("submitblock", submitBlock)
 
-	err := http.ListenAndServe(":" + strconv.Itoa(HTTPJSONPORT), nil)
+	err := http.ListenAndServe(":" + strconv.Itoa(Parameters.HttpJsonPort), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err.Error())
 	}

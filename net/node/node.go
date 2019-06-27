@@ -2,6 +2,7 @@ package node
 
 import (
 	"dad-go/common"
+	. "dad-go/config"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	. "dad-go/net/message"
@@ -105,20 +106,20 @@ func InitNode() Tmper {
 
 	n.version = PROTOCOLVERSION
 	n.services = NODESERVICES
-	n.port = NODETESTPORT
+	n.port = uint16(Parameters.NodePort)
 	n.relay = true
 	rand.Seed(time.Now().UTC().UnixNano())
 	// Fixme replace with the real random number
 	n.nonce = rand.Uint32()
-
+	fmt.Printf("Init node ID to %d \n", n.nonce)
 	n.neighb.init()
 	n.local = n
 	n.TXNPool.init()
 	n.eventQueue.init()
 	n.ledger, err = ledger.GetDefaultLedger()
 	if err != nil {
+		fmt.Printf("Get Default Ledger error\n")
 		errors.New("Get Default Ledger error")
-		// FIXME report the error
 	}
 
 	go n.initConnection()
@@ -132,7 +133,6 @@ func rmNode(node *node) {
 
 // TODO pass pointer to method only need modify it
 func (node *node) backend() {
-	common.Trace()
 	for f := range node.chF {
 		f()
 	}
@@ -278,7 +278,6 @@ func (node node) GetAddr() string {
 }
 
 func (node node) GetAddr16() ([16]byte, error) {
-	common.Trace()
 	var result [16]byte
 	ip := net.ParseIP(node.addr).To16()
 	if ip == nil {

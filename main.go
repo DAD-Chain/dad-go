@@ -1,7 +1,6 @@
 package main
 
 import (
-	"dad-go/client"
 	"dad-go/common/log"
 	"dad-go/core/ledger"
 	"dad-go/core/store"
@@ -20,6 +19,8 @@ const (
 	NCPU = 4
 )
 
+var Version string
+
 func init() {
 	runtime.GOMAXPROCS(NCPU)
 	var path string = "./Log/"
@@ -27,6 +28,7 @@ func init() {
 }
 
 func main() {
+	fmt.Printf("Node version: %s\n", Version)
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** 0. Client Set                                                      ***")
 	fmt.Println("//**************************************************************************")
@@ -47,12 +49,6 @@ func main() {
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** 2. Generate Account                                                ***")
 	fmt.Println("//**************************************************************************")
-	user, _ := client.NewAccount([]byte{})
-	admin, _ := client.NewAccount([]byte{})
-	userpubkey, _ := user.PublicKey.EncodePoint(true)
-	fmt.Printf("user.PrivateKey: %x user.PrivateKey Len: %d\n", user.PrivateKey, len(user.PrivateKey))
-	fmt.Printf("user.PublicKey: %x user.PublicKey Len: %d\n", userpubkey, len(userpubkey))
-	fmt.Printf("admin.PrivateKey: %x admin.PrivateKey Len: %d\n", admin.PrivateKey, len(admin.PrivateKey))
 
 	time.Sleep(2 * time.Second)
 	net.StartProtocol()
