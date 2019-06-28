@@ -3,6 +3,11 @@ package contract
 import (
 	. "dad-go/common"
 	"dad-go/vm"
+	"io"
+	"bytes"
+	"dad-go/common/serialization"
+	. "dad-go/errors"
+	"errors"
 )
 
 //Contract address is the hash of contract program .
@@ -107,4 +112,71 @@ func (c *Contract) GetType() ContractType{
 	}
 	return CustomContract
 }
+
+func (c *Contract) Deserialize(r io.Reader) error {
+	c.OwnerPubkeyHash.Deserialize(r)
+
+	p,err := serialization.ReadVarBytes(r)
+	if err != nil {
+		return err
+	}
+	c.Parameters = ByteToContractParameterType(p)
+
+	c.Code,err = serialization.ReadVarBytes(r)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Contract) Serialize(w io.Writer) error {
+	len,err := c.OwnerPubkeyHash.Serialize(w)
+	if err != nil {
+		return err
+	}
+	if len != 20 {
+		return NewDetailErr(errors.New("PubkeyHash.Serialize(): len != len(Uint160)"), ErrNoCode, "")
+	}
+
+	err = serialization.WriteVarBytes(w,ContractParameterTypeToByte(c.Parameters))
+	if err != nil {
+		return err
+	}
+
+	err = serialization.WriteVarBytes(w,c.Code)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Contract) ToArray() []byte {
+	w := new(bytes.Buffer)
+	c.Serialize(w)
+
+	return w.Bytes()
+}
+
+func ContractParameterTypeToByte( c [] ContractParameterType ) []byte {
+	b := make( []byte, len(c) )
+
+	for i:=0; i<len(c); i++ {
+		b[i] = byte(c[i])
+	}
+
+	return b
+}
+
+func ByteToContractParameterType( b []byte ) []ContractParameterType {
+	c := make( []ContractParameterType, len(b) )
+
+	for i:=0; i<len(b); i++ {
+		c[i] = ContractParameterType(b[i])
+	}
+
+	return c
+}
+
 
