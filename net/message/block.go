@@ -2,8 +2,8 @@ package message
 
 import (
 	"dad-go/common"
-	"dad-go/events"
 	"dad-go/core/ledger"
+	"dad-go/events"
 	//"dad-go/events"
 	. "dad-go/net/protocol"
 	"bytes"
@@ -128,6 +128,7 @@ func (msg *block) Deserialization(p []byte) error {
 		uint32(unsafe.Sizeof(*msg)))
 
 	buf := bytes.NewBuffer(p)
-	err := binary.Read(buf, binary.LittleEndian, msg)
+	err := binary.Read(buf, binary.LittleEndian, msg.msgHdr)
+	msg.blk.Deserialize(buf)
 	return err
 }

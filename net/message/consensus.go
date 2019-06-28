@@ -5,14 +5,16 @@ import (
 	"dad-go/common/serialization"
 	"dad-go/core/contract/program"
 	//"dad-go/events"
+	"dad-go/events"
 	. "dad-go/net/protocol"
 	"bytes"
-	"dad-go/events"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
+	"unsafe"
 )
 
 type ConsensusPayload struct {
@@ -97,21 +99,83 @@ func (cp *ConsensusPayload) SerializeUnsigned(w io.Writer) error {
 
 }
 
-func (cp *ConsensusPayload) Serialize(w io.Writer) {
-	cp.SerializeUnsigned(w)
-	serialization.WriteVarBytes(w, cp.Data)
-	cp.Program.Serialize(w)
+func (cp *ConsensusPayload) Serialize(w io.Writer) error {
+	err := cp.SerializeUnsigned(w)
+	err = serialization.WriteVarBytes(w, cp.Data)
+	if cp.Program == nil {
+		common.Trace()
+		fmt.Println("Program is NULL")
+		return errors.New("Program in consensus is NULL")
+	}
+	err = cp.Program.Serialize(w)
+	return err
 }
 
-func (msg consensus) Serialization() ([]byte, error) {
+func (msg *consensus) Serialization() ([]byte, error) {
 	hdrBuf, err := msg.msgHdr.Serialization()
 	if err != nil {
 		return nil, err
 	}
 	buf := bytes.NewBuffer(hdrBuf)
-	msg.cons.Serialize(buf)
+	err = msg.cons.Serialize(buf)
 
 	return buf.Bytes(), err
+}
+
+func (cp *ConsensusPayload) DeserializeUnsigned(r io.Reader) error {
+	var err error
+	cp.Version, err = serialization.ReadUint32(r)
+	if err != nil {
+		return errors.New("consensus item Version Deserialize failed.")
+	}
+
+	preBlock := new(common.Uint256)
+	err = preBlock.Deserialize(r)
+	if err != nil {
+		return errors.New("consensus item preHash Deserialize failed.")
+	}
+	cp.PrevHash = *preBlock
+
+	cp.Height, err = serialization.ReadUint32(r)
+	if err != nil {
+		return errors.New("consensus item Height Deserialize failed.")
+	}
+
+	cp.MinerIndex, err = serialization.ReadUint16(r)
+	if err != nil {
+		return errors.New("consensus item MinerIndex Deserialize failed.")
+	}
+
+	cp.Timestamp, err = serialization.ReadUint32(r)
+	if err != nil {
+		return errors.New("consensus item Timestamp Deserialize failed.")
+	}
+
+	cp.Data, err = serialization.ReadVarBytes(r)
+	if err != nil {
+		return errors.New("consensus item Data Deserialize failed.")
+	}
+	return nil
+}
+
+func (cp *ConsensusPayload) Deserialize(r io.Reader) error {
+	err := cp.DeserializeUnsigned(r)
+	if cp.Program == nil {
+		common.Trace()
+		fmt.Println("Program is NULL")
+		return errors.New("Program in consensus is NULL")
+	}
+	err = cp.Program.Deserialize(r)
+	return err
+}
+
+func (msg *consensus) Deserialization(p []byte) error {
+	fmt.Printf("The size of messge is %d in deserialization\n",
+		uint32(unsafe.Sizeof(*msg)))
+	buf := bytes.NewBuffer(p)
+	err := binary.Read(buf, binary.LittleEndian, &(msg.msgHdr))
+	err = msg.cons.Deserialize(buf)
+	return err
 }
 
 func NewConsensus(cp *ConsensusPayload) ([]byte, error) {
