@@ -9,6 +9,7 @@ import (
 	ser "dad-go/common/serialization"
 	cl "dad-go/client"
 	"fmt"
+	"bytes"
 )
 
 const ContextVersion uint32 = 0
