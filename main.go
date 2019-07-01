@@ -57,6 +57,7 @@ func main() {
 		fmt.Println("Can't get local client.")
 		os.Exit(1)
 	}
+
 	issuer, err := localclient.GetDefaultAccount()
 	if err != nil {
 		fmt.Println(err)
@@ -81,27 +82,25 @@ func main() {
 	ledger.DefaultLedger.Blockchain = &sampleBlockchain
 
 	time.Sleep(2 * time.Second)
-	neter := net.StartProtocol()
-	time.Sleep(1 * time.Minute)
+	neter, noder := net.StartProtocol()
+	httpjsonrpc.RegistRpcNode(noder)
+	time.Sleep(20 * time.Second)
 
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** 5. Start DBFT Services                                             ***")
 	fmt.Println("//**************************************************************************")
 	dbftServices := dbft.NewDbftService(localclient, "logdbft", neter)
+	httpjsonrpc.RegistDbftService(dbftServices)
 	go dbftServices.Start()
 	time.Sleep(5 * time.Second)
 	fmt.Println("DBFT Services start completed.")
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** Init Complete                                                      ***")
 	fmt.Println("//**************************************************************************")
-	go httpjsonrpc.StartServer()
+	go httpjsonrpc.StartRPCServer()
+	go httpjsonrpc.StartLocalServer()
 
 	time.Sleep(2 * time.Second)
-	//httpjsonrpc.StartClient()
-	// Modules start sample
-	//ledger.Start(net.NetToLedgerCh <-chan *Msg, net.LedgerToNetCh chan<- *Msg)
-	//consensus.Start(net.NetToConsensusCh <-chan *Msg, net.ConsensusToNetCh chan<- *Msg)
-
 	// if config.Parameters.MinerName == "c4" {
 	// 	time.Sleep(2 * time.Second)
 	// 	tx := sampleTransaction(issuer, admin)

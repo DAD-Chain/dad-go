@@ -8,6 +8,7 @@ import (
 	"dad-go/core/contract/program"
 	. "dad-go/core/asset"
 	"dad-go/common/serialization"
+	"dad-go/common/log"
 	"bytes"
 	"fmt"
 	tx "dad-go/core/transaction"
@@ -235,7 +236,7 @@ func (bd *LevelDBStore) GetHeader(hash Uint256) (*Header, error) {
 
 	prefix := []byte{ byte(DATA_Header) }
 	data,err_get := bd.Get( append(prefix,hash.ToArray()...) )
-	fmt.Printf( "Get Header Data: %x\n",  data )
+	//fmt.Printf( "Get Header Data: %x\n",  data )
 	if ( err_get != nil ) {
 		//TODO: implement error process
 		return nil, err_get
@@ -313,30 +314,32 @@ func (bd *LevelDBStore) GetNextBlockHash(hash []byte) common.Uint256 {
 */
 
 func (bd *LevelDBStore) GetTransaction(hash Uint256) (*tx.Transaction, error) {
-
-	fmt.Printf( "GetTransaction Hash: %x\n",  hash )
-
+	Trace()
+	log.Debug(fmt.Sprintf("GetTransaction Hash: %x\n", hash))
 	t := new(tx.Transaction)
-	err := bd.getTx( t, hash )
+	err := bd.getTx(t, hash)
 
-	return t,err
+	if err != nil  {
+		return nil, err
+	}
+
+	return t, err
 }
 
 func (bd *LevelDBStore) getTx(tx *tx.Transaction, hash Uint256) error {
-	fmt.Printf( "getTx Hash: %x\n",  hash )
-
 	prefix := []byte{ byte(DATA_Transaction) }
-	tHash,err_get := bd.Get( append(prefix,hash.ToArray()...) )
-	fmt.Printf( "getTx Data: %x\n",  tHash )
+	tHash, err_get := bd.Get( append(prefix,hash.ToArray()...) )
+	fmt.Printf("getTx Data: %x\n", tHash)
 	if ( err_get != nil ) {
 		//TODO: implement error process
+		log.Warn("Get TX from DB error")
 		return err_get
 	}
 
 	r := bytes.NewReader(tHash)
 
 	// get height
-	height,err := serialization.ReadUint32(r)
+	height, err := serialization.ReadUint32(r)
 	fmt.Printf( "tx height: %d\n",  height )
 
 	// Deserialize Transaction

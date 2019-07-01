@@ -2,6 +2,7 @@ package node
 
 import (
 	"dad-go/common"
+	"dad-go/common/log"
 	. "dad-go/config"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
@@ -23,22 +24,22 @@ const (
 )
 
 type node struct {
-	state          uint      // node status
-	id             uint64    // The nodes's id
-	cap            uint32    // The node capability set
-	version        uint32    // The network protocol the node used
-	services       uint64    // The services the node supplied
-	relay          bool      // The relay capability of the node (merge into capbility flag)
-	height         uint64    // The node latest block height
+	state    uint   // node status
+	id       uint64 // The nodes's id
+	cap      uint32 // The node capability set
+	version  uint32 // The network protocol the node used
+	services uint64 // The services the node supplied
+	relay    bool   // The relay capability of the node (merge into capbility flag)
+	height   uint64 // The node latest block height
 	// TODO does this channel should be a buffer channel
-	chF   chan func() error // Channel used to operate the node without lock
-	link			// The link status and infomation
-	local  *node		// The pointer to local node
-	nbrNodes		// The neighbor node connect with currently node except itself
-	eventQueue                // The event queue to notice notice other modules
-	TXNPool                   // Unconfirmed transaction pool
-	idCache                   // The buffer to store the id of the items which already be processed
-	ledger     *ledger.Ledger // The Local ledger
+	chF        chan func() error // Channel used to operate the node without lock
+	link                         // The link status and infomation
+	local      *node             // The pointer to local node
+	nbrNodes                     // The neighbor node connect with currently node except itself
+	eventQueue                   // The event queue to notice notice other modules
+	TXNPool                      // Unconfirmed transaction pool
+	idCache                      // The buffer to store the id of the items which already be processed
+	ledger     *ledger.Ledger    // The Local ledger
 }
 
 func (node node) DumpInfo() {
@@ -83,7 +84,7 @@ func NewNode() *node {
 	return &n
 }
 
-func InitNode() Tmper {
+func InitNode() Noder {
 	var err error
 	n := NewNode()
 
@@ -107,11 +108,12 @@ func InitNode() Tmper {
 
 	go n.initConnection()
 	go n.updateNodeInfo()
+
 	return n
 }
 
 func rmNode(node *node) {
-	fmt.Printf("Remove node %s\n", node.addr)
+	log.Debug(fmt.Sprintf("Remove unused/deuplicate node: 0x%0x", node.id))
 }
 
 // TODO pass pointer to method only need modify it
@@ -184,13 +186,12 @@ func (node node) SynchronizeMemoryPool() {
 }
 
 func (node node) Xmit(inv common.Inventory) error {
-
-	fmt.Println("****** node Xmit ********")
+	common.Trace()
 	var buffer []byte
 	var err error
 
 	if inv.Type() == common.TRANSACTION {
-		fmt.Printf("****TX transaction message*****\n")
+		log.Info("****TX transaction message*****\n")
 		transaction, isTransaction := inv.(*transaction.Transaction)
 		if isTransaction {
 			//transaction.Serialize(tmpBuffer)
@@ -202,7 +203,7 @@ func (node node) Xmit(inv common.Inventory) error {
 		}
 
 	} else if inv.Type() == common.BLOCK {
-		fmt.Printf("****TX block message****\n")
+		log.Info("****TX block message****\n")
 		block, isBlock := inv.(*ledger.Block)
 		if isBlock {
 			buffer, err = NewBlock(block)
@@ -212,7 +213,7 @@ func (node node) Xmit(inv common.Inventory) error {
 			}
 		}
 	} else if inv.Type() == common.CONSENSUS {
-		fmt.Printf("*****TX consensus message****\n")
+		log.Info("*****TX consensus message****\n")
 		payload, isConsensusPayload := inv.(*ConsensusPayload)
 		if isConsensusPayload {
 			buffer, err = NewConsensus(payload)
@@ -221,8 +222,13 @@ func (node node) Xmit(inv common.Inventory) error {
 				return err
 			}
 		}
-	}
-	node.neighb.Broadcast(buffer)
+	}  else {
+		log.Info("Unknow Xmit message type")
+		return errors.New("Unknow Xmit message type\n")
+ 	}
+
+	node.nbrNodes.Broadcast(buffer)
+
 	return nil
 }
 
@@ -231,7 +237,6 @@ func (node node) GetAddr() string {
 }
 
 func (node node) GetAddr16() ([16]byte, error) {
-	common.Trace()
 	var result [16]byte
 	ip := net.ParseIP(node.addr).To16()
 	if ip == nil {

@@ -2,6 +2,7 @@ package dbft
 
 import (
 	. "dad-go/common"
+	"dad-go/common/log"
 	"dad-go/crypto"
 	tx "dad-go/core/transaction"
 	 "dad-go/core/ledger"
@@ -9,13 +10,11 @@ import (
 	ser "dad-go/common/serialization"
 	cl "dad-go/client"
 	"fmt"
-	"bytes"
 )
 
 const ContextVersion uint32 = 0
 
 type ConsensusContext struct {
-
 	State ConsensusState
 	PrevHash Uint256
 	Height uint32
@@ -60,7 +59,7 @@ func (cxt *ConsensusContext)  ChangeView(viewNum byte)  {
 
 	if cxt.State == Initial{
 		cxt.TransactionHashes = nil
-		cxt.Signatures = make([][]byte,len(cxt.Miners))
+		cxt.Signatures = make([][]byte, len(cxt.Miners))
 	}
 	cxt.header = nil
 }
@@ -111,7 +110,7 @@ func (cxt *ConsensusContext)  MakeHeader() *ledger.Block {
 	return cxt.header
 }
 
-func (cxt *ConsensusContext)  MakePayload(message ConsensusMessage) *msg.ConsensusPayload{
+func (cxt *ConsensusContext) MakePayload(message ConsensusMessage) *msg.ConsensusPayload{
 	Trace()
 	message.ConsensusMessageData().ViewNumber = cxt.ViewNumber
 	return &msg.ConsensusPayload{
@@ -124,9 +123,8 @@ func (cxt *ConsensusContext)  MakePayload(message ConsensusMessage) *msg.Consens
 	}
 }
 
-func (cxt *ConsensusContext)  MakePrepareRequest() *msg.ConsensusPayload{
+func (cxt *ConsensusContext) MakePrepareRequest() *msg.ConsensusPayload{
 	Trace()
-	fmt.Println("cxt.TransactionHashes[0]",cxt.TransactionHashes[0])
 	preReq := &PrepareRequest{
 		Nonce: cxt.Nonce,
 		NextMiner: cxt.NextMiner,
@@ -138,7 +136,7 @@ func (cxt *ConsensusContext)  MakePrepareRequest() *msg.ConsensusPayload{
 	return cxt.MakePayload(preReq)
 }
 
-func (cxt *ConsensusContext)  MakePerpareResponse(signature []byte) *msg.ConsensusPayload{
+func (cxt *ConsensusContext) MakePrepareResponse(signature []byte) *msg.ConsensusPayload{
 	Trace()
 	preRes := &PrepareResponse{
 		Signature: signature,
@@ -147,10 +145,10 @@ func (cxt *ConsensusContext)  MakePerpareResponse(signature []byte) *msg.Consens
 	return cxt.MakePayload(preRes)
 }
 
-func (cxt *ConsensusContext)  GetSignaturesCount() (count int){
+func (cxt *ConsensusContext) GetSignaturesCount() (count int){
 	Trace()
 	count = 0
-	for _,sig := range cxt.Signatures {
+	for _, sig := range cxt.Signatures {
 		if sig != nil {
 			count += 1
 		}
@@ -158,7 +156,7 @@ func (cxt *ConsensusContext)  GetSignaturesCount() (count int){
 	return count
 }
 
-func (cxt *ConsensusContext)  GetTransactionList()  []*tx.Transaction{
+func (cxt *ConsensusContext) GetTransactionList() []*tx.Transaction{
 	Trace()
 	if cxt.txlist == nil{
 		cxt.txlist = []*tx.Transaction{}
@@ -215,11 +213,10 @@ func (cxt *ConsensusContext) Reset(client *cl.Client){
 	        }
 	for i:=0;i<minerLen ;i++  {
 		if client.ContainsAccount(cxt.Miners[i]){
-			fmt.Println("Runed.")
 			cxt.MinerIndex = i
 			break
 		}
 	}
-	fmt.Println("cxt.MinerIndex = ",cxt.MinerIndex)
+	log.Info("cxt.MinerIndex = ", cxt.MinerIndex)
 	cxt.header = nil
 }

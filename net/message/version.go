@@ -2,11 +2,11 @@ package message
 
 import (
 	"dad-go/common"
+	"dad-go/common/log"
 	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
-	"encoding/hex"
 	"fmt"
 	"time"
 	"errors"
@@ -76,8 +76,6 @@ func NewVersion(n Noder) ([]byte, error) {
 		return nil, err
 	}
 
-	str := hex.EncodeToString(m)
-	fmt.Printf("The message length is %d, %s\n", len(m), str)
 	return m, nil
 }
 
@@ -140,7 +138,7 @@ func (msg version) Handle(node Noder) error {
 	// Obsolete node
 	n, ret := localNode.DelNbrNode(msg.P.Nonce)
 	if ret == true {
-		fmt.Printf("Remove a eixted Node\n")
+		log.Info("Node reconnect 0x%x\n", msg.P.Nonce)
 		// Close the connection and release the node soure
 		n.SetState(INACTIVITY)
 		n.CloseConn()
