@@ -2,6 +2,7 @@ package node
 
 import (
 	"dad-go/common"
+	"dad-go/common/log"
 	. "dad-go/config"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
@@ -221,8 +222,13 @@ func (node node) Xmit(inv common.Inventory) error {
 				return err
 			}
 		}
-	}
-	node.neighb.Broadcast(buffer)
+	}  else {
+		log.Info("Unknow Xmit message type")
+		return errors.New("Unknow Xmit message type\n")
+ 	}
+
+	node.nbrNodes.Broadcast(buffer)
+
 	return nil
 }
 
@@ -231,7 +237,6 @@ func (node node) GetAddr() string {
 }
 
 func (node node) GetAddr16() ([16]byte, error) {
-	common.Trace()
 	var result [16]byte
 	ip := net.ParseIP(node.addr).To16()
 	if ip == nil {

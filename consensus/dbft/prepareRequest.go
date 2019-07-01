@@ -7,7 +7,6 @@ import (
 	ser "dad-go/common/serialization"
 	tx "dad-go/core/transaction"
 	"fmt"
-	"bytes"
 )
 
 type PrepareRequest struct {
