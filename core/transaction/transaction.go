@@ -6,7 +6,6 @@ import (
 	"dad-go/core/contract"
 	"dad-go/core/contract/program"
 	sig "dad-go/core/signature"
-	msg "dad-go/node/message"
 	"dad-go/core/transaction/payload"
 	. "dad-go/errors"
 	"crypto/sha256"
