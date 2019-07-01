@@ -3,9 +3,10 @@ package net
 import (
 	"dad-go/common"
 	"dad-go/config"
-	"dad-go/events"
 	"dad-go/core/transaction"
+	"dad-go/events"
 	"dad-go/net/node"
+	"dad-go/net/protocol"
 )
 
 type Neter interface {
@@ -15,12 +16,12 @@ type Neter interface {
 	GetEvent(eventName string) *events.Event
 }
 
-func StartProtocol() Neter {
+func StartProtocol() (Neter, protocol.Noder) {
 	seedNodes := config.Parameters.SeedList
 
 	net := node.InitNode()
 	for _, nodeAddr := range seedNodes {
 		net.Connect(nodeAddr)
 	}
-	return net
+	return net, net
 }
