@@ -4,7 +4,6 @@ import (
 	. "dad-go/client"
 	"dad-go/common/log"
 	"dad-go/consensus/dbft"
-	. "dad-go/core/asset"
 	"dad-go/core/ledger"
 	"dad-go/core/store"
 	"dad-go/core/transaction"
@@ -97,7 +96,7 @@ func main() {
 	fmt.Println("//*** Init Complete                                                      ***")
 	fmt.Println("//**************************************************************************")
 	go httpjsonrpc.StartRPCServer()
-	go httpjsonrpc.StartLocalServer()
+	//go httpjsonrpc.StartLocalServer()
 
 	time.Sleep(2 * time.Second)
 
