@@ -2,16 +2,13 @@ package ledger
 
 import (
 	. "dad-go/common"
+	"dad-go/common/log"
 	tx "dad-go/core/transaction"
 	"dad-go/crypto"
 	. "dad-go/errors"
 	"dad-go/events"
 	"errors"
 	"sync"
-)
-
-const (
-	EventBlockPersistCompleted events.EventType = iota
 )
 
 type Blockchain struct {
@@ -43,7 +40,7 @@ func NewBlockchainWithGenesisBlock() (*Blockchain,error) {
 }
 
 func (bc *Blockchain) AddBlock(block *Block) error {
-	//TODO: implement AddBlock
+	Trace()
 
 	//set block cache
 	bc.AddBlockCache(block)
@@ -56,6 +53,8 @@ func (bc *Blockchain) AddBlock(block *Block) error {
 		return err
 	}
 
+	// Need atomic oepratoion
+	bc.BlockHeight++
 	return nil
 }
 
@@ -81,22 +80,24 @@ func (bc *Blockchain) GetHeader(hash Uint256) (*Header,error) {
 }
 
 func (bc *Blockchain) SaveBlock(block *Block) error {
+	Trace()
 	err := DefaultLedger.Store.SaveBlock(block)
 	if err != nil {
+		log.Error("Save block failure")
 		return err
 	}
-	bc.BCEvents.Notify(EventBlockPersistCompleted, block)
+	bc.BCEvents.Notify(events.EventBlockPersistCompleted, block)
 
 	return nil
 }
 
 func (bc *Blockchain) ContainsTransaction(hash Uint256) bool {
 	//TODO: implement error catch
-	tx, _ := DefaultLedger.Store.GetTransaction(hash)
-	if tx != nil{
-		return true
+	_ ,err := DefaultLedger.Store.GetTransaction(hash)
+	if (err!= nil){
+		return false
 	}
-	return false
+	return true
 }
 
 func (bc *Blockchain) GetMinersByTXs(others []*tx.Transaction) []*crypto.PubKey {

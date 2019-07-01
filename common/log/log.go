@@ -5,9 +5,11 @@ import (
 	"dad-go/config"
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"io"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -30,8 +32,8 @@ const (
 var (
 	levels = map[int]string{
 		debugLog: "DEBUG",
-		infoLog:  "INFO",
-		warnLog:  "WARN",
+		infoLog:  "INFO ",
+		warnLog:  "WARN ",
 		errorLog: "ERROR",
 		fatalLog: "FATAL",
 	}
@@ -86,10 +88,20 @@ func New(out io.Writer, prefix string, flag, level int) *Logger {
 }
 
 func (l *Logger) output(level int, s string) error {
-	if (level == 0) || (level == 3) {
+	// FIXME enable print GID for all log, should be disable as it effect performance
+	if (level == 0) || (level == 1) || (level == 2) || (level == 3) {
 		gid := common.GetGID()
 		gidStr := strconv.FormatUint(gid, 10)
-		return l.logger.Output(callDepth, AddBracket(LevelName(level))+" "+"GID"+" "+gidStr+", "+s)
+
+		// Get file information only
+		pc := make([]uintptr, 10)
+		runtime.Callers(2, pc)
+		f := runtime.FuncForPC(pc[0])
+		file, line := f.FileLine(pc[0])
+		fileName := filepath.Base(file)
+		lineStr := strconv.FormatUint(uint64(line), 10)
+		return l.logger.Output(callDepth, AddBracket(LevelName(level))+" "+"GID"+
+			" "+gidStr+", "+s+" "+fileName+":"+lineStr)
 	} else {
 		return l.logger.Output(callDepth, AddBracket(LevelName(level))+" "+s)
 	}
@@ -190,7 +202,7 @@ func CreatePrintLog(path string) {
 	}
 	fileAndStdoutWrite := io.MultiWriter(writers...)
 
-	Log = New(fileAndStdoutWrite, "\r\n", log.Lmicroseconds, printlevel)
+	Log = New(fileAndStdoutWrite, "", log.Lmicroseconds, printlevel)
 }
 
 func ClosePrintLog() {

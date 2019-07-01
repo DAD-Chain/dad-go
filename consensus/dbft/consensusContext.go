@@ -91,7 +91,6 @@ func (cxt *ConsensusContext)  MakeHeader() *ledger.Block {
 
 	txRoot,_ := crypto.ComputeRoot(cxt.TransactionHashes)
 
-
 	if cxt.header == nil{
 		blockData := &ledger.Blockdata{
 			Version: ContextVersion,
@@ -191,7 +190,7 @@ func (cxt *ConsensusContext)  CheckTxHashesExist() bool {
 	return true
 }
 
-func (cxt *ConsensusContext) Reset(client *cl.Client){
+func (cxt *ConsensusContext) Reset(client cl.Client){
 	Trace()
 	cxt.State = Initial
 	cxt.PrevHash = ledger.DefaultLedger.Blockchain.CurrentBlockHash()
