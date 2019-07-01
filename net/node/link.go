@@ -5,6 +5,7 @@ import (
 	. "dad-go/net/message"
 	. "dad-go/net/protocol"
 	. "dad-go/config"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -177,14 +178,17 @@ func (node *node) Connect(nodeAddr string) {
 
 // TODO construct a TX channel and other application just drop the message to the channel
 func (node node) Tx(buf []byte) {
-	node.chF <- func() error {
-		common.Trace()
-		_, err := node.conn.Write(buf)
-		if err != nil {
-			fmt.Println("Error sending messge to peer node\n", err.Error())
-		}
-		return err
+	//node.chF <- func() error {
+	common.Trace()
+	str := hex.EncodeToString(buf)
+	fmt.Printf("TX buf length: %d\n%s\n", len(buf), str)
+
+	_, err := node.conn.Write(buf)
+	if err != nil {
+		fmt.Println("Error sending messge to peer node\n", err.Error())
 	}
+	//return err
+	//}
 }
 
 // func (net net) Xmit(inv Inventory) error {
