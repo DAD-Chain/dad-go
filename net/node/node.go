@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"net"
 	"runtime"
+	"sync/atomic"
 	"time"
 )
 
@@ -24,7 +25,8 @@ const (
 )
 
 type node struct {
-	state    uint   // node status
+	//sync.RWMutex	//The Lock not be used as expected to use function channel instead of lock
+	state    uint32 // node state
 	id       uint64 // The nodes's id
 	cap      uint32 // The node capability set
 	version  uint32 // The network protocol the node used
@@ -39,7 +41,6 @@ type node struct {
 	eventQueue                   // The event queue to notice notice other modules
 	TXNPool                      // Unconfirmed transaction pool
 	idCache                      // The buffer to store the id of the items which already be processed
-	ledger     *ledger.Ledger    // The Local ledger
 }
 
 func (node node) DumpInfo() {
@@ -54,13 +55,12 @@ func (node node) DumpInfo() {
 	fmt.Printf("\t port = %d\n", node.port)
 	fmt.Printf("\t relay = %v\n", node.relay)
 	fmt.Printf("\t height = %v\n", node.height)
-
 	fmt.Printf("\t conn cnt = %v\n", node.link.connCnt)
 }
 
 func (node *node) UpdateInfo(t time.Time, version uint32, services uint64,
 	port uint16, nonce uint64, relay uint8, height uint64) {
-	// TODO need lock
+
 	node.UpdateTime(t)
 	node.id = nonce
 	node.version = version
@@ -85,7 +85,6 @@ func NewNode() *node {
 }
 
 func InitNode() Noder {
-	var err error
 	n := NewNode()
 
 	n.version = PROTOCOLVERSION
@@ -100,11 +99,6 @@ func InitNode() Noder {
 	n.local = n
 	n.TXNPool.init()
 	n.eventQueue.init()
-	n.ledger, err = ledger.GetDefaultLedger()
-	if err != nil {
-		fmt.Printf("Get Default Ledger error\n")
-		errors.New("Get Default Ledger error")
-	}
 
 	go n.initConnection()
 	go n.updateNodeInfo()
@@ -127,8 +121,8 @@ func (node node) GetID() uint64 {
 	return node.id
 }
 
-func (node node) GetState() uint {
-	return node.state
+func (node node) GetState() uint32 {
+	return atomic.LoadUint32(&(node.state))
 }
 
 func (node node) getConn() net.Conn {
@@ -151,9 +145,14 @@ func (node node) Services() uint64 {
 	return node.services
 }
 
-func (node *node) SetState(state uint) {
-	node.state = state
+func (node *node) SetState(state uint32) {
+	atomic.StoreUint32(&(node.state), state)
 }
+
+func (node *node) CompareAndSetState(old, new uint32) bool {
+	return atomic.CompareAndSwapUint32(&(node.state), old, new)
+}
+
 
 func (node *node) LocalNode() Noder {
 	return node.local
@@ -163,26 +162,8 @@ func (node node) GetHeight() uint64 {
 	return node.height
 }
 
-func (node node) GetLedger() *ledger.Ledger {
-	return node.ledger
-}
-
 func (node *node) UpdateTime(t time.Time) {
 	node.time = t
-}
-
-func (node node) GetMemoryPool() map[common.Uint256]*transaction.Transaction {
-	return node.GetTxnPool()
-	// TODO refresh the pending transaction pool
-}
-
-func (node node) SynchronizeMemoryPool() {
-	// Fixme need lock
-	for _, n := range node.nbrNodes.List {
-		if n.state == ESTABLISH {
-			ReqMemoryPool(n)
-		}
-	}
 }
 
 func (node node) Xmit(inv common.Inventory) error {
@@ -260,26 +241,4 @@ func (node node) GetAddr16() ([16]byte, error) {
 func (node node) GetTime() int64 {
 	t := time.Now()
 	return t.UnixNano()
-}
-
-func (node node) GetNeighborAddrs() ([]NodeAddr, uint64) {
-	var i uint64
-	var addrs []NodeAddr
-	// TODO read lock
-	for _, n := range node.nbrNodes.List {
-		if n.GetState() != ESTABLISH {
-			continue
-		}
-		var addr NodeAddr
-		addr.IpAddr, _ = n.GetAddr16()
-		addr.Time = n.GetTime()
-		addr.Services = n.Services()
-		addr.Port = n.GetPort()
-		addr.ID = n.GetID()
-		addrs = append(addrs, addr)
-
-		i++
-	}
-
-	return addrs, i
 }

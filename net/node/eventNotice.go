@@ -1,7 +1,6 @@
 package node
 
 import (
-	"dad-go/common"
 	"dad-go/events"
 	"fmt"
 )
@@ -14,10 +13,6 @@ type eventQueue struct {
 func (eq *eventQueue) init() {
 	eq.Consensus = events.NewEvent()
 	eq.Block = events.NewEvent()
-}
-
-func (eq eventQueue) SubscribeMsgQueue(common.InventoryType) {
-	//TODO
 }
 
 func (eq *eventQueue) GetEvent(eventName string) *events.Event {

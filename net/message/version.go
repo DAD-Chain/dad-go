@@ -3,6 +3,7 @@ package message
 import (
 	"dad-go/common"
 	"dad-go/common/log"
+	"dad-go/core/ledger"
 	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
@@ -43,8 +44,7 @@ func NewVersion(n Noder) ([]byte, error) {
 	msg.P.Port = n.GetPort()
 	msg.P.Nonce = n.GetID()
 	msg.P.UserAgent = 0x00
-	// Fixme Get the block height from ledger
-	msg.P.StartHeight = uint64(n.GetLedger().GetLocalBlockChainHeight())
+	msg.P.StartHeight = uint64(ledger.DefaultLedger.GetLocalBlockChainHeight())
 	if n.GetRelay() {
 		msg.P.Relay = 1
 	} else {
@@ -130,7 +130,7 @@ func (msg version) Handle(node Noder) error {
 	}
 
 	s := node.GetState()
-	if s != INIT {
+	if s != INIT && s != HAND {
 		log.Warn("Unknow status to received version")
 		return errors.New("Unknow status to received version")
 	}
@@ -144,16 +144,18 @@ func (msg version) Handle(node Noder) error {
 		n.CloseConn()
 	}
 
-	node.SetState(HANDSHAKE)
 	node.UpdateInfo(time.Now(), msg.P.Version, msg.P.Services,
 		msg.P.Port, msg.P.Nonce, msg.P.Relay, msg.P.StartHeight)
 	localNode.AddNbrNode(node)
 
-	buf, _ := NewVersion(localNode)
-	node.Tx(buf)
-
-	time.Sleep(2 * time.Second)
-	buf, _ = NewVerack()
+	var buf []byte
+	if (s == INIT) {
+		node.SetState(HANDSHAKE)
+		buf, _ = NewVersion(localNode)
+	} else if (s == HAND) {
+		node.SetState(HANDSHAKED)
+		buf, _ = NewVerack()
+	}
 	node.Tx(buf)
 
 	return nil

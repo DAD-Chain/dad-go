@@ -84,7 +84,7 @@ func main() {
 	time.Sleep(2 * time.Second)
 	neter, noder := net.StartProtocol()
 	httpjsonrpc.RegistRpcNode(noder)
-	time.Sleep(1 * time.Minute)
+	time.Sleep(20 * time.Second)
 
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** 5. Start DBFT Services                                             ***")
@@ -97,7 +97,7 @@ func main() {
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** Init Complete                                                      ***")
 	fmt.Println("//**************************************************************************")
-	//go httpjsonrpc.StartRPCServer()
+	go httpjsonrpc.StartRPCServer()
 	//go httpjsonrpc.StartLocalServer()
 
 	time.Sleep(2 * time.Second)
@@ -125,7 +125,7 @@ func main() {
 
 	for {
 		log.Debug("ledger.DefaultLedger.Blockchain.BlockHeight= ", ledger.DefaultLedger.Blockchain.BlockHeight)
-		time.Sleep(15 * time.Second)
+		time.Sleep(dbft.GenBlockTime)
 	}
 }
 func InitBlockChain() ledger.Blockchain {
