@@ -3,6 +3,7 @@ package message
 import (
 	"dad-go/common"
 	"dad-go/common/log"
+	"dad-go/core/ledger"
 	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
@@ -156,5 +157,9 @@ func (msg version) Handle(node Noder) error {
 	buf, _ = NewVerack()
 	node.Tx(buf)
 
+	if ledger.DefaultLedger.Blockchain.BlockHeight < uint32(msg.P.StartHeight) {
+		buf, _ := NewHeadersReq(node)
+		node.Tx(buf)
+	}
 	return nil
 }
