@@ -49,7 +49,10 @@ func (msg blocksReq) Handle(node Noder) error {
 	stophash = msg.HashStop
 	//FIXME if HeaderHashCount > 1
 	inv := GetInvFromBlockHash(starthash[0], stophash)
-	buf, _ := NewInv(inv)
+	buf, err := NewInv(inv)
+	if err != nil {
+		return err
+	}
 	go node.Tx(buf)
 	return nil
 }
@@ -161,21 +164,25 @@ func GetInvFromBlockHash(starthash common.Uint256, stophash common.Uint256) invP
 	var stopheight uint32
 	var count uint32 = 0
 	var i uint32
-	/*wait for GetBlockWithHash commit
+
 	var empty common.Uint256
-	bkstart, _ := ledger.DefaultLedger.Blockchain.GetBlockWithHash(starthash)
+	bkstart, _ := ledger.DefaultLedger.GetBlockWithHash(starthash)
 	startheight := bkstart.Blockdata.Height
-	if (stophash != empty){
-		bkstop, _ := ledger.DefaultLedger.Blockchain.GetBlockWithHash(starthash)
+	if stophash != empty {
+		bkstop, _ := ledger.DefaultLedger.GetBlockWithHash(starthash)
 		stopheight = bkstop.Blockdata.Height
 		count = startheight - stopheight
-		if (count >= 500) {
-			count = 500
+		if count >= MAXINVHDRCNT {
+			count = MAXINVHDRCNT
+			stopheight = startheight - MAXINVHDRCNT
 		}
-	}else{
-		count = 500
+	} else {
+		if startheight > MAXINVHDRCNT {
+			count = MAXINVHDRCNT
+		} else {
+			count = startheight
+		}
 	}
-	*/
 
 	tmpBuffer := bytes.NewBuffer([]byte{})
 	for i = 1; i <= count; i++ {
@@ -203,7 +210,7 @@ func NewInv(inv invPayload) ([]byte, error) {
 	b := new(bytes.Buffer)
 	err := binary.Write(b, binary.LittleEndian, tmpBuffer.Bytes())
 	if err != nil {
-		log.Error("Binary Write failed at new Msg")
+		log.Error("Binary Write failed at new Msg", err.Error())
 		return nil, err
 	}
 	s := sha256.Sum256(b.Bytes())

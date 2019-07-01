@@ -7,9 +7,9 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"time"
-	"errors"
 )
 
 type version struct {
@@ -19,7 +19,7 @@ type version struct {
 		Services  uint64
 		TimeStamp uint32
 		Port      uint16
-		Nonce	  uint64
+		Nonce     uint64
 		// TODO remove tempory to get serilization function passed
 		UserAgent   uint8
 		StartHeight uint64
@@ -124,13 +124,13 @@ func (msg version) Handle(node Noder) error {
 	localNode := node.LocalNode()
 
 	// Exclude the node itself
-	if (msg.P.Nonce == localNode.GetID()) {
+	if msg.P.Nonce == localNode.GetID() {
 		log.Warn("The node handshark with itself")
 		return errors.New("The node handshark with itself")
 	}
 
 	s := node.GetState()
-	if (s != INIT) {
+	if s != INIT {
 		log.Warn("Unknow status to received version")
 		return errors.New("Unknow status to received version")
 	}

@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"errors"
 	"fmt"
 )
 
@@ -62,18 +63,37 @@ func (msg dataReq) Serialization() ([]byte, error) {
 }
 
 func (msg *dataReq) Deserialization(p []byte) error {
-	// TODO
+	buf := bytes.NewBuffer(p)
+	err := binary.Read(buf, binary.LittleEndian, &(msg.msgHdr))
+	if err != nil {
+		log.Warn("Parse datareq message hdr error")
+		return errors.New("Parse datareq message hdr error")
+	}
+
+	err = binary.Read(buf, binary.LittleEndian, &(msg.dataType))
+	if err != nil {
+		log.Warn("Parse datareq message dataType error")
+		return errors.New("Parse datareq message dataType error")
+	}
+
+	err = msg.hash.Deserialize(buf)
+	if err != nil {
+		log.Warn("Parse datareq message hash error")
+		return errors.New("Parse datareq message hash error")
+	}
 	return nil
 }
 
-func NewTxFromHash(hash common.Uint256) *transaction.Transaction {
+func NewTxnFromHash(hash common.Uint256) (*transaction.Transaction, error) {
+	txn, err := ledger.DefaultLedger.GetTransactionWithHash(hash)
+	if err != nil {
+		log.Error("Get transaction with hash error: ", err.Error())
+		return nil, err
+	}
 
-	trx, _ := ledger.DefaultLedger.GetTransactionWithHash(hash)
-
-	//var trx *transaction.Transaction
-	return trx
+	return txn, nil
 }
-func NewTx(trx *transaction.Transaction) ([]byte, error) {
+func NewTxn(txn *transaction.Transaction) ([]byte, error) {
 	common.Trace()
 	var msg trn
 
@@ -81,8 +101,8 @@ func NewTx(trx *transaction.Transaction) ([]byte, error) {
 	cmd := "tx"
 	copy(msg.msgHdr.CMD[0:len(cmd)], cmd)
 	tmpBuffer := bytes.NewBuffer([]byte{})
-	trx.Serialize(tmpBuffer)
-	msg.txn = *trx
+	txn.Serialize(tmpBuffer)
+	msg.txn = *txn
 	b := new(bytes.Buffer)
 	err := binary.Write(b, binary.LittleEndian, tmpBuffer.Bytes())
 	if err != nil {

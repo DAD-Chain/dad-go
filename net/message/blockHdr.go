@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"errors"
 )
 
 type headersReq struct {
@@ -91,8 +92,18 @@ func (msg blkHeader) Serialization() ([]byte, error) {
 }
 
 func (msg *blkHeader) Deserialization(p []byte) error {
-	err := msg.hdr.Deserialization(p)
-	//msg.blkHdr = p[MSGHDRLEN:]
+	buf := bytes.NewBuffer(p)
+	err := binary.Read(buf, binary.LittleEndian, &(msg.hdr))
+	err = binary.Read(buf, binary.LittleEndian, &(msg.cnt))
+	log.Debug("The block header count is ", msg.cnt)
+	msg.blkHdr = make([]ledger.Blockdata, msg.cnt)
+	for i := 0; i < int(msg.cnt); i++ {
+		err := binary.Read(buf, binary.LittleEndian, &(msg.blkHdr[i]))
+		if err != nil {
+			goto blkHdrErr
+		}
+	}
+blkHdrErr:
 	return err
 }
 
@@ -112,7 +123,15 @@ func (msg headersReq) Handle(node Noder) error {
 
 func (msg blkHeader) Handle(node Noder) error {
 	common.Trace()
-	// TBD
+	for i := 0; i < int(msg.cnt); i++ {
+		var header ledger.Header
+		header.Blockdata = &msg.blkHdr[i]
+		err := ledger.DefaultLedger.Store.SaveHeader(&header)
+		if err != nil {
+			log.Warn("Add block Header error")
+			return errors.New("Add block Header error\n")
+		}
+	}
 	return nil
 }
 func GetHeadersFromHash(starthash common.Uint256, stophash common.Uint256) ([]ledger.Blockdata, uint32) {
@@ -126,18 +145,19 @@ func GetHeadersFromHash(starthash common.Uint256, stophash common.Uint256) ([]le
 		bkstop, _ := ledger.DefaultLedger.GetBlockWithHash(stophash)
 		stopheight = bkstop.Blockdata.Height
 		count = startheight - stopheight
-		if count >= 2000 {
-			count = 2000
-			stopheight = startheight - 20000
+		if count >= MAXBLKHDRCNT {
+			count = MAXBLKHDRCNT
+			stopheight = startheight - MAXBLKHDRCNT
 		}
 	} else {
-		count = 2000
+		if startheight > MAXBLKHDRCNT {
+			count = MAXBLKHDRCNT
+		} else {
+			count = startheight
+		}
 	}
 
-	// waiting for GetBlockWithHeight commit
-
 	var i uint32
-
 	for i = 1; i <= count; i++ {
 		//FIXME need add error handle for GetBlockWithHeight
 		bk, _ := ledger.DefaultLedger.GetBlockWithHeight(stopheight + i)

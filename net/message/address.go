@@ -56,13 +56,13 @@ func NewAddrs(nodeaddrs []NodeAddr, count uint64) ([]byte, error) {
 	p := new(bytes.Buffer)
 	err := binary.Write(p, binary.LittleEndian, msg.nodeCnt)
 	if err != nil {
-		log.Error("Binary Write failed at new Msg")
+		log.Error("Binary Write failed at new Msg: ", err.Error())
 		return nil, err
 	}
 
 	err = binary.Write(p, binary.LittleEndian, msg.nodeAddrs)
 	if err != nil {
-		log.Error("Binary Write failed at new Msg")
+		log.Error("Binary Write failed at new Msg: ", err.Error())
 		return nil, err
 	}
 	s := sha256.Sum256(p.Bytes())
@@ -94,7 +94,10 @@ func (msg addrReq) Handle(node Noder) error {
 	var addrstr []NodeAddr
 	var count uint64
 	addrstr, count = node.LocalNode().GetNeighborAddrs()
-	buf, _ := NewAddrs(addrstr, count)
+	buf, err := NewAddrs(addrstr, count)
+	if err != nil {
+		return err
+	}
 	go node.Tx(buf)
 	return nil
 }
@@ -127,7 +130,6 @@ func (msg addr) Serialization() ([]byte, error) {
 		return nil, err
 	}
 	for _, v := range msg.nodeAddrs {
-		//err = binary.Write(&buf, binary.LittleEndian, v.Serialization)
 		err = binary.Write(&buf, binary.LittleEndian, v)
 		if err != nil {
 			return nil, err
@@ -140,9 +142,7 @@ func (msg addr) Serialization() ([]byte, error) {
 func (msg *addr) Deserialization(p []byte) error {
 	buf := bytes.NewBuffer(p)
 	err := binary.Read(buf, binary.LittleEndian, &(msg.hdr))
-	//err := msg.hdr.Deserialization(p)
 	err = binary.Read(buf, binary.LittleEndian, &(msg.nodeCnt))
-	//err = binary.Read(p[MSGHDRLEN:p[MSGHDRLEN + 8], binary.LittleEndian, &cnt)
 	log.Debug("The address count is ", msg.nodeCnt)
 	msg.nodeAddrs = make([]NodeAddr, msg.nodeCnt)
 	for i := 0; i < int(msg.nodeCnt); i++ {
@@ -166,11 +166,11 @@ func (msg addr) Handle(node Noder) error {
 	for _, v := range msg.nodeAddrs {
 		var ip net.IP
 		ip = v.IpAddr[:]
-		// Fixme consider the IPv6 case
-		address := ip.To4().String() + ":" + strconv.Itoa(int(v.Port))
+		//address := ip.To4().String() + ":" + strconv.Itoa(int(v.Port))
+		address := ip.To16().String() + ":" + strconv.Itoa(int(v.Port))
 		log.Info(fmt.Sprintf("The ip address is %s id is 0x%x", address, v.ID))
 
-		if (v.ID == node.LocalNode().GetID()) {
+		if v.ID == node.LocalNode().GetID() {
 			continue
 		}
 		if node.LocalNode().NodeEstablished(v.ID) {

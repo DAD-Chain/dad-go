@@ -2,9 +2,10 @@ package message
 
 import (
 	"dad-go/common"
+	"dad-go/common/log"
+	"dad-go/core/ledger"
 	. "dad-go/net/protocol"
 	"encoding/hex"
-	"fmt"
 	"time"
 )
 
@@ -26,7 +27,7 @@ func NewVerack() ([]byte, error) {
 	}
 
 	str := hex.EncodeToString(buf)
-	fmt.Printf("The message tx verack length is %d, %s\n", len(buf), str)
+	log.Info("The message tx verack length is %d, %s\n", len(buf), str)
 
 	return buf, err
 }
@@ -58,14 +59,22 @@ func (msg verACK) Handle(node Noder) error {
 	if s == HANDSHAKE {
 		node.SetState(ESTABLISH)
 	} else {
-		fmt.Println("Unkown status when get the verack")
+		log.Error("Unkown status when get the verack")
 	}
 	// TODO update other node info
 	node.UpdateTime(t)
 	node.DumpInfo()
 	if node.GetState() == ESTABLISH {
 		node.ReqNeighborList()
-	}
 
+		if uint64(ledger.DefaultLedger.Blockchain.BlockHeight) < node.GetHeight() {
+			buf, err := NewHeadersReq(node)
+			if err != nil {
+				log.Error("failed build a new headersReq")
+			} else {
+				node.Tx(buf)
+			}
+		}
+	}
 	return nil
 }
