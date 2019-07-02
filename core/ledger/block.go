@@ -5,6 +5,7 @@ import (
 	"dad-go/common/serialization"
 	"dad-go/core/contract/program"
 	tx "dad-go/core/transaction"
+	sig "dad-go/core/signature"
 	"dad-go/crypto"
 	. "dad-go/errors"
 	"io"
@@ -65,8 +66,7 @@ func (b *Block) Deserialize(r io.Reader) error {
 }
 
 func (b *Block) GetMessage() []byte {
-	//TODO: GetMessage
-	return []byte{}
+	return  sig.GetHashForSigning(b)
 }
 
 func (b *Block) GetProgramHashes() ([]Uint160, error) {
