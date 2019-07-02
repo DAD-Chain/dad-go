@@ -1,16 +1,16 @@
 package message
 
 import (
+	"dad-go/common"
+	"dad-go/common/log"
+	"dad-go/core/ledger"
+	"dad-go/core/transaction"
+	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	"github.com/DAD-Chain/dad-go/core/transaction"
-	. "github.com/DAD-Chain/dad-go/net/protocol"
 )
 
 type dataReq struct {
@@ -51,16 +51,13 @@ func reqTxnData(node Noder, hash common.Uint256) error {
 }
 
 func (msg dataReq) Serialization() ([]byte, error) {
-	hdrBuf, err := msg.msgHdr.Serialization()
+	var buf bytes.Buffer
+
+	//using serilization function
+	err := binary.Write(&buf, binary.LittleEndian, msg)
 	if err != nil {
 		return nil, err
 	}
-	buf := bytes.NewBuffer(hdrBuf)
-	err = binary.Write(buf, binary.LittleEndian, msg.dataType)
-	if err != nil {
-		return nil, err
-	}
-	msg.hash.Serialize(buf)
 
 	return buf.Bytes(), err
 }
@@ -150,6 +147,7 @@ func (msg trn) DeSerialization(p []byte) error {
 
 	return nil
 }
+
 
 type txnPool struct {
 	msgHdr

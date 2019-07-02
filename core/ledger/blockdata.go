@@ -1,11 +1,11 @@
 package ledger
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/serialization"
-	"github.com/DAD-Chain/dad-go/core/contract/program"
-	sig "github.com/DAD-Chain/dad-go/core/signature"
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/common"
+	"dad-go/common/serialization"
+	"dad-go/core/contract/program"
+	sig "dad-go/core/signature"
+	. "dad-go/errors"
 	"crypto/sha256"
 	"errors"
 	"io"
@@ -28,9 +28,7 @@ type Blockdata struct {
 func (bd *Blockdata) Serialize(w io.Writer) {
 	bd.SerializeUnsigned(w)
 	w.Write([]byte{byte(1)})
-	if bd.Program != nil {
-		bd.Program.Serialize(w)
-	}
+	bd.Program.Serialize(w)
 }
 
 //Serialize the blockheader data without program

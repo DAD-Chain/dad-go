@@ -1,11 +1,11 @@
 package validation
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	sig "github.com/DAD-Chain/dad-go/core/signature"
-	"github.com/DAD-Chain/dad-go/crypto"
-	. "github.com/DAD-Chain/dad-go/errors"
-	"github.com/DAD-Chain/dad-go/vm"
+	. "dad-go/common"
+	sig "dad-go/core/signature"
+	"dad-go/crypto"
+	. "dad-go/errors"
+	"dad-go/vm"
 	"errors"
 )
 

@@ -1,12 +1,12 @@
 package contract
 
 import (
-	"github.com/DAD-Chain/dad-go/crypto"
-	"github.com/DAD-Chain/dad-go/vm"
-	. "github.com/DAD-Chain/dad-go/common"
-	pg "github.com/DAD-Chain/dad-go/core/contract/program"
+	"dad-go/crypto"
+	"dad-go/vm"
+	. "dad-go/common"
+	pg "dad-go/core/contract/program"
 	"math/big"
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/errors"
 	"sort"
 )
 

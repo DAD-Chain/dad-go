@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 
-	"github.com/DAD-Chain/dad-go/common/log"
-	"github.com/DAD-Chain/dad-go/crypto"
-	"github.com/DAD-Chain/dad-go/utility"
-	"github.com/DAD-Chain/dad-go/utility/consensus"
-	"github.com/DAD-Chain/dad-go/utility/info"
-	"github.com/DAD-Chain/dad-go/utility/test"
+	"dad-go/common/log"
+	"dad-go/crypto"
+	"dad-go/utility"
+	"dad-go/utility/consensus"
+	"dad-go/utility/info"
+	"dad-go/utility/test"
 )
 
 const (

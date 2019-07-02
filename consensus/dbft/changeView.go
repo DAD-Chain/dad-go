@@ -2,7 +2,7 @@ package dbft
 
 import (
 	"io"
-	ser "github.com/DAD-Chain/dad-go/common/serialization"
+	ser "dad-go/common/serialization"
 )
 
 type ChangeView struct {

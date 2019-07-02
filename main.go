@@ -1,16 +1,16 @@
 package main
 
 import (
+	. "dad-go/client"
+	"dad-go/common/log"
+	"dad-go/consensus/dbft"
+	"dad-go/core/ledger"
+	"dad-go/core/store"
+	"dad-go/core/transaction"
+	"dad-go/crypto"
+	"dad-go/net"
+	"dad-go/net/httpjsonrpc"
 	"fmt"
-	. "github.com/DAD-Chain/dad-go/client"
-	"github.com/DAD-Chain/dad-go/common/log"
-	"github.com/DAD-Chain/dad-go/consensus/dbft"
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	"github.com/DAD-Chain/dad-go/core/store"
-	"github.com/DAD-Chain/dad-go/core/transaction"
-	"github.com/DAD-Chain/dad-go/crypto"
-	"github.com/DAD-Chain/dad-go/net"
-	"github.com/DAD-Chain/dad-go/net/httpjsonrpc"
 	"os"
 	"runtime"
 	"time"
@@ -82,8 +82,6 @@ func main() {
 	httpjsonrpc.RegistRpcNode(noder)
 	time.Sleep(20 * time.Second)
 	miners, _ := neter.GetMinersAddrs()
-	noder.LocalNode().SyncNodeHeight()
-
 	ledger.CreateGenesisBlock(miners)
 
 	fmt.Println("//**************************************************************************")

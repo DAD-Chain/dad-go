@@ -1,14 +1,14 @@
 package ledger
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	tx "github.com/DAD-Chain/dad-go/core/transaction"
-	"github.com/DAD-Chain/dad-go/crypto"
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/common"
+	tx "dad-go/core/transaction"
+	"dad-go/crypto"
+	. "dad-go/errors"
 	"errors"
-	"github.com/DAD-Chain/dad-go/core/asset"
-	"github.com/DAD-Chain/dad-go/core/contract"
-	"github.com/DAD-Chain/dad-go/common"
+	"dad-go/core/asset"
+	"dad-go/core/contract"
+	"dad-go/common"
 )
 
 var DefaultLedger *Ledger

@@ -1,7 +1,7 @@
 package signature
 
 import (
-	"github.com/DAD-Chain/dad-go/crypto"
+	"dad-go/crypto"
 )
 
 //Signer is the abstract interface of user's information(Keys) for signing data.

@@ -1,8 +1,8 @@
 package store
 
 import(
-	. "github.com/DAD-Chain/dad-go/core/ledger"
-	. "github.com/DAD-Chain/dad-go/core/store/LevelDBStore"
+	. "dad-go/core/ledger"
+	. "dad-go/core/store/LevelDBStore"
 )
 
 func NewLedgerStore() ILedgerStore {

@@ -1,7 +1,7 @@
 package node
 
 import (
-	"github.com/DAD-Chain/dad-go/events"
+	"dad-go/events"
 	"fmt"
 )
 

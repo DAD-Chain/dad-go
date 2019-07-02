@@ -2,11 +2,11 @@ package transaction
 
 
 import (
-	"github.com/DAD-Chain/dad-go/core/asset"
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/crypto"
-	"github.com/DAD-Chain/dad-go/core/transaction/payload"
-	"github.com/DAD-Chain/dad-go/core/contract/program"
+	"dad-go/core/asset"
+	"dad-go/common"
+	"dad-go/crypto"
+	"dad-go/core/transaction/payload"
+	"dad-go/core/contract/program"
 )
 
 //initial a new transaction with asset registration payload

@@ -1,8 +1,8 @@
 package validation
 
 import (
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	"dad-go/core/ledger"
+	tx "dad-go/core/transaction"
 	"errors"
 	"math"
 )

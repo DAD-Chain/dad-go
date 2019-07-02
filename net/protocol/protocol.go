@@ -1,12 +1,12 @@
 package protocol
 
 import (
+	"dad-go/common"
+	"dad-go/core/transaction"
+	"dad-go/crypto"
+	"dad-go/events"
 	"bytes"
 	"encoding/binary"
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/core/transaction"
-	"github.com/DAD-Chain/dad-go/crypto"
-	"github.com/DAD-Chain/dad-go/events"
 	"time"
 )
 
@@ -27,7 +27,6 @@ const (
 	NETMAGIC     = 0x74746e41
 	MAXBLKHDRCNT = 2000
 	MAXINVHDRCNT = 500
-	DIVHASHLEN   = 5
 )
 const (
 	HELLOTIMEOUT     = 3 // Seconds
@@ -83,8 +82,6 @@ type Noder interface {
 	GetMinerAddr() *crypto.PubKey
 	GetMinersAddrs() ([]*crypto.PubKey, uint64)
 	SetMinerAddr(pk *crypto.PubKey)
-	GetNeighborHeights() ([]uint64, uint64)
-	SyncNodeHeight()
 }
 
 type JsonNoder interface {

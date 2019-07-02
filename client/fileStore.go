@@ -1,10 +1,10 @@
 package client
 
 import (
-	ct "github.com/DAD-Chain/dad-go/core/contract"
+	ct "dad-go/core/contract"
 	"fmt"
 	"os"
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/errors"
 	"errors"
 	"encoding/json"
 	"io/ioutil"

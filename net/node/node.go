@@ -1,16 +1,16 @@
 package node
 
 import (
+	"dad-go/common"
+	"dad-go/common/log"
+	. "dad-go/config"
+	"dad-go/core/ledger"
+	"dad-go/core/transaction"
+	"dad-go/crypto"
+	. "dad-go/net/message"
+	. "dad-go/net/protocol"
 	"errors"
 	"fmt"
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
-	. "github.com/DAD-Chain/dad-go/config"
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	"github.com/DAD-Chain/dad-go/core/transaction"
-	"github.com/DAD-Chain/dad-go/crypto"
-	. "github.com/DAD-Chain/dad-go/net/message"
-	. "github.com/DAD-Chain/dad-go/net/protocol"
 	"math/rand"
 	"net"
 	"runtime"
@@ -267,15 +267,4 @@ func (node node) GetMinersAddrs() ([]*crypto.PubKey, uint64) {
 
 func (node *node) SetMinerAddr(pk *crypto.PubKey) {
 	node.publicKey = pk
-}
-
-func (node node) SyncNodeHeight() {
-	for {
-		heights, _ := node.GetNeighborHeights()
-		if common.CompareHeight(uint64(ledger.DefaultLedger.Blockchain.BlockHeight), heights) {
-			break
-		}
-		<-time.After(5 * time.Second)
-	}
-
 }

@@ -1,8 +1,8 @@
 package httpjsonrpc
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	. "github.com/DAD-Chain/dad-go/config"
+	. "dad-go/common"
+	. "dad-go/config"
 	"log"
 	"net/http"
 	"strconv"
