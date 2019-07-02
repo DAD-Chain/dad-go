@@ -10,7 +10,6 @@ import (
 	"dad-go/common/log"
 )
 
-
 type ConsensusMessage interface {
 	ser.SerializableData
 	Type() ConsensusMessageType
