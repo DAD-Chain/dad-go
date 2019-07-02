@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	. "github.com/DAD-Chain/dad-go/client"
 	"github.com/DAD-Chain/dad-go/common/log"
 	"github.com/DAD-Chain/dad-go/consensus/dbft"
@@ -10,7 +11,6 @@ import (
 	"github.com/DAD-Chain/dad-go/crypto"
 	"github.com/DAD-Chain/dad-go/net"
 	"github.com/DAD-Chain/dad-go/net/httpjsonrpc"
-	"fmt"
 	"os"
 	"runtime"
 	"time"
@@ -82,6 +82,8 @@ func main() {
 	httpjsonrpc.RegistRpcNode(noder)
 	time.Sleep(20 * time.Second)
 	miners, _ := neter.GetMinersAddrs()
+	noder.LocalNode().SyncNodeHeight()
+
 	ledger.CreateGenesisBlock(miners)
 
 	fmt.Println("//**************************************************************************")
