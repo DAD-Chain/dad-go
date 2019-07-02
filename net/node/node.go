@@ -1,14 +1,14 @@
 package node
 
 import (
-	"dad-go/common"
-	"dad-go/common/log"
-	. "dad-go/config"
-	"dad-go/core/ledger"
-	"dad-go/core/transaction"
-	"dad-go/crypto"
-	. "dad-go/net/message"
-	. "dad-go/net/protocol"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/log"
+	. "github.com/DAD-Chain/dad-go/config"
+	"github.com/DAD-Chain/dad-go/core/ledger"
+	"github.com/DAD-Chain/dad-go/core/transaction"
+	"github.com/DAD-Chain/dad-go/crypto"
+	. "github.com/DAD-Chain/dad-go/net/message"
+	. "github.com/DAD-Chain/dad-go/net/protocol"
 	"errors"
 	"fmt"
 	"math/rand"

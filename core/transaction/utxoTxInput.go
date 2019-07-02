@@ -1,8 +1,8 @@
 package transaction
 
 import (
-	"dad-go/common"
-	"dad-go/common/serialization"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/serialization"
 	"io"
 	"math"
 )

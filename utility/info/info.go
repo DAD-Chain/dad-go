@@ -1,8 +1,8 @@
 package info
 
 import (
-	"dad-go/net/httpjsonrpc"
-	"dad-go/utility"
+	"github.com/DAD-Chain/dad-go/net/httpjsonrpc"
+	"github.com/DAD-Chain/dad-go/utility"
 	"fmt"
 	"os"
 )

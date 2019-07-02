@@ -1,8 +1,8 @@
 package client
 
 import (
-	ct "dad-go/core/contract"
-	. "dad-go/common"
+	ct "github.com/DAD-Chain/dad-go/core/contract"
+	. "github.com/DAD-Chain/dad-go/common"
 )
 
 type IClientStore interface {

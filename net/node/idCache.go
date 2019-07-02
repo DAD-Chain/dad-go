@@ -1,7 +1,7 @@
 package node
 
 import (
-	"dad-go/common"
+	"github.com/DAD-Chain/dad-go/common"
 	"sync"
 )
 

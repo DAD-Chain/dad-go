@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"testing"
-	. "dad-go/common"
+	. "github.com/DAD-Chain/dad-go/common"
 )
 
 var ldbs * LevelDBStore

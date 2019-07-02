@@ -1,8 +1,8 @@
 package vm
 
 import (
-	"dad-go/crypto"
-	. "dad-go/errors"
+	"github.com/DAD-Chain/dad-go/crypto"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"errors"
 	"fmt"
 )

@@ -2,8 +2,8 @@ package dbft
 
 import (
 	"io"
-	ser "dad-go/common/serialization"
-	. "dad-go/common"
+	ser "github.com/DAD-Chain/dad-go/common/serialization"
+	. "github.com/DAD-Chain/dad-go/common"
 )
 
 type PrepareResponse struct {

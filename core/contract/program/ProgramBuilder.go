@@ -2,9 +2,9 @@ package program
 
 import (
 	"bytes"
-	"dad-go/vm"
+	"github.com/DAD-Chain/dad-go/vm"
 	"math/big"
-	. "dad-go/common"
+	. "github.com/DAD-Chain/dad-go/common"
 )
 
 type ProgramBuilder struct {

@@ -7,7 +7,7 @@ import (
 	"crypto/sha256"
 	"math/big"
 	"github.com/tv42/base58"
-	."dad-go/errors"
+	."github.com/DAD-Chain/dad-go/errors"
 	"errors"
 )
 

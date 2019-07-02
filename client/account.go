@@ -1,9 +1,9 @@
 package client
 
 import (
-	"dad-go/crypto"
-	. "dad-go/common"
-	. "dad-go/errors"
+	"github.com/DAD-Chain/dad-go/crypto"
+	. "github.com/DAD-Chain/dad-go/common"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"errors"
 )
 

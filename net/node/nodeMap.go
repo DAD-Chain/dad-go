@@ -1,7 +1,7 @@
 package node
 
 import (
-	. "dad-go/net/protocol"
+	. "github.com/DAD-Chain/dad-go/net/protocol"
 	"fmt"
 	"sync"
 )

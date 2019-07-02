@@ -1,9 +1,9 @@
 package ledger
 
 import (
-	. "dad-go/common"
-	. "dad-go/core/asset"
-	tx "dad-go/core/transaction"
+	. "github.com/DAD-Chain/dad-go/common"
+	. "github.com/DAD-Chain/dad-go/core/asset"
+	tx "github.com/DAD-Chain/dad-go/core/transaction"
 )
 
 // ILedgerStore provides func with store package.
