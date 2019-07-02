@@ -1,15 +1,15 @@
 package LevelDBStore
 
 import (
-	. "dad-go/common"
-	"dad-go/common/log"
-	"dad-go/common/serialization"
-	. "dad-go/core/asset"
-	"dad-go/core/contract/program"
-	. "dad-go/core/ledger"
-	tx "dad-go/core/transaction"
-	"dad-go/core/validation"
-	. "dad-go/errors"
+	. "github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/log"
+	"github.com/DAD-Chain/dad-go/common/serialization"
+	. "github.com/DAD-Chain/dad-go/core/asset"
+	"github.com/DAD-Chain/dad-go/core/contract/program"
+	. "github.com/DAD-Chain/dad-go/core/ledger"
+	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	"github.com/DAD-Chain/dad-go/core/validation"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"bytes"
 	"fmt"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -654,7 +654,8 @@ func (bd *LevelDBStore) SaveBlock(b *Block, ledger *Ledger) error {
 	if bd.block_cache[b.Hash()] == nil {
 		bd.block_cache[b.Hash()] = b
 	}
-
+	bd.persistBlocks()
+/*
 	if b.Blockdata.Height-uint32(len(bd.header_index)) >= 1 {
 		//return false,NewDetailErr(errors.New(fmt.Sprintf("WARNING: [SaveBlock] block height - header_index.count >= 1, block height:%d, header_index.count:%d",b.Blockdata.Height, uint32(len(bd.header_index)) )),ErrDuplicatedBlock,"")
 		return errors.New(fmt.Sprintf("WARNING: [SaveBlock] block height - header_index.count >= 1, block height:%d, header_index.count:%d", b.Blockdata.Height, uint32(len(bd.header_index))))
@@ -662,6 +663,7 @@ func (bd *LevelDBStore) SaveBlock(b *Block, ledger *Ledger) error {
 
 	if b.Blockdata.Height == uint32(len(bd.header_index)) {
 		//Block verify
+		// TO TEST Verify func
 		err := validation.VerifyBlock(b, ledger, true)
 		if err != nil {
 			log.Debug("VerifyBlock() error!")
@@ -686,7 +688,7 @@ func (bd *LevelDBStore) SaveBlock(b *Block, ledger *Ledger) error {
 	} else {
 		return errors.New("[SaveBlock] block height < header_index")
 	}
-
+*/
 
 	return nil
 }

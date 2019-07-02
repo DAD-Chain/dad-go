@@ -1,9 +1,9 @@
 package validation
 
 import (
-	"dad-go/core/ledger"
-	tx "dad-go/core/transaction"
-	. "dad-go/errors"
+	"github.com/DAD-Chain/dad-go/core/ledger"
+	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"errors"
 	"fmt"
 )
@@ -14,13 +14,6 @@ func VerifyBlock(block *ledger.Block, ld *ledger.Ledger, completely bool) error 
 	}
 	err := VerifyBlockData(block.Blockdata, ld)
 	if err != nil {
-		return err
-	}
-
-	flag, err := VerifySignableData(block)
-	if flag && err == nil {
-		return nil
-	} else {
 		return err
 	}
 
@@ -85,5 +78,10 @@ func VerifyBlockData(bd *ledger.Blockdata, ledger *ledger.Ledger) error {
 		return NewDetailErr(err, ErrNoCode, "[BlockValidator], block timestamp is incorrect.")
 	}
 
-	return nil
+	flag, err := VerifySignableData(bd)
+	if flag && err == nil {
+		return nil
+	} else {
+		return err
+	}
 }

@@ -1,10 +1,10 @@
 package ledger
 
 import (
-	. "dad-go/common"
-	"dad-go/common/log"
-	. "dad-go/errors"
-	"dad-go/events"
+	. "github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/log"
+	. "github.com/DAD-Chain/dad-go/errors"
+	"github.com/DAD-Chain/dad-go/events"
 	"sync"
 )
 

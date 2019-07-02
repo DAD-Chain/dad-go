@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	_ "fmt"
-	."dad-go/errors"
+	."github.com/DAD-Chain/dad-go/errors"
 	"errors"
 )
 

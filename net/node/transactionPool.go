@@ -1,10 +1,10 @@
 package node
 
 import (
-	"dad-go/common"
-	"dad-go/core/transaction"
-	msg "dad-go/net/message"
-	. "dad-go/net/protocol"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/core/transaction"
+	msg "github.com/DAD-Chain/dad-go/net/message"
+	. "github.com/DAD-Chain/dad-go/net/protocol"
 	"sync"
 )
 

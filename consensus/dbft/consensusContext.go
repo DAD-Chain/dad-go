@@ -1,14 +1,14 @@
 package dbft
 
 import (
-	cl "dad-go/client"
-	. "dad-go/common"
-	ser "dad-go/common/serialization"
-	"dad-go/core/ledger"
-	tx "dad-go/core/transaction"
-	"dad-go/crypto"
-	"dad-go/net"
-	msg "dad-go/net/message"
+	cl "github.com/DAD-Chain/dad-go/client"
+	. "github.com/DAD-Chain/dad-go/common"
+	ser "github.com/DAD-Chain/dad-go/common/serialization"
+	"github.com/DAD-Chain/dad-go/core/ledger"
+	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	"github.com/DAD-Chain/dad-go/crypto"
+	"github.com/DAD-Chain/dad-go/net"
+	msg "github.com/DAD-Chain/dad-go/net/message"
 	"fmt"
 	"sort"
 	"sync"

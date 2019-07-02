@@ -1,8 +1,8 @@
 package log
 
 import (
-	. "dad-go/common"
-	"dad-go/config"
+	. "github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/config"
 	"fmt"
 	"io"
 	"log"

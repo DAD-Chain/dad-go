@@ -1,8 +1,8 @@
 package program
 
 import (
-	"dad-go/common/serialization"
-	. "dad-go/errors"
+	"github.com/DAD-Chain/dad-go/common/serialization"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"io"
 )
 

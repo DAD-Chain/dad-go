@@ -1,17 +1,16 @@
 package ledger
 
 import (
-	. "dad-go/common"
-	"dad-go/common/serialization"
-	"dad-go/core/contract/program"
-	tx "dad-go/core/transaction"
-	sig "dad-go/core/signature"
-	"dad-go/crypto"
-	. "dad-go/errors"
+	. "github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/serialization"
+	"github.com/DAD-Chain/dad-go/core/contract/program"
+	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	"github.com/DAD-Chain/dad-go/crypto"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"io"
 	"time"
-	"dad-go/vm"
-	"dad-go/common/log"
+	"github.com/DAD-Chain/dad-go/vm"
+	"github.com/DAD-Chain/dad-go/common/log"
 )
 
 type Block struct {
@@ -66,7 +65,8 @@ func (b *Block) Deserialize(r io.Reader) error {
 }
 
 func (b *Block) GetMessage() []byte {
-	return  sig.GetHashForSigning(b)
+	//TODO: GetMessage
+	return []byte{}
 }
 
 func (b *Block) GetProgramHashes() ([]Uint160, error) {

@@ -1,11 +1,11 @@
 package ledger
 
 import (
-	. "dad-go/common"
-	"dad-go/common/serialization"
-	"dad-go/core/contract/program"
-	sig "dad-go/core/signature"
-	. "dad-go/errors"
+	. "github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/serialization"
+	"github.com/DAD-Chain/dad-go/core/contract/program"
+	sig "github.com/DAD-Chain/dad-go/core/signature"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"crypto/sha256"
 	"errors"
 	"io"

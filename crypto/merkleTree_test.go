@@ -1,7 +1,7 @@
 package crypto
 
 import (
-	. "dad-go/common"
+	. "github.com/DAD-Chain/dad-go/common"
 	"crypto/sha256"
 	"fmt"
 	"testing"

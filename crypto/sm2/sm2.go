@@ -1,7 +1,7 @@
 package sm2
 
 import (
-	"dad-go/crypto/util"
+	"github.com/DAD-Chain/dad-go/crypto/util"
 	"crypto/elliptic"
 	"crypto/rand"
 	"errors"

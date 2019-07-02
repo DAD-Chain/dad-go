@@ -1,12 +1,12 @@
 package contract
 
 import (
-	. "dad-go/common"
-	"dad-go/common/log"
-	pg "dad-go/core/contract/program"
-	sig "dad-go/core/signature"
-	"dad-go/crypto"
-	_ "dad-go/errors"
+	. "github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/log"
+	pg "github.com/DAD-Chain/dad-go/core/contract/program"
+	sig "github.com/DAD-Chain/dad-go/core/signature"
+	"github.com/DAD-Chain/dad-go/crypto"
+	_ "github.com/DAD-Chain/dad-go/errors"
 	"errors"
 	"fmt"
 	_ "fmt"

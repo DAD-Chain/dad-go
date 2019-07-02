@@ -1,13 +1,13 @@
 package net
 
 import (
-	"dad-go/common"
-	"dad-go/config"
-	"dad-go/core/transaction"
-	"dad-go/crypto"
-	"dad-go/events"
-	"dad-go/net/node"
-	"dad-go/net/protocol"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/config"
+	"github.com/DAD-Chain/dad-go/core/transaction"
+	"github.com/DAD-Chain/dad-go/crypto"
+	"github.com/DAD-Chain/dad-go/events"
+	"github.com/DAD-Chain/dad-go/net/node"
+	"github.com/DAD-Chain/dad-go/net/protocol"
 )
 
 type Neter interface {

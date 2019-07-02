@@ -1,21 +1,21 @@
 package client
 
 import (
-	"dad-go/crypto"
-	ct "dad-go/core/contract"
-	. "dad-go/common"
+	"github.com/DAD-Chain/dad-go/crypto"
+	ct "github.com/DAD-Chain/dad-go/core/contract"
+	. "github.com/DAD-Chain/dad-go/common"
 	"sync"
-	sig "dad-go/core/signature"
-	. "dad-go/errors"
+	sig "github.com/DAD-Chain/dad-go/core/signature"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"errors"
-	"dad-go/core/ledger"
+	"github.com/DAD-Chain/dad-go/core/ledger"
 	"time"
 	"fmt"
 	"crypto/sha256"
 	"math/rand"
 	"bytes"
-	"dad-go/common/serialization"
-	"dad-go/core/contract"
+	"github.com/DAD-Chain/dad-go/common/serialization"
+	"github.com/DAD-Chain/dad-go/core/contract"
 )
 
 type ClientVersion struct {

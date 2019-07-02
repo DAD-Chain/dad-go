@@ -1,11 +1,11 @@
 package node
 
 import (
-	"dad-go/common"
-	"dad-go/common/log"
-	. "dad-go/config"
-	. "dad-go/net/message"
-	. "dad-go/net/protocol"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/log"
+	. "github.com/DAD-Chain/dad-go/config"
+	. "github.com/DAD-Chain/dad-go/net/message"
+	. "github.com/DAD-Chain/dad-go/net/protocol"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/hex"

@@ -2,7 +2,7 @@ package consensus
 
 import (
 	"fmt"
-	"dad-go/common/log"
+	"github.com/DAD-Chain/dad-go/common/log"
 	"time"
 )
 

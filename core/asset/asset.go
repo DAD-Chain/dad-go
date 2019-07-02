@@ -1,9 +1,9 @@
 package asset
 
 import (
-	"dad-go/common"
-	"dad-go/common/serialization"
-	. "dad-go/errors"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/serialization"
+	. "github.com/DAD-Chain/dad-go/errors"
 	"errors"
 	"io"
 )

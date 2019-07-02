@@ -1,8 +1,8 @@
 package utility
 
 import (
-	"dad-go/config"
-	"dad-go/net/httpjsonrpc"
+	"github.com/DAD-Chain/dad-go/config"
+	"github.com/DAD-Chain/dad-go/net/httpjsonrpc"
 	"bytes"
 	"encoding/json"
 	"errors"
