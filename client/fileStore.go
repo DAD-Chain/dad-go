@@ -2,7 +2,6 @@ package client
 
 import (
 	ct "dad-go/core/contract"
-	//. "dad-go/common"
 	"fmt"
 	"os"
 	. "dad-go/errors"

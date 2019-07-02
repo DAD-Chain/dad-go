@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"testing"
-	//"github.com/syndtr/goleveldb/leveldb/opt"
 	. "dad-go/common"
 )
 

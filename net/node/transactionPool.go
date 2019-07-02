@@ -13,29 +13,6 @@ type TXNPool struct {
 	list map[common.Uint256]*transaction.Transaction
 }
 
-// Reference process
-// func (net neter) AddTransaction(Transaction tx) bool {
-// 	if (Blockchain.Default == null) {
-// 		return false
-// 	}
-
-// 	//TODO Lock the memory pool
-// 	if (MemoryPool.ContainsKey(tx.Hash)) {
-// 		return false
-// 	}
-// 	if (Blockchain.Default.ContainsTransaction(tx.Hash)) {
-// 		return false
-// 	}
-// 	if (!tx.Verify(MemoryPool.Values)) {
-// 		return false
-// 	}
-// 	AddingTransactionEventArgs args = new AddingTransactionEventArgs(tx);
-// 	AddingTransaction.Invoke(this, args);
-// 	if (!args.Cancel) MemoryPool.Add(tx.Hash, tx);
-// 	return !args.Cancel;
-
-// }
-
 func (txnPool *TXNPool) GetTransaction(hash common.Uint256) *transaction.Transaction {
 	txnPool.RLock()
 	defer txnPool.RUnlock()
