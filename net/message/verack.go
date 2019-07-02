@@ -1,12 +1,12 @@
 package message
 
 import (
+	"encoding/hex"
+	"errors"
 	"github.com/DAD-Chain/dad-go/common"
 	"github.com/DAD-Chain/dad-go/common/log"
 	"github.com/DAD-Chain/dad-go/core/ledger"
 	. "github.com/DAD-Chain/dad-go/net/protocol"
-	"encoding/hex"
-	"errors"
 	"time"
 )
 
@@ -62,7 +62,7 @@ func (msg verACK) Handle(node Noder) error {
 	}
 
 	node.SetState(ESTABLISH)
-	if (s == HANDSHAKE) {
+	if s == HANDSHAKE {
 		buf, _ := NewVerack()
 		node.Tx(buf)
 	}
@@ -77,12 +77,22 @@ func (msg verACK) Handle(node Noder) error {
 
 	// FIXME compact to a seperate function
 	if uint64(ledger.DefaultLedger.Blockchain.BlockHeight) < node.GetHeight() {
-		buf, err := NewHeadersReq(node)
-		if err != nil {
-			log.Error("failed build a new headersReq")
-		} else {
-			node.Tx(buf)
-		}
+		/*
+			log.Info("request header")
+			buf, err := NewHeadersReq(node)
+			if err != nil {
+				log.Error("failed build a new headersReq")
+			} else {
+				node.Tx(buf)
+			}
+				log.Info("request blocks header hash")
+				buf, err = NewBlocksReq(node)
+				if err != nil {
+					log.Error("failed build a new blockReq")
+				} else {
+					node.Tx(buf)
+				}
+		*/
 	}
 	return nil
 }
