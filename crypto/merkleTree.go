@@ -1,8 +1,8 @@
 package crypto
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/common"
+	. "dad-go/errors"
 	"bytes"
 	"crypto/sha256"
 	"errors"

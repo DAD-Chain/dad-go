@@ -1,10 +1,10 @@
 package message
 
 import (
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	. "github.com/DAD-Chain/dad-go/net/protocol"
+	"dad-go/common"
+	"dad-go/common/log"
+	"dad-go/core/ledger"
+	. "dad-go/net/protocol"
 	"encoding/hex"
 	"errors"
 	"time"

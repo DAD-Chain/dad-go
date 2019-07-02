@@ -1,9 +1,9 @@
 package node
 
 import (
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	. "github.com/DAD-Chain/dad-go/net/message"
-	. "github.com/DAD-Chain/dad-go/net/protocol"
+	"dad-go/core/ledger"
+	. "dad-go/net/message"
+	. "dad-go/net/protocol"
 	"time"
 )
 

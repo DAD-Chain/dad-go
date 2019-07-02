@@ -1,11 +1,11 @@
 package message
 
 import (
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	"github.com/DAD-Chain/dad-go/core/transaction"
-	. "github.com/DAD-Chain/dad-go/net/protocol"
+	"dad-go/common"
+	"dad-go/common/log"
+	"dad-go/core/ledger"
+	"dad-go/core/transaction"
+	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"

@@ -1,13 +1,13 @@
 package transaction
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/serialization"
-	"github.com/DAD-Chain/dad-go/core/contract"
-	"github.com/DAD-Chain/dad-go/core/contract/program"
-	sig "github.com/DAD-Chain/dad-go/core/signature"
-	"github.com/DAD-Chain/dad-go/core/transaction/payload"
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/common"
+	"dad-go/common/serialization"
+	"dad-go/core/contract"
+	"dad-go/core/contract/program"
+	sig "dad-go/core/signature"
+	"dad-go/core/transaction/payload"
+	. "dad-go/errors"
 	"crypto/sha256"
 	"errors"
 	"io"

@@ -1,10 +1,10 @@
 package protocol
 
 import (
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/core/transaction"
-	"github.com/DAD-Chain/dad-go/crypto"
-	"github.com/DAD-Chain/dad-go/events"
+	"dad-go/common"
+	"dad-go/core/transaction"
+	"dad-go/crypto"
+	"dad-go/events"
 	"bytes"
 	"encoding/binary"
 	"time"

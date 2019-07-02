@@ -1,8 +1,8 @@
 package consensus
 
 import (
-	"github.com/DAD-Chain/dad-go/net/httpjsonrpc"
-	"github.com/DAD-Chain/dad-go/utility"
+	"dad-go/net/httpjsonrpc"
+	"dad-go/utility"
 	"errors"
 	"fmt"
 	"os"

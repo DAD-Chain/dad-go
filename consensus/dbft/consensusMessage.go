@@ -1,13 +1,13 @@
 package dbft
 
 import (
-	ser "github.com/DAD-Chain/dad-go/common/serialization"
-	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	ser "dad-go/common/serialization"
+	tx "dad-go/core/transaction"
 	"io"
 	"bytes"
 	"errors"
-	. "github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
+	. "dad-go/common"
+	"dad-go/common/log"
 )
 
 type ConsensusMessage interface {

@@ -1,10 +1,10 @@
 package httpjsonrpc
 
 import (
-	. "github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
-	"github.com/DAD-Chain/dad-go/core/ledger"
-	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	. "dad-go/common"
+	"dad-go/common/log"
+	"dad-go/core/ledger"
+	tx "dad-go/core/transaction"
 	"bytes"
 	"encoding/base64"
 	"encoding/hex"

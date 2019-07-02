@@ -1,7 +1,7 @@
 package common
 
 import (
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/errors"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"

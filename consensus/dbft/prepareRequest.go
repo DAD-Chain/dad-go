@@ -2,12 +2,12 @@ package dbft
 
 import (
 	"io"
-	. "github.com/DAD-Chain/dad-go/common"
-	. "github.com/DAD-Chain/dad-go/errors"
-	ser "github.com/DAD-Chain/dad-go/common/serialization"
-	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	. "dad-go/common"
+	. "dad-go/errors"
+	ser "dad-go/common/serialization"
+	tx "dad-go/core/transaction"
 	"fmt"
-	"github.com/DAD-Chain/dad-go/common/log"
+	"dad-go/common/log"
 )
 
 type PrepareRequest struct {

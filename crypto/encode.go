@@ -1,7 +1,7 @@
 package crypto
 
 import (
-	. "github.com/DAD-Chain/dad-go/errors"
+	. "dad-go/errors"
 	"crypto/elliptic"
 	"crypto/rand"
 	"errors"

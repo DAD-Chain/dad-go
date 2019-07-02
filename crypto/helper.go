@@ -6,7 +6,7 @@ import (
 	"crypto/cipher"
 	"bytes"
 	"crypto/sha256"
-	. "github.com/DAD-Chain/dad-go/common"
+	. "dad-go/common"
 )
 
 func ToAesKey( pwd []byte ) []byte {

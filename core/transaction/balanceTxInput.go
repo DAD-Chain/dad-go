@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"github.com/DAD-Chain/dad-go/common"
+	"dad-go/common"
 	"io"
 )
 
