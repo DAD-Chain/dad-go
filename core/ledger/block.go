@@ -5,6 +5,7 @@ import (
 	"github.com/DAD-Chain/dad-go/common/serialization"
 	"github.com/DAD-Chain/dad-go/core/contract/program"
 	tx "github.com/DAD-Chain/dad-go/core/transaction"
+	sig "github.com/DAD-Chain/dad-go/core/signature"
 	"github.com/DAD-Chain/dad-go/crypto"
 	. "github.com/DAD-Chain/dad-go/errors"
 	"io"
