@@ -1,15 +1,15 @@
 package message
 
 import (
-	"github.com/DAD-Chain/dad-go/common"
-	"github.com/DAD-Chain/dad-go/common/log"
-	. "github.com/DAD-Chain/dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/DAD-Chain/dad-go/common"
+	"github.com/DAD-Chain/dad-go/common/log"
+	. "github.com/DAD-Chain/dad-go/net/protocol"
 )
 
 type Messager interface {
@@ -130,7 +130,7 @@ func AllocMsg(t string, length int) Messager {
 		copy(msg.msgHdr.CMD[0:len(t)], t)
 		return &msg
 	case "getblocks":
-		var msg blockReq
+		var msg blocksReq
 		copy(msg.msgHdr.CMD[0:len(t)], t)
 		return &msg
 	case "txnpool":
