@@ -12,6 +12,7 @@ import (
 )
 
 var DefaultLedger *Ledger
+var StandbyMiners []*crypto.PubKey
 
 // Ledger - the struct for onchainDNA ledger
 type Ledger struct {

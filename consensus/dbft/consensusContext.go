@@ -8,10 +8,8 @@ import (
 	"dad-go/core/ledger"
 	tx "dad-go/core/transaction"
 	"dad-go/crypto"
-	"dad-go/net"
 	msg "dad-go/net/message"
 	"fmt"
-	"sort"
 	"sync"
 )
 
@@ -23,7 +21,6 @@ type ConsensusContext struct {
 	Height            uint32
 	ViewNumber        byte
 	Miners            []*crypto.PubKey
-	Owner             *crypto.PubKey
 	MinerIndex        int
 	PrimaryIndex      uint32
 	Timestamp         uint32
@@ -123,7 +120,6 @@ func (cxt *ConsensusContext) MakePayload(message ConsensusMessage) *msg.Consensu
 		MinerIndex: uint16(cxt.MinerIndex),
 		Timestamp:  cxt.Timestamp,
 		Data:       ser.ToArray(message),
-		Owner:      cxt.Owner,
 	}
 }
 
@@ -162,7 +158,6 @@ func (cxt *ConsensusContext) GetSignaturesCount() (count int) {
 
 func (cxt *ConsensusContext) GetTransactionList() []*tx.Transaction {
 	Trace()
-	log.Info("len(cxt.txlist)=", len(cxt.txlist))
 	if cxt.txlist == nil {
 		cxt.txlist = []*tx.Transaction{}
 		fmt.Println("cxt.Transactions=", cxt.Transactions)
@@ -209,19 +204,14 @@ func (cxt *ConsensusContext) CheckTxHashesExist() bool {
 	return true
 }
 
-func (cxt *ConsensusContext) Reset(client cl.Client, localNode net.Neter) {
+func (cxt *ConsensusContext) Reset(client cl.Client) {
 	Trace()
 	cxt.State = Initial
 	cxt.PrevHash = ledger.DefaultLedger.Blockchain.CurrentBlockHash()
 	cxt.Height = ledger.DefaultLedger.Blockchain.BlockHeight + 1
 	cxt.ViewNumber = 0
+	cxt.Miners = ledger.DefaultLedger.Blockchain.GetMiners()
 	cxt.MinerIndex = -1
-
-	miners, _ := localNode.GetMinersAddrs()
-	cxt.Owner = miners[0]
-	log.Debug("[Public Key] =", cxt.Owner)
-	sort.Sort(crypto.PubKeySlice(miners))
-	cxt.Miners = miners
 
 	minerLen := len(cxt.Miners)
 	cxt.PrimaryIndex = cxt.Height % uint32(minerLen)
@@ -229,19 +219,18 @@ func (cxt *ConsensusContext) Reset(client cl.Client, localNode net.Neter) {
 	cxt.Signatures = make([][]byte, minerLen)
 	cxt.ExpectedView = make([]byte, minerLen)
 
-	log.Debug("[Consensus Miners] ", cxt.Miners)
+	log.Debug("[Consensus Reset] minerLen= ", minerLen)
 	for _, v := range cxt.Miners {
 		pubkey, _ := v.EncodePoint(true)
+		log.Debug("[Consensus Reset] Miners pub key = ", pubkey)
 	}
 
 	for i := 0; i < minerLen; i++ {
-		ac, _ := client.GetDefaultAccount()
-		if ac.PublicKey.X.Cmp(cxt.Miners[i].X) == 0 {
+		if client.ContainsAccount(cxt.Miners[i]) {
 			cxt.MinerIndex = i
 			break
 		}
 	}
-
 	log.Debug("cxt.MinerIndex = ", cxt.MinerIndex)
 	cxt.header = nil
 }

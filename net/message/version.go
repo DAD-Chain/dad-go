@@ -4,7 +4,6 @@ import (
 	"dad-go/common"
 	"dad-go/common/log"
 	"dad-go/core/ledger"
-	"dad-go/crypto"
 	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
@@ -28,7 +27,6 @@ type version struct {
 		// FIXME check with the specify relay type length
 		Relay uint8
 	}
-	pk *crypto.PubKey
 }
 
 func (msg *version) init(n Noder) {
@@ -53,16 +51,13 @@ func NewVersion(n Noder) ([]byte, error) {
 		msg.P.Relay = 0
 	}
 
-	msg.pk = n.GetMinerAddr()
-	log.Debug("new version msg.pk is ", msg.pk)
 	// TODO the function to wrap below process
 	// msg.HDR.init("version", n.GetID(), uint32(len(p.Bytes())))
 
 	msg.Hdr.Magic = NETMAGIC
 	copy(msg.Hdr.CMD[0:7], "version")
-	p := bytes.NewBuffer([]byte{})
+	p := new(bytes.Buffer)
 	err := binary.Write(p, binary.LittleEndian, &(msg.P))
-	msg.pk.Serialize(p)
 	if err != nil {
 		log.Error("Binary Write failed at new Msg")
 		return nil, err
@@ -92,41 +87,19 @@ func (msg version) Verify(buf []byte) error {
 }
 
 func (msg version) Serialization() ([]byte, error) {
-	hdrBuf, err := msg.Hdr.Serialization()
+	var buf bytes.Buffer
+
+	err := binary.Write(&buf, binary.LittleEndian, msg)
 	if err != nil {
 		return nil, err
 	}
-	buf := bytes.NewBuffer(hdrBuf)
-	err = binary.Write(buf, binary.LittleEndian, msg.P)
-	if err != nil {
-		return nil, err
-	}
-	msg.pk.Serialize(buf)
 
 	return buf.Bytes(), err
 }
 
 func (msg *version) Deserialization(p []byte) error {
 	buf := bytes.NewBuffer(p)
-
-	err := binary.Read(buf, binary.LittleEndian, &(msg.Hdr))
-	if err != nil {
-		log.Warn("Parse version message hdr error")
-		return errors.New("Parse version message hdr error")
-	}
-
-	err = binary.Read(buf, binary.LittleEndian, &(msg.P))
-	if err != nil {
-		log.Warn("Parse version P message error")
-		return errors.New("Parse version P message error")
-	}
-
-	pk := new(crypto.PubKey)
-	err = pk.DeSerialize(buf)
-	if err != nil {
-		return errors.New("Parse pubkey Deserialize failed.")
-	}
-	msg.pk = pk
+	err := binary.Read(buf, binary.LittleEndian, msg)
 	return err
 }
 
@@ -171,8 +144,6 @@ func (msg version) Handle(node Noder) error {
 		n.CloseConn()
 	}
 
-	log.Info("handle version msg.pk is ", msg.pk)
-	node.SetMinerAddr(msg.pk)
 	node.UpdateInfo(time.Now(), msg.P.Version, msg.P.Services,
 		msg.P.Port, msg.P.Nonce, msg.P.Relay, msg.P.StartHeight)
 	localNode.AddNbrNode(node)

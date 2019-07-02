@@ -2,7 +2,6 @@ package ledger
 
 import (
 	. "dad-go/common"
-	"dad-go/common/log"
 	"dad-go/common/serialization"
 	"dad-go/core/contract/program"
 	tx "dad-go/core/transaction"
@@ -99,7 +98,7 @@ func (b *Block) Type() InventoryType {
 	return BLOCK
 }
 
-func GenesisBlockInit(miners []*crypto.PubKey) (*Block, error) {
+func GenesisBlockInit() (*Block, error) {
 	genesisBlock := new(Block)
 	//blockdata
 	genesisBlockdata := new(Blockdata)
@@ -110,8 +109,7 @@ func GenesisBlockInit(miners []*crypto.PubKey) (*Block, error) {
 	genesisBlockdata.Timestamp = uint32(tm.Unix())
 	genesisBlockdata.Height = uint32(0)
 	genesisBlockdata.ConsensusData = uint64(2083236893)
-
-	nextMiner, err := GetMinerAddress(miners)
+	nextMiner, err := GetMinerAddress(StandbyMiners)
 	if err != nil {
 		return nil, NewDetailErr(err, ErrNoCode, "[Block],GenesisBlockInit err with GetMinerAddress")
 	}
@@ -152,26 +150,6 @@ func GenesisBlockInit(miners []*crypto.PubKey) (*Block, error) {
 
 	return genesisBlock, nil
 }
-
-func CreateGenesisBlock(miners []*crypto.PubKey) error {
-	genesisBlock, err := GenesisBlockInit(miners)
-	if err != nil {
-		log.Error("Init Genesis Block Error")
-		return err
-	}
-	err = genesisBlock.RebuildMerkleRoot()
-	if err != nil {
-		return err
-	}
-	hashx := genesisBlock.Hash()
-	genesisBlock.hash = &hashx
-	err = DefaultLedger.Blockchain.AddBlock(genesisBlock)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (b *Block) RebuildMerkleRoot() error {
 	txs := b.Transcations
 	transactionHashes := []Uint256{}
