@@ -1,10 +1,10 @@
 package code
 
 import (
-	"github.com/DAD-Chain/dad-go/common/log"
-	."github.com/DAD-Chain/dad-go/common"
-	."github.com/DAD-Chain/dad-go/core/contract"
-	"github.com/DAD-Chain/dad-go/common/serialization"
+	"dad-go/common/log"
+	. "dad-go/common"
+	. "dad-go/core/contract"
+	"dad-go/common/serialization"
 	"fmt"
 	"io"
 )

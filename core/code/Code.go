@@ -1,8 +1,8 @@
 package code
 
 import (
-	."github.com/DAD-Chain/dad-go/common"
-	."github.com/DAD-Chain/dad-go/core/contract"
+	. "dad-go/common"
+	. "dad-go/core/contract"
 )
 //ICode is the abstract interface of smart contract code.
 type ICode interface {
