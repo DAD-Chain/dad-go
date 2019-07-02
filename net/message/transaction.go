@@ -34,6 +34,8 @@ func (msg trn) Handle(node Noder) error {
 
 	if !node.LocalNode().ExistedID(msg.txn.Hash()) {
 		node.LocalNode().AppendTxnPool(&(msg.txn))
+		log.Debug("RX Transaction message hash", msg.txn.Hash())
+		log.Debug("RX Transaction message type", msg.txn.TxType)
 	}
 
 	return nil
@@ -51,13 +53,16 @@ func reqTxnData(node Noder, hash common.Uint256) error {
 }
 
 func (msg dataReq) Serialization() ([]byte, error) {
-	var buf bytes.Buffer
-
-	//using serilization function
-	err := binary.Write(&buf, binary.LittleEndian, msg)
+	hdrBuf, err := msg.msgHdr.Serialization()
 	if err != nil {
 		return nil, err
 	}
+	buf := bytes.NewBuffer(hdrBuf)
+	err = binary.Write(buf, binary.LittleEndian, msg.dataType)
+	if err != nil {
+		return nil, err
+	}
+	msg.hash.Serialize(buf)
 
 	return buf.Bytes(), err
 }
@@ -137,7 +142,7 @@ func (msg trn) Serialization() ([]byte, error) {
 	return buf.Bytes(), err
 }
 
-func (msg trn) DeSerialization(p []byte) error {
+func (msg *trn) Deserialization(p []byte) error {
 	buf := bytes.NewBuffer(p)
 	err := binary.Read(buf, binary.LittleEndian, &(msg.msgHdr))
 	err = msg.txn.Deserialize(buf)
@@ -147,7 +152,6 @@ func (msg trn) DeSerialization(p []byte) error {
 
 	return nil
 }
-
 
 type txnPool struct {
 	msgHdr
