@@ -1,7 +1,6 @@
 package message
 
 import (
-	"dad-go/common"
 	"dad-go/common/log"
 	"dad-go/core/ledger"
 	. "dad-go/net/protocol"
@@ -52,7 +51,7 @@ func NewVerack() ([]byte, error) {
  */
 // TODO The process should be adjusted based on above table
 func (msg verACK) Handle(node Noder) error {
-	common.Trace()
+	log.Trace()
 
 	t := time.Now()
 	s := node.GetState()

@@ -1,9 +1,8 @@
 package httpjsonrpc
 
 import (
-	. "dad-go/common"
+	"dad-go/common/log"
 	. "dad-go/config"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -14,7 +13,7 @@ const (
 )
 
 func StartLocalServer() {
-	Trace()
+	log.Trace()
 	http.HandleFunc(LocalDir, Handle)
 
 	HandleFunc("getneighbor", getNeighbor)

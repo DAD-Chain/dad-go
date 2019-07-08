@@ -1,15 +1,14 @@
 package httpjsonrpc
 
 import (
-	. "dad-go/common"
+	"dad-go/common/log"
 	. "dad-go/config"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 func StartRPCServer() {
-	Trace()
+	log.Trace()
 	http.HandleFunc("/", Handle)
 
 	HandleFunc("getbestblockhash", getBestBlockHash)

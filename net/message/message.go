@@ -1,7 +1,6 @@
 package message
 
 import (
-	"dad-go/common"
 	"dad-go/common/log"
 	. "dad-go/net/protocol"
 	"bytes"
@@ -292,7 +291,7 @@ func (hdr msgHdr) Serialization() ([]byte, error) {
 }
 
 func (hdr msgHdr) Handle(n Noder) error {
-	common.Trace()
+	log.Trace()
 	// TBD
 	return nil
 }
