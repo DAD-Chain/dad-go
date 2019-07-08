@@ -66,7 +66,7 @@ func sampleTransaction(issuer, admin *client.Account, assetid Uint256, index int
 	controllerPGM, _ := contract.CreateSignatureContract(admin.PubKey())
 	// generate transaction
 	ammount := Fixed64(10)
-	tx, _ := transaction.NewAssetRegistrationTransaction(a, &ammount, issuer.PubKey(), &controllerPGM.ProgramHash)
+	tx, _ := transaction.NewAssetRegistrationTransaction(a, ammount, issuer.PubKey(), controllerPGM.ProgramHash)
 	if nosign {
 		return tx
 	}
