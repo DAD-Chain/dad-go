@@ -193,19 +193,16 @@ func (tx *Transaction) DeserializeUnsignedWithoutType(r io.Reader) error {
 	if tx.TxType == RegisterAsset {
 		// Asset Registration
 		tx.Payload = new(payload.RegisterAsset)
-		tx.Payload.Deserialize(r)
 	} else if tx.TxType == IssueAsset {
 		// Issue Asset
 		tx.Payload = new(payload.IssueAsset)
-		tx.Payload.Deserialize(r)
 	} else if tx.TxType == TransferAsset {
 		// Transfer Asset
 		tx.Payload = new(payload.TransferAsset)
-		tx.Payload.Deserialize(r)
 	}else if tx.TxType == BookKeeping{
 		tx.Payload = new(payload.BookKeeping)
-		tx.Payload.Deserialize(r)
 	}
+	tx.Payload.Deserialize(r)
 	//attributes
 
 	nonce, err := serialization.ReadVarUint(r, 0)
@@ -326,7 +323,7 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 
 			switch v1 := tx.Payload.(type){
 				case *payload.RegisterAsset:
-					hashs = append(hashs,*v1.Controller)
+					hashs = append(hashs,v1.Controller)
 				default:
 					return nil, NewDetailErr(err, ErrNoCode, fmt.Sprintf("[Transaction], payload is illegal",v.AssetId))
 			}
@@ -390,7 +387,7 @@ func (tx *Transaction) GetReference() (map[*UTXOTxInput]*TxOutput, error) {
 	}
 	//UTXO input /  Outputs
 	reference := make(map[*UTXOTxInput]*TxOutput)
-	// key 顺序，v UTXOInput
+	// Key index，v UTXOInput
 	for _, utxo := range tx.UTXOInputs {
 		transaction, err := TxStore.GetTransaction(utxo.ReferTxID)
 		if err != nil {
