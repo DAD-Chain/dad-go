@@ -3,6 +3,7 @@ package httpjsonrpc
 import (
 	"dad-go/consensus/dbft"
 	"dad-go/core/ledger"
+	"dad-go/core/transaction"
 	tx "dad-go/core/transaction"
 	. "dad-go/net/protocol"
 	"encoding/json"
@@ -31,7 +32,9 @@ type ServeMux struct {
 
 type BlockInfo struct {
 	Hash      string
-	BlockData *ledger.Blockdata
+	BlockData *ledger.Blockhead
+	TxN        uint32
+	Transactions []transaction.Transactions
 }
 
 type TxInfo struct {
