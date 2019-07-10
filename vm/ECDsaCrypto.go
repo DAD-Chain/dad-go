@@ -3,8 +3,8 @@ package vm
 import (
 	"dad-go/crypto"
 	. "dad-go/errors"
+	"dad-go/common/log"
 	"errors"
-	"fmt"
 )
 
 
@@ -21,9 +21,9 @@ func (c * ECDsaCrypto) Hash256( message []byte ) []byte {
 
 func (c * ECDsaCrypto) VerifySignature(message []byte,signature []byte, pubkey []byte) (bool,error) {
 
-	fmt.Printf( "message: %x \n", message )
-	fmt.Printf( "signature: %x \n", signature )
-	fmt.Printf( "pubkey: %x \n", pubkey )
+	log.Debug("message: %x \n", message)
+	log.Debug("signature: %x \n", signature)
+	log.Debug("pubkey: %x \n", pubkey)
 
 	pk,err := crypto.DecodePoint(pubkey)
 	if err != nil {
