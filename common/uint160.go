@@ -11,8 +11,7 @@ import (
 	"errors"
 )
 
-const UINT160SIZE int = 20 
-type Uint160 [UINT160SIZE]uint8
+type Uint160 [20]uint8
 
 func (u *Uint160) CompareTo( o Uint160 ) int {
 	x := u.ToArray()
@@ -31,7 +30,7 @@ func (u *Uint160) CompareTo( o Uint160 ) int {
 }
 
 func (u *Uint160) ToArray() []byte {
-	var x []byte = make([]byte, UINT160SIZE)
+	var x []byte = make([]byte,20)
 	for i:=0; i<20; i++ {
 		x[i] = byte(u[i])
 	}
@@ -53,7 +52,7 @@ func (u *Uint160) Serialize(w io.Writer) (int,error) {
 }
 
 func (f *Uint160) Deserialize(r io.Reader) error {
-	p := make([]byte, UINT160SIZE)
+	p := make([]byte, 20)
 	n, err := r.Read(p)
 
 	if n <= 0 || err != nil {
@@ -82,7 +81,7 @@ func (f *Uint160) ToAddress() string {
 }
 
 func Uint160ParseFromBytes(f []byte) (Uint160,error){
-	if ( len(f) != UINT160SIZE ) {
+	if ( len(f) != 20 ) {
 		return Uint160{},NewDetailErr(errors.New("[Common]: Uint160ParseFromBytes err, len != 20"), ErrNoCode, "");
 	}
 
