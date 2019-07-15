@@ -4,7 +4,7 @@ idea/*
 temp/*
 temp/
 idea/
-vendor/
+vendor/*
 .idea/
 dad-go.iml
 .DS_Store
