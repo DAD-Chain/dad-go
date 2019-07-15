@@ -8,7 +8,6 @@ import (
 	"dad-go/core/contract/program"
 	. "dad-go/core/ledger"
 	tx "dad-go/core/transaction"
-	"dad-go/core/transaction/payload"
 	"dad-go/core/validation"
 	. "dad-go/errors"
 	"bytes"
@@ -123,6 +122,24 @@ func (self *LevelDBStore) NewIterator(options *opt.ReadOptions) *Iterator {
 	}
 }
 
+func (self *LevelDBStore) BatchPut(key []byte, value []byte) error {
+	self.b.Put(key, value)
+
+	return nil
+}
+
+func (self *LevelDBStore) BatchDelete(key []byte) error {
+
+	self.b.Delete(key)
+
+	return nil
+}
+
+func (self *LevelDBStore) BatchWrite() error {
+
+	return self.db.Write(self.b, nil)
+}
+
 func (bd *LevelDBStore) InitLedgerStore(l *Ledger) error {
 	// TODO: InitLedgerStore
 	return nil
@@ -164,8 +181,6 @@ func (bd *LevelDBStore) GetBlockHash(height uint32) (Uint256, error) {
 }
 
 func (bd *LevelDBStore) GetCurrentBlockHash() Uint256 {
-	bd.mutex.Lock()
-	defer bd.mutex.Unlock()
 
 	return bd.header_index[bd.current_block_height]
 }
@@ -290,7 +305,7 @@ func (bd *LevelDBStore) GetHeader(hash Uint256) (*Header, error) {
 	return h, err
 }
 
-func (bd *LevelDBStore) SaveAsset(assetid Uint256, asset *Asset) error {
+func (bd *LevelDBStore) SaveAsset(asset *Asset) error {
 	w := bytes.NewBuffer(nil)
 
 	asset.Serialize(w)
@@ -300,7 +315,7 @@ func (bd *LevelDBStore) SaveAsset(assetid Uint256, asset *Asset) error {
 	// add asset prefix.
 	assetkey.WriteByte(byte(ST_QuantityIssued))
 	// contact asset id
-	assetid.Serialize(assetkey)
+	asset.ID.Serialize(assetkey)
 
 	log.Debug(fmt.Sprintf("asset key: %x\n", assetkey))
 
@@ -352,7 +367,6 @@ func (bd *LevelDBStore) GetNextBlockHash(hash []byte) common.Uint256 {
 func (bd *LevelDBStore) GetTransaction(hash Uint256) (*tx.Transaction, error) {
 	log.Trace()
 	log.Debug(fmt.Sprintf("GetTransaction Hash: %x\n", hash))
-  
 	t := new(tx.Transaction)
 	err := bd.getTx(t, hash)
 
@@ -376,12 +390,12 @@ func (bd *LevelDBStore) getTx(tx *tx.Transaction, hash Uint256) error {
 	r := bytes.NewReader(tHash)
 
 	// get height
-	_, err := serialization.ReadUint32(r)
-	//height, err := serialization.ReadUint32(r)
+	//_, err := serialization.ReadUint32(r)
+	height, err := serialization.ReadUint32(r)
 	if err != nil {
 		return err
 	}
-	//log.Debug(fmt.Sprintf("tx height: %d\n", height))
+	log.Debug(fmt.Sprintf("tx height: %d\n", height))
 
 	// Deserialize Transaction
 	err = tx.Deserialize(r)
@@ -428,17 +442,17 @@ func (bd *LevelDBStore) GetBlock(hash Uint256) (*Block, error) {
 		//TODO: implement error process
 		return nil, err_get
 	}
-	//log.Debug(fmt.Sprintf("GetBlock Data: %x\n", bHash))
+	log.Debug(fmt.Sprintf("GetBlock Data: %x\n", bHash))
 
 	r := bytes.NewReader(bHash)
 
 	// first 8 bytes is sys_fee
-	_,err := serialization.ReadUint64(r)
-	//sysfee, err := serialization.ReadUint64(r)
+	//_,err := serialization.ReadUint64(r)
+	sysfee, err := serialization.ReadUint64(r)
 	if err != nil {
 		return nil, err
 	}
-	//log.Debug(fmt.Sprintf("sysfee: %d\n", sysfee))
+	log.Debug(fmt.Sprintf("sysfee: %d\n", sysfee))
 
 	// Deserialize block data
 	err = b.Deserialize(r)
@@ -447,8 +461,8 @@ func (bd *LevelDBStore) GetBlock(hash Uint256) (*Block, error) {
 	}
 
 	// Deserialize transaction
-	for i := 0; i < len(b.Transcations); i++ {
-		err = bd.getTx(b.Transcations[i], b.Transcations[i].Hash())
+	for i := 0; i < len(b.Transactions); i++ {
+		err = bd.getTx(b.Transactions[i], b.Transactions[i].Hash())
 		if err != nil {
 			return nil, err
 		}
@@ -458,8 +472,6 @@ func (bd *LevelDBStore) GetBlock(hash Uint256) (*Block, error) {
 }
 
 func (bd *LevelDBStore) persist(b *Block) error {
-
-	batch := new(leveldb.Batch)
 
 	//////////////////////////////////////////////////////////////
 	// generate key with DATA_Header prefix
@@ -477,19 +489,17 @@ func (bd *LevelDBStore) persist(b *Block) error {
 	serialization.WriteUint64(w, sysfee)
 	b.Serialize(w)
 
-	// BATCH PUT VALUE
-	batch.Put(bhhash.Bytes(), w.Bytes())
-	/*
+	// PUT VALUE
 	err := bd.Put(bhhash.Bytes(), w.Bytes())
 	if err != nil {
 		return err
-	}*/
+	}
 
 	//////////////////////////////////////////////////////////////
 	// generate key with DATA_BlockHash prefix
 	bhash := bytes.NewBuffer(nil)
 	bhash.WriteByte(byte(DATA_BlockHash))
-	err := serialization.WriteUint32(bhash, b.Blockdata.Height)
+	err = serialization.WriteUint32(bhash, b.Blockdata.Height)
 	if err != nil {
 		return err
 	}
@@ -501,40 +511,28 @@ func (bd *LevelDBStore) persist(b *Block) error {
 	hashvalue.Serialize(hashwriter)
 	log.Debug(fmt.Sprintf("DATA_BlockHash table value: %x\n", hashvalue))
 
-	// BATCH PUT VALUE
-	batch.Put(bhash.Bytes(), hashwriter.Bytes())
-	/*
+	// PUT VALUE
 	err = bd.Put(bhash.Bytes(), hashwriter.Bytes())
 	if err != nil {
 		return err
-	}*/
+	}
 
 	//////////////////////////////////////////////////////////////
 	// save transcations to leveldb
-	nLen := len(b.Transcations)
+	nLen := len(b.Transactions)
 	for i := 0; i < nLen; i++ {
 		/*
 			// for test
 			if i==1 {
-				b.Transcations[i].Hash = Uint256{0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03}
-				fmt.Printf( "txhash: %x\n",  b.Transcations[i].Hash )
-				bd.SaveTransaction(b.Transcations[i],b.Blockdata.Height)
+				b.Transactions[i].Hash = Uint256{0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03,0x00,0x01,0x02,0x03}
+				fmt.Printf( "txhash: %x\n",  b.Transactions[i].Hash )
+				bd.SaveTransaction(b.Transactions[i],b.Blockdata.Height)
 			}
 		*/
 
-		// now support RegisterAsset / IssueAsset / TransferAsset and Miner TX ONLY.
-		if b.Transcations[i].TxType == tx.RegisterAsset || b.Transcations[i].TxType == tx.IssueAsset || b.Transcations[i].TxType == tx.TransferAsset || b.Transcations[i].TxType == tx.BookKeeping {
-			err = bd.SaveTransaction(b.Transcations[i], b.Blockdata.Height)
-			if err != nil {
-				return err
-			}
-		}
-		if b.Transcations[i].TxType == tx.RegisterAsset {
-			ar := b.Transcations[i].Payload.(*payload.AssetRegistration)
-			err = bd.SaveAsset(b.Transcations[i].Hash(),ar.Asset)
-			if err != nil {
-				return err
-			}
+		// now support RegisterAsset and Miner tx ONLY.
+		if b.Transactions[i].TxType == 0x40 || b.Transactions[i].TxType == 0x00 {
+			bd.SaveTransaction(b.Transactions[i], b.Blockdata.Height)
 		}
 	}
 
@@ -550,21 +548,14 @@ func (bd *LevelDBStore) persist(b *Block) error {
 	blockhash.Serialize(currentblock)
 	serialization.WriteUint32(currentblock, b.Blockdata.Height)
 
-	// BATCH PUT VALUE
-	batch.Put(currentblockkey.Bytes(), currentblock.Bytes())
-	/*
+	// PUT VALUE
 	err = bd.Put(currentblockkey.Bytes(), currentblock.Bytes())
 	if err != nil {
 		return err
-	}*/
+	}
 
 	//bh := b.Blockdata.Hash()
 	//bd.header_index[bd.current_block_height] = &bh
-
-	err = bd.db.Write(batch, nil)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
