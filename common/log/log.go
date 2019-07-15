@@ -3,7 +3,6 @@ package log
 import (
 	"dad-go/config"
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -30,6 +29,10 @@ func Color(code, msg string) string {
 }
 
 const (
+	PRINTLEVEL = 0
+)
+
+const (
 	traceLog = iota
 	debugLog
 	infoLog
@@ -37,6 +40,7 @@ const (
 	errorLog
 	fatalLog
 	printLog
+	numSeverity = 5
 )
 
 var (
@@ -66,6 +70,7 @@ func GetGID() uint64 {
 }
 
 var Log *Logger
+var lock = sync.Mutex{}
 
 func LevelName(level int) string {
 	if name, ok := levels[level]; ok {
@@ -88,7 +93,6 @@ func NameLevel(name string) int {
 }
 
 type Logger struct {
-	sync.Mutex
 	level  int
 	logger *log.Logger
 }
@@ -98,17 +102,6 @@ func New(out io.Writer, prefix string, flag, level int) *Logger {
 		level:  level,
 		logger: log.New(out, prefix, flag),
 	}
-}
-
-func (l *Logger) SetDebugLevel(level int) error {
-	l.Lock()
-	defer l.Unlock()
-	if level > printLog || level < traceLog {
-		return errors.New("Invalid Debug Level")
-	}
-
-	l.level = level
-	return nil
 }
 
 func (l *Logger) output(level int, s string) error {
@@ -132,44 +125,44 @@ func (l *Logger) Output(level int, a ...interface{}) error {
 }
 
 func (l *Logger) Trace(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(traceLog, a...)
 }
 
 func (l *Logger) Print(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(printLog, a...)
 }
 
 func (l *Logger) Debug(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(debugLog, a...)
 }
 
 func (l *Logger) Info(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(infoLog, a...)
 }
 
 func (l *Logger) Warn(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(warnLog, a...)
 }
 
 func (l *Logger) Error(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(errorLog, a...)
 }
 
 func (l *Logger) Fatal(a ...interface{}) {
-	l.Lock()
-	defer l.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	l.Output(fatalLog, a...)
 }
 
