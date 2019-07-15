@@ -6,7 +6,7 @@ import (
 	"dad-go/core/contract/program"
 	"dad-go/crypto"
 	. "dad-go/errors"
-	"dad-go/vm"
+	"dad-go/vm/interfaces"
 	"bytes"
 	"crypto/sha256"
 	"io"
@@ -14,7 +14,7 @@ import (
 
 //SignableData describe the data need be signed.
 type SignableData interface {
-	vm.ISignableObject
+	interfaces.ISignableObject
 
 	//Get the the SignableData's program hashes
 	GetProgramHashes() ([]common.Uint160, error)
