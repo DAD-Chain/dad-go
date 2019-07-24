@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"sync"
 )
 
 var GenBlockTime = (2 * time.Second)
@@ -126,6 +125,11 @@ func (ds *DbftService) BlockPersistCompleted(v interface{}) {
 	log.Trace()
 	if block, ok := v.(*ledger.Block); ok {
 		log.Info(fmt.Sprintf("persist block: %d", block.Hash()))
+		err := ds.localNet.CleanSubmittedTransactions(block)
+		if err != nil {
+			log.Warn(err)
+		}
+		//log.Debug(fmt.Sprintf("persist block: %d with %d transactions\n", block.Hash(),len(trxHashToBeDelete)))
 	}
 
 	ds.blockReceivedTime = time.Now()
@@ -135,7 +139,7 @@ func (ds *DbftService) BlockPersistCompleted(v interface{}) {
 
 func (ds *DbftService) CheckExpectedView(viewNumber byte) {
 	log.Trace()
-	if ds.context.State.HasFlag(BlockSent){
+	if ds.context.State.HasFlag(BlockSent) {
 		return
 	}
 	if ds.context.ViewNumber == viewNumber {
@@ -270,6 +274,9 @@ func (ds *DbftService) InitializeConsensus(viewNum byte) error {
 	if viewNum == 0 {
 		ds.context.Reset(ds.Client, ds.localNet)
 	} else {
+		if ds.context.State.HasFlag(BlockSent) {
+			return nil
+		}
 		ds.context.ChangeView(viewNum)
 	}
 
@@ -418,7 +425,6 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 		return
 	}
 
-	//ds.context copy
 	ds.context.State |= RequestReceived
 	ds.context.Timestamp = payload.Timestamp
 	ds.context.Nonce = message.Nonce
@@ -435,57 +441,12 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	ds.context.Signatures = make([][]byte, len(ds.context.Miners))
 	ds.context.Signatures[payload.MinerIndex] = message.Signature
 
-	if len(ds.context.TransactionHashes) > 1 {
-		//check weather local txnpool has all transactions from request.
-		mempool := ds.localNet.GetTxnPool(false)
-		requesttxs := []Uint256{}
-		txsProcessList := make([]*tx.Transaction,0,len(message.TransactionHashes))
-		for _, hash := range ds.context.TransactionHashes[1:] {
-			if v, ok := mempool[hash]; ok {
-				txsProcessList = append(txsProcessList,v)
-				continue
-			}else{
-				requesttxs =append(requesttxs,hash)
-			}
-		}
-
-		if len(requesttxs)>0 {
-			//ds.localNet.SynchronizeTxnPool(requestTransaction)
-			//TODO: tx net sync request
-			return
-		}
-
-		//verify single transaction.
-		var wg sync.WaitGroup
-		var se chan error = make(chan error,len(txsProcessList))
-		for _, transaction:= range txsProcessList {
-			wg.Add(1)
-			go func(t *tx.Transaction, ts []*tx.Transaction) {
-				err := va.VerifyTransaction(t, ledger.DefaultLedger, ts)
-				if err != nil {
-					log.Warn(fmt.Sprintf("[AddTransaction] TX Verfiy failed: %v", transaction.Hash()))
-					se <- err
-				}
-				wg.Done()
-			}(transaction, txsProcessList)
-		}
-		wg.Wait()
-		if len(se)>0{
-			ds.RequestChangeView()
-			return
-		}
-
-		//verify the transaction Pool :check weather has duplicate utxo inputs
-		if ! va.VerifyTransactionPoolWhenResponse(txsProcessList){
-			ds.RequestChangeView()
-			return
-		}
-
-		//add transaction to context and start the response process.
-		for _, transaction := range txsProcessList {
+	mempool := ds.localNet.GetTxnPool(false)
+	for _, hash := range ds.context.TransactionHashes[1:] {
+		if transaction, ok := mempool[hash]; ok {
 			if err := ds.AddTransaction(transaction, false); err != nil {
-				log.Warn(fmt.Sprintf("[AddTransaction] TX Verfiy failed: %v err=", transaction.Hash(),err))
-				ds.RequestChangeView()
+				log.Info("PrepareRequestReceived AddTransaction failed.")
+				return
 			}
 		}
 	}
@@ -498,6 +459,9 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	//TODO: LocalNode allow hashes (add Except method)
 	//AllowHashes(ds.context.TransactionHashes)
 	log.Info("Prepare Requst finished")
+	if len(ds.context.Transactions) < len(ds.context.TransactionHashes) {
+		ds.localNet.SynchronizeTxnPool()
+	}
 }
 
 func (ds *DbftService) PrepareResponseReceived(payload *msg.ConsensusPayload, message *PrepareResponse) {
@@ -620,7 +584,7 @@ func (ds *DbftService) Timeout() {
 			}
 
 			ds.context.Nonce = GetNonce()
-			transactionsPool := ds.localNet.GetTxnPool(true) //TODO: add policy
+			transactionsPool := ds.localNet.GetTxnPool(false) //TODO: add policy
 
 			//TODO: add max TX limitation
 
