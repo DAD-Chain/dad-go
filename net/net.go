@@ -3,6 +3,7 @@ package net
 import (
 	"dad-go/common"
 	"dad-go/config"
+	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/crypto"
 	"dad-go/events"
@@ -16,6 +17,7 @@ type Neter interface {
 	Xmit(common.Inventory) error // The transmit interface
 	GetEvent(eventName string) *events.Event
 	GetMinersAddrs() ([]*crypto.PubKey, uint64)
+	CleanSubmittedTransactions(block *ledger.Block) error
 }
 
 func StartProtocol(pubKey *crypto.PubKey) (Neter, protocol.Noder) {

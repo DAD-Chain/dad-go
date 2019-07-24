@@ -2,6 +2,7 @@ package protocol
 
 import (
 	"dad-go/common"
+	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/crypto"
 	"dad-go/events"
@@ -89,6 +90,7 @@ type Noder interface {
 	SetMinerAddr(pk *crypto.PubKey)
 	GetNeighborHeights() ([]uint64, uint64)
 	SyncNodeHeight()
+	CleanSubmittedTransactions(block *ledger.Block) error
 }
 
 type JsonNoder interface {
