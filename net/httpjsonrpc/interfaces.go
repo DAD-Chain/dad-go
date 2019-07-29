@@ -331,7 +331,7 @@ func sendSampleTransaction(cmd map[string]interface{}) map[string]interface{} {
 	}
 	admin := issuer
 
-	var regHash, issueHash, transferHash, recordHash Uint256
+	var regHash, issueHash, transferHash Uint256
 	rbuf := make([]byte, RANDBYTELEN)
 	rand.Read(rbuf)
 	switch string(txType) {
@@ -355,27 +355,19 @@ func sendSampleTransaction(cmd map[string]interface{}) map[string]interface{} {
 		SendTx(regTx)
 
 		// wait for the block
-		time.Sleep(3 * time.Second)
+		time.Sleep(5 * time.Second)
 		issueTx := NewIssueTx(admin, regHash)
 		issueHash = issueTx.Hash()
 		SignTx(admin, issueTx)
 		SendTx(issueTx)
 
 		// wait for the block
-		time.Sleep(3 * time.Second)
-		transferTx := NewTransferTx(regHash, issueHash, admin)
+		time.Sleep(5 * time.Second)
+		transferTx := NewTransferTx(regHash, issueHash, issuer)
 		transferHash = transferTx.Hash()
 		SignTx(admin, transferTx)
 		SendTx(transferTx)
-
-		// wait for the block
-		time.Sleep(5 * time.Second)
-		NewRecordTx := NewRecordTx(ToHexString(rbuf))
-		recordHash = NewRecordTx.Hash()
-		SignTx(admin, NewRecordTx)
-		SendTx(NewRecordTx)
-
-		return responsePacking(fmt.Sprintf("regist: %x, issue: %x, transfer: x%, record: %x", regHash, issueHash, transferHash,recordHash), id)
+		return responsePacking(fmt.Sprintf("regist: %x, issue: %x, transfer: %x", regHash, issueHash, transferHash), id)
 	default:
 		return responsePacking("Invalid transacion type", id)
 	}
