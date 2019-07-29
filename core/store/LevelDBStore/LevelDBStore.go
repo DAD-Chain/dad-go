@@ -468,8 +468,7 @@ func (bd *LevelDBStore) persist(b *Block) error {
 	for i := 0; i < nLen; i++ {
 
 		// now support RegisterAsset / IssueAsset / TransferAsset and Miner TX ONLY.
-		if b.Transactions[i].TxType == tx.RegisterAsset || b.Transactions[i].TxType == tx.IssueAsset || b.Transactions[i].TxType == tx.TransferAsset ||
-			b.Transactions[i].TxType == tx.Record || b.Transactions[i].TxType == tx.BookKeeping {
+		if b.Transactions[i].TxType == tx.RegisterAsset || b.Transactions[i].TxType == tx.IssueAsset || b.Transactions[i].TxType == tx.TransferAsset || b.Transactions[i].TxType == tx.BookKeeping {
 			err = bd.SaveTransaction(b.Transactions[i], b.Blockdata.Height)
 			if err != nil {
 				return err
@@ -672,7 +671,7 @@ func (bd *LevelDBStore) SaveBlock(b *Block, ledger *Ledger) error {
 
 	if b.Blockdata.Height == uint32(len(bd.header_index)) {
 		//Block verify
-		err := validation.VerifyBlock(b, ledger, true)
+		err := validation.VerifyBlock(b, ledger, false)
 		if err != nil {
 			log.Debug("VerifyBlock() error!")
 			return err
