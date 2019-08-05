@@ -34,6 +34,7 @@ func (msg block) Handle(node Noder) error {
 		log.Error("Add block error after Received")
 		return errors.New("Add block error after reveived\n")
 	}
+	node.RemoveFlightHeight(msg.blk.Blockdata.Height)
 	node.LocalNode().GetEvent("block").Notify(events.EventNewInventory, &msg.blk)
 	return nil
 }
@@ -46,7 +47,10 @@ func (msg dataReq) Handle(node Noder) error {
 	case common.BLOCK:
 		block, err := NewBlockFromHash(hash)
 		if err != nil {
-			log.Error("Can't get block from hash: ", hash)
+			log.Error("Can't get block from hash: ", hash, " ,send not found message")
+			//call notfound message
+			b, err := NewNotFound(hash)
+			node.Tx(b)
 			return err
 		}
 		log.Debug("block height is ", block.Blockdata.Height, " ,hash is ", hash)
@@ -111,7 +115,7 @@ func NewBlock(bk *ledger.Block) ([]byte, error) {
 	return m, nil
 }
 
-func reqBlkData(node Noder, hash common.Uint256) error {
+func ReqBlkData(node Noder, hash common.Uint256) error {
 	var msg dataReq
 	msg.dataType = common.BLOCK
 	msg.hash = hash

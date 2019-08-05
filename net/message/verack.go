@@ -2,7 +2,6 @@ package message
 
 import (
 	"dad-go/common/log"
-	"dad-go/core/ledger"
 	. "dad-go/net/protocol"
 	"encoding/hex"
 	"errors"
@@ -73,15 +72,6 @@ func (msg verACK) Handle(node Noder) error {
 	// but it doesn't matter to access the invalid
 	// node which will trigger a warning
 	node.ReqNeighborList()
-
-	if uint64(ledger.DefaultLedger.Blockchain.BlockHeight) < node.GetHeight() {
-		buf, err := NewBlocksReq(node)
-		if err != nil {
-			log.Error("failed build a new blockReq")
-		} else {
-			go node.Tx(buf)
-		}
-	}
 
 	return nil
 }
