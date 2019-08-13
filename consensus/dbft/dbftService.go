@@ -217,10 +217,20 @@ func (ds *DbftService) CheckSignatures() error {
 
 		block.Transactions = ds.context.GetTXByHashes()
 
-		if err := ds.localNet.Xmit(block); err != nil {
-			log.Info(fmt.Sprintf("[CheckSignatures] Xmit block Error: %s, blockHash: %d", err.Error(), block.Hash()))
+		hash := block.Hash()
+		if !ledger.DefaultLedger.ContainBlock(hash) {
+			// save block
+			if err := ledger.DefaultLedger.Blockchain.AddBlock(block); err != nil {
+				log.Warn("Block saving error: ", hash)
+				return err
+			}
+			// broadcast block hash
+			if err := ds.localNet.Xmit(hash); err != nil {
+				log.Warn("Block hash transmitting error: ", hash)
+				return err
+			}
+			ds.context.State |= BlockSent
 		}
-		ds.context.State |= BlockSent
 	}
 	return nil
 }
