@@ -3,7 +3,6 @@ package dbft
 import (
 	"dad-go/common/log"
 	ser "dad-go/common/serialization"
-	tx "dad-go/core/transaction"
 	"bytes"
 	"errors"
 	"io"
@@ -28,9 +27,7 @@ func DeserializeMessage(data []byte) (ConsensusMessage, error) {
 	r := bytes.NewReader(data)
 	switch msgType {
 	case PrepareRequestMsg:
-		prMsg := &PrepareRequest{
-			BookkeepingTransaction: new(tx.Transaction),
-		}
+		prMsg := &PrepareRequest{}
 		err := prMsg.Deserialize(r)
 		if err != nil {
 			log.Error("[DeserializeMessage] PrepareRequestMsg Deserialize Error: ", err.Error())
