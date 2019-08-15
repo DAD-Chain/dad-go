@@ -3,7 +3,7 @@ package node
 import (
 	. "dad-go/common"
 	"dad-go/common/log"
-	. "dad-go/config"
+	. "dad-go/common/config"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/crypto"

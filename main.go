@@ -3,7 +3,7 @@ package main
 import (
 	. "dad-go/client"
 	"dad-go/common/log"
-	"dad-go/config"
+	"dad-go/common/config"
 	"dad-go/consensus/dbft"
 	"dad-go/core/ledger"
 	"dad-go/core/store"
@@ -134,7 +134,7 @@ func OpenClientAndGetAccount(count uint32) Client {
 	clientName := config.Parameters.BookKeeperName
 	fmt.Printf("The BookKeeper name is %s\n", clientName)
 	if clientName == "" {
-		fmt.Printf("BookKeeper name not be set at config file protocol.json, which schould be c1,c2,c3,c4. Now is %s\n", clientName)
+		log.Error("BookKeeper name not be set at config.json")
 		return nil
 	}
 	var c []Client

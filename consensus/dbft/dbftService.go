@@ -4,7 +4,7 @@ import (
 	cl "dad-go/client"
 	. "dad-go/common"
 	"dad-go/common/log"
-	"dad-go/config"
+	"dad-go/common/config"
 	con "dad-go/consensus"
 	ct "dad-go/core/contract"
 	"dad-go/core/contract/program"
