@@ -1,7 +1,7 @@
 package utility
 
 import (
-	"dad-go/config"
+	"dad-go/common/config"
 	"dad-go/net/httpjsonrpc"
 	"bytes"
 	"encoding/json"
@@ -86,11 +86,11 @@ func Start(cmds map[string]*Command) error {
 		return errors.New("no subcommand was given")
 	}
 
-	subCmdName := flag.Arg(0)
+	subCmdad-gome := flag.Arg(0)
 	subCmdArgs := flag.Args()[1:]
-	subCmd, found := cmds[subCmdName]
+	subCmd, found := cmds[subCmdad-gome]
 	if !found {
-		fmt.Fprintf(os.Stderr, "subcommand %s is not defined\n\n", subCmdName)
+		fmt.Fprintf(os.Stderr, "subcommand %s is not defined\n\n", subCmdad-gome)
 		flag.Usage()
 		return errors.New("undefined subcommand")
 	}

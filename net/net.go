@@ -2,7 +2,7 @@ package net
 
 import (
 	. "dad-go/common"
-	"dad-go/config"
+	"dad-go/common/config"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/crypto"
@@ -16,7 +16,7 @@ type Neter interface {
 	SynchronizeTxnPool()
 	Xmit(interface{}) error
 	GetEvent(eventName string) *events.Event
-	GetMinersAddrs() ([]*crypto.PubKey, uint64)
+	GetBookKeepersAddrs() ([]*crypto.PubKey, uint64)
 	CleanSubmittedTransactions(block *ledger.Block) error
 	GetNeighborNoder() []protocol.Noder
 	Tx(buf []byte)

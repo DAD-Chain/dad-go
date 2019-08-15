@@ -2,7 +2,7 @@ package node
 
 import (
 	"dad-go/common/log"
-	. "dad-go/config"
+	. "dad-go/common/config"
 	. "dad-go/net/message"
 	. "dad-go/net/protocol"
 	"crypto/tls"
