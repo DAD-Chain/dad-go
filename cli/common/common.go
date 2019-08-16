@@ -7,9 +7,14 @@ import (
 	"os"
 	"strconv"
 
-	"dad-go/config"
+	"dad-go/common/config"
 
 	"github.com/urfave/cli"
+)
+
+const (
+	DefaultWalletName   = "wallet.db3"
+	DefaultWalletPasswd = "dad-gopw"
 )
 
 var (
@@ -37,7 +42,6 @@ func NewPortFlag() cli.Flag {
 
 func Address() string {
 	address := "http://" + Ip + ":" + Port
-	fmt.Printf("Connecting to %s ...\n", address)
 	return address
 }
 
