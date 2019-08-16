@@ -3,8 +3,8 @@ package dbft
 import (
 	cl "dad-go/client"
 	. "dad-go/common"
-	"dad-go/common/log"
 	"dad-go/common/config"
+	"dad-go/common/log"
 	con "dad-go/consensus"
 	ct "dad-go/core/contract"
 	"dad-go/core/contract/program"
@@ -28,7 +28,7 @@ const (
 	INVDELAYTIME = 20 * time.Millisecond
 )
 
-var GenBlockTime = (2 * time.Second)
+var GenBlockTime = (6 * time.Second)
 
 type DbftService struct {
 	context           ConsensusContext
