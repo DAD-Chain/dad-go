@@ -29,7 +29,7 @@ const (
 	MAXBLKHDRCNT  = 2000
 	MAXINVHDRCNT  = 500
 	DIVHASHLEN    = 5
-	MINCONNCNT    = 4
+	MINCONNCNT    = 3
 	MAXREQBLKONCE = 16
 )
 const (
@@ -109,6 +109,7 @@ type Noder interface {
 	RemoveFlightHeight(height uint32)
 	SetLastContact()
 	GetLastContact() time.Time
+	SetHeight(height uint64)
 }
 
 func (msg *NodeAddr) Deserialization(p []byte) error {
