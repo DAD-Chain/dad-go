@@ -259,7 +259,7 @@ func sendRawTransaction(params []interface{}) map[string]interface{} {
 			return dad-goRpcInvalidTransaction
 		}
 		hash = txn.Hash()
-		if err := SendTx(&txn); err != nil {
+		if err := VerifyAndSendTx(&txn); err != nil {
 			return dad-goRpcInternalError
 		}
 	default:
@@ -462,7 +462,7 @@ func sendSampleTransaction(params []interface{}) map[string]interface{} {
 		for i := 0; i < num; i++ {
 			regTx := NewRegTx(ToHexString(rbuf), i, admin, issuer)
 			SignTx(admin, regTx)
-			SendTx(regTx)
+			VerifyAndSendTx(regTx)
 		}
 		return dad-goRpc(fmt.Sprintf("%d transaction(s) was sent", num))
 	default:
