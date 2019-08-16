@@ -2,11 +2,11 @@ package main
 
 import (
 	. "dad-go/client"
-	"dad-go/common/log"
 	"dad-go/common/config"
+	"dad-go/common/log"
 	"dad-go/consensus/dbft"
 	"dad-go/core/ledger"
-	"dad-go/core/store"
+	"dad-go/core/store/ChainStore"
 	"dad-go/core/transaction"
 	"dad-go/crypto"
 	"dad-go/net"
@@ -63,7 +63,7 @@ func main() {
 	fmt.Println("//*** 0. Client open                                                     ***")
 	fmt.Println("//**************************************************************************")
 	ledger.DefaultLedger = new(ledger.Ledger)
-	ledger.DefaultLedger.Store = store.NewLedgerStore()
+	ledger.DefaultLedger.Store = ChainStore.NewLedgerStore()
 	ledger.DefaultLedger.Store.InitLedgerStore(ledger.DefaultLedger)
 	transaction.TxStore = ledger.DefaultLedger.Store
 	crypto.SetAlg(crypto.P256R1)
