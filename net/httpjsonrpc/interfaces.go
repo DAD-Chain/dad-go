@@ -3,6 +3,7 @@ package httpjsonrpc
 import (
 	"dad-go/client"
 	. "dad-go/common"
+	"dad-go/common/config"
 	"dad-go/common/log"
 	"dad-go/core/ledger"
 	tx "dad-go/core/transaction"
@@ -484,4 +485,8 @@ func setDebugInfo(params []interface{}) map[string]interface{} {
 		return dad-goRpcInvalidParameter
 	}
 	return dad-goRpcSuccess
+}
+
+func getVersion(params []interface{}) map[string]interface{} {
+	return dad-goRpc(config.Version)
 }
