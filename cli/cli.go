@@ -9,6 +9,7 @@ import (
 	"dad-go/cli/debug"
 	"dad-go/cli/info"
 	"dad-go/cli/test"
+	"dad-go/cli/wallet"
 
 	"github.com/urfave/cli"
 )
@@ -33,6 +34,7 @@ func init() {
 		*debug.NewCommand(),
 		*info.NewCommand(),
 		*test.NewCommand(),
+		*wallet.NewCommand(),
 	}
 	sort.Sort(cli.CommandsByName(app.Commands))
 	sort.Sort(cli.FlagsByName(app.Flags))
