@@ -11,6 +11,7 @@ import (
 	"dad-go/crypto"
 	"dad-go/net"
 	"dad-go/net/httpjsonrpc"
+	"dad-go/net/protocol"
 	"fmt"
 	"os"
 	"runtime"
@@ -19,17 +20,22 @@ import (
 )
 
 const (
-	// The number of the CPU cores for parallel optimization,TODO set from config file
-	NCPU                   = 4
 	DefaultBookKeeperCount = 4
+	DefaultMultiCoreNum  = 4
 )
 
-var Version string
-
 func init() {
-	runtime.GOMAXPROCS(NCPU)
 	var path string = "./Log/"
 	log.CreatePrintLog(path)
+
+	var coreNum int
+	if (config.Parameters.MultiCoreNum > DefaultMultiCoreNum) {
+		coreNum = int(config.Parameters.MultiCoreNum)
+	} else {
+		coreNum = DefaultMultiCoreNum
+	}
+	log.Info("The Core number is ", coreNum)
+	runtime.GOMAXPROCS(coreNum)
 }
 
 func fileExisted(filename string) bool {
@@ -59,7 +65,7 @@ func InitBlockChain() ledger.Blockchain {
 }
 
 func main() {
-	fmt.Printf("Node version: %s\n", Version)
+	fmt.Printf("Node version: %s\n", config.Version)
 	fmt.Println("//**************************************************************************")
 	fmt.Println("//*** 0. Client open                                                     ***")
 	fmt.Println("//**************************************************************************")
@@ -73,13 +79,13 @@ func main() {
 	fmt.Println("//*** 1. Generate [Account]                                              ***")
 	fmt.Println("//**************************************************************************")
 
-	localclient := OpenClientAndGetAccount()
-	if localclient == nil {
+	localClient, nodeType := OpenClientAndGetAccount()
+	if localClient == nil {
 		fmt.Println("Can't get local client.")
 		os.Exit(1)
 	}
 
-	issuer, err := localclient.GetDefaultAccount()
+	issuer, err := localClient.GetDefaultAccount()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -101,23 +107,24 @@ func main() {
 	ledger.DefaultLedger.Blockchain = &sampleBlockchain
 
 	time.Sleep(2 * time.Second)
-	neter, noder := net.StartProtocol(issuer.PublicKey)
+	neter, noder := net.StartProtocol(issuer.PublicKey, nodeType)
 	httpjsonrpc.RegistRpcNode(noder)
 	time.Sleep(20 * time.Second)
-
 	noder.LocalNode().SyncNodeHeight()
-
-	fmt.Println("//**************************************************************************")
-	fmt.Println("//*** 5. Start DBFT Services                                             ***")
-	fmt.Println("//**************************************************************************")
-	dbftServices := dbft.NewDbftService(localclient, "logdbft", neter)
-	httpjsonrpc.RegistDbftService(dbftServices)
-	go dbftServices.Start()
-	time.Sleep(5 * time.Second)
-	fmt.Println("DBFT Services start completed.")
-	fmt.Println("//**************************************************************************")
-	fmt.Println("//*** Init Complete                                                      ***")
-	fmt.Println("//**************************************************************************")
+	noder.LocalNode().WaitForFourPeersStart()
+	if protocol.IsNodeTypeVerify(nodeType) {
+		fmt.Println("//**************************************************************************")
+		fmt.Println("//*** 5. Start DBFT Services                                             ***")
+		fmt.Println("//**************************************************************************")
+		dbftServices := dbft.NewDbftService(localClient, "logdbft", neter)
+		httpjsonrpc.RegistDbftService(dbftServices)
+		go dbftServices.Start()
+		time.Sleep(5 * time.Second)
+		fmt.Println("DBFT Services start completed.")
+		fmt.Println("//**************************************************************************")
+		fmt.Println("//*** Init Complete                                                      ***")
+		fmt.Println("//**************************************************************************")
+	}
 	go httpjsonrpc.StartRPCServer()
 	go httpjsonrpc.StartLocalServer()
 
@@ -139,12 +146,23 @@ func clientIsDefaultBookKeeper(clientName string) bool {
 	return false
 }
 
-func OpenClientAndGetAccount() Client {
+func OpenClientAndGetAccount() (clt Client, nodeType int) {
+	if "service" == config.Parameters.NodeType {
+		var sc Client
+		walletFile := "wallet.txt"
+		if fileExisted(walletFile) {
+			sc = OpenClient(walletFile, []byte("\x12\x34\x56"))
+		} else {
+			sc = CreateClient(walletFile, []byte("\x12\x34\x56"))
+		}
+		return sc, protocol.GetServiceFlag()
+	}
+
 	clientName := config.Parameters.BookKeeperName
 	fmt.Printf("The BookKeeper name is %s\n", clientName)
 	if clientName == "" {
 		log.Error("BookKeeper name not be set at config.json")
-		return nil
+		return nil, protocol.GetVerifyFlag()
 	}
 	isDefaultBookKeeper := clientIsDefaultBookKeeper(clientName)
 	var c []Client
@@ -165,7 +183,7 @@ func OpenClientAndGetAccount() Client {
 	var n uint32
 	fmt.Sscanf(clientName, "c%d", &n)
 	if isDefaultBookKeeper == true {
-		return c[n-1]
+		return c[n-1], protocol.GetVerifyFlag()
 	}
 	if isDefaultBookKeeper == false {
 		w := fmt.Sprintf("wallet%d.txt", n)
@@ -175,7 +193,7 @@ func OpenClientAndGetAccount() Client {
 			c[DefaultBookKeeperCount] = CreateClient(w, []byte("\x12\x34\x56"))
 		}
 	}
-	return c[DefaultBookKeeperCount]
+	return c[DefaultBookKeeperCount], protocol.GetVerifyFlag()
 }
 
 func getBookKeeper(n uint32) *Account {
