@@ -17,6 +17,7 @@ import (
 	"dad-go/crypto"
 
 	"github.com/urfave/cli"
+	"dad-go/common/config"
 )
 
 var Version string
@@ -24,7 +25,7 @@ var Version string
 func init() {
 	var path string = "./Log/"
 	log.CreatePrintLog(path)
-	crypto.SetAlg(crypto.P256R1)
+	crypto.SetAlg(config.Parameters.EncryptAlg)
 	//seed transaction nonce
 	rand.Seed(time.Now().UnixNano())
 
