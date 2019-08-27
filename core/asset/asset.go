@@ -19,13 +19,13 @@ const (
 
 type AssetRecordType byte
 
-//onchain dad-go is planed to support UTXO and Balance
+//DAD Chain is planed to support UTXO and Balance
 const (
 	UTXO    AssetRecordType = 0x00
 	Balance AssetRecordType = 0x01
 )
 
-//define the asset stucture in onchain dad-go
+//define the asset stucture in DAD Chain
 //registered asset will be assigned to contract address
 type Asset struct {
 	Name       string
@@ -83,13 +83,3 @@ func (a *Asset) Deserialize(r io.Reader) error {
 	}
 	return nil
 }
-
-// as the import cycle move to ledger.go
-/*func GetAsset(assetId common.Uint256) *Asset {
-	fmt.Println("///asset/GetAsset")
-	asset, err:= ledger.DefaultLedger.Store.GetAsset(assetId)
-	if err != nil {
-		return nil,NewDetailErr(err, ErrNoCode, "[Asset], GetAsset failed.")
-	}
-	return asset, nil
-}*/
