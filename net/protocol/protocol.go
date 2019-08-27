@@ -83,6 +83,7 @@ type Noder interface {
 	DumpInfo()
 	UpdateInfo(t time.Time, version uint32, services uint64,
 		port uint16, nonce uint64, relay uint8, height uint64)
+	ConnectSeeds()
 	Connect(nodeAddr string) error
 	Tx(buf []byte)
 	GetTime() int64
@@ -113,6 +114,7 @@ type Noder interface {
 	GetNbrNodeCnt() uint32
 	StoreFlightHeight(height uint32)
 	GetFlightHeightCnt() int
+	RemoveFlightHeightLessThan(height uint32)
 	RemoveFlightHeight(height uint32)
 	GetLastRXTime() time.Time
 	SetHeight(height uint64)

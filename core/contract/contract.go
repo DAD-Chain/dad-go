@@ -1,17 +1,18 @@
 package contract
 
 import (
+	"bytes"
+	"errors"
+	"io"
+
 	. "dad-go/common"
 	"dad-go/common/serialization"
 	. "dad-go/errors"
 	"dad-go/vm"
-	"bytes"
-	"errors"
-	"io"
 )
 
 //Contract address is the hash of contract program .
-//which be used to control asset or indicate the smart contract address �?
+//which be used to control asset or indicate the smart contract address
 
 //Contract include the program codes with parameters which can be executed on specific evnrioment
 type Contract struct {

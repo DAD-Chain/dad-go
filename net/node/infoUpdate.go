@@ -1,6 +1,7 @@
 package node
 
 import (
+	"dad-go/common/config"
 	"dad-go/common/log"
 	"dad-go/core/ledger"
 	. "dad-go/net/message"
@@ -40,6 +41,7 @@ func (node *node) SyncBlk() {
 	var i uint32
 	noders := node.local.GetNeighborNoder()
 	for _, n := range noders {
+		n.RemoveFlightHeightLessThan(currentBlkHeight)
 		count := MAXREQBLKONCE - uint32(n.GetFlightHeightCnt())
 		dValue = int32(headerHeight - currentBlkHeight - reqCnt)
 		for i = 1; i <= count && dValue >= 0; i++ {
@@ -88,6 +90,17 @@ func (node node) ReqNeighborList() {
 	go node.Tx(buf)
 }
 
+func (node node) ConnectSeeds() {
+	if node.nbrNodes.GetConnectionCnt() == 0 {
+		seedNodes := config.Parameters.SeedList
+		for _, nodeAddr := range seedNodes {
+			go node.Connect(nodeAddr)
+		}
+	}
+}
+
+// FIXME part of node info update function could be a node method itself intead of
+// a node map method
 // Fixme the Nodes should be a parameter
 func (node node) updateNodeInfo() {
 	ticker := time.NewTicker(time.Second * PERIODUPDATETIME)
@@ -95,7 +108,7 @@ func (node node) updateNodeInfo() {
 	for {
 		select {
 		case <-ticker.C:
-			//GetHeaders process haven't finished yet. So comment it now.
+			node.ConnectSeeds()
 			node.SendPingToNbr()
 			node.GetBlkHdrs()
 			node.SyncBlk()
