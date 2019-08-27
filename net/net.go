@@ -2,7 +2,6 @@ package net
 
 import (
 	. "dad-go/common"
-	"dad-go/common/config"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/crypto"
@@ -23,11 +22,8 @@ type Neter interface {
 }
 
 func StartProtocol(pubKey *crypto.PubKey, nodeType int) (Neter, protocol.Noder) {
-	seedNodes := config.Parameters.SeedList
-
 	net := node.InitNode(pubKey, nodeType)
-	for _, nodeAddr := range seedNodes {
-		go net.Connect(nodeAddr)
-	}
+	net.ConnectSeeds()
+
 	return net, net
 }
