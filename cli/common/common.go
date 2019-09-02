@@ -12,11 +12,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-const (
-	DefaultWalletName   = "wallet.db3"
-	DefaultWalletPasswd = "dad-gopw"
-)
-
 var (
 	Ip   string
 	Port string

@@ -1,7 +1,7 @@
 package httpjsonrpc
 
 import (
-	"dad-go/client"
+	"dad-go/account"
 	. "dad-go/common"
 	"dad-go/common/config"
 	"dad-go/common/log"
@@ -442,7 +442,7 @@ func sendSampleTransaction(params []interface{}) map[string]interface{} {
 		return dad-goRpcInvalidParameter
 	}
 
-	issuer, err := client.NewAccount()
+	issuer, err := account.NewAccount()
 	if err != nil {
 		return dad-goRpc("Failed to create account")
 	}
