@@ -1,7 +1,7 @@
 package httpjsonrpc
 
 import (
-	"dad-go/client"
+	. "dad-go/account"
 	. "dad-go/common"
 	"dad-go/common/log"
 	. "dad-go/core/asset"
@@ -15,7 +15,7 @@ const (
 	ASSETPREFIX = "dad-go"
 )
 
-func NewRegTx(rand string, index int, admin, issuer *client.Account) *transaction.Transaction {
+func NewRegTx(rand string, index int, admin, issuer *Account) *transaction.Transaction {
 	name := ASSETPREFIX + "-" + strconv.Itoa(index) + "-" + rand
 	asset := &Asset{name, byte(0x00), AssetType(Share), UTXO}
 	amount := Fixed64(1000)
@@ -24,7 +24,7 @@ func NewRegTx(rand string, index int, admin, issuer *client.Account) *transactio
 	return tx
 }
 
-func SignTx(admin *client.Account, tx *transaction.Transaction) {
+func SignTx(admin *Account, tx *transaction.Transaction) {
 	signdate, err := signature.SignBySigner(tx, admin)
 	if err != nil {
 		log.Error(err, "signdate SignBySigner failed")

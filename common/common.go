@@ -7,11 +7,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
+	"os"
 	"math/rand"
-
 	"dad-go/common/log"
 	. "dad-go/errors"
-
 	"github.com/golang/crypto/ripemd160"
 )
 
@@ -123,3 +122,9 @@ func SliceRemove(slice []uint32, h uint32) []uint32 {
 	}
 	return slice
 }
+
+func FileExisted(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil || os.IsExist(err)
+}
+
