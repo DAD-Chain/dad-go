@@ -9,6 +9,7 @@ import (
 	"dad-go/crypto"
 	. "dad-go/net/message"
 	. "dad-go/net/protocol"
+	"encoding/binary"
 	"bytes"
 	"errors"
 	"fmt"
@@ -48,7 +49,7 @@ type node struct {
 	lastContact   time.Time
 }
 
-func (node node) DumpInfo() {
+func (node *node) DumpInfo() {
 	log.Info("Node info:")
 	log.Info("\t state = ", node.state)
 	log.Info(fmt.Sprintf("\t id = 0x%x", node.id))
@@ -89,16 +90,27 @@ func NewNode() *node {
 	return &n
 }
 
-func InitNode(pubKey *crypto.PubKey, nodeType int) Noder {
+func InitNode(pubKey *crypto.PubKey) Noder {
 	n := NewNode()
-
 	n.version = PROTOCOLVERSION
-	n.services = uint64(nodeType)
+	if (Parameters.NodeType == SERVICENODENAME) {
+		n.services = uint64(SERVICENODE)
+	} else if (Parameters.NodeType == VERIFYNODENAME) {
+		n.services = uint64(VERIFYNODE)
+	}
 	n.link.port = uint16(Parameters.NodePort)
 	n.relay = true
+	// TODO is it neccessary to init the rand seed here?
 	rand.Seed(time.Now().UTC().UnixNano())
-	//id is the first 8 bytes of public key
-	n.id = ReadNodeID()
+
+	key, err := pubKey.EncodePoint(true)
+	if err != nil {
+		log.Error(err)
+	}
+	err = binary.Read(bytes.NewBuffer(key[:8]), binary.LittleEndian, &(n.id))
+	if err != nil {
+		log.Error(err)
+	}
 	log.Info(fmt.Sprintf("Init node ID to 0x%x", n.id))
 	n.nbrNodes.init()
 	n.local = n
@@ -123,31 +135,31 @@ func (node *node) backend() {
 	}
 }
 
-func (node node) GetID() uint64 {
+func (node *node) GetID() uint64 {
 	return node.id
 }
 
-func (node node) GetState() uint32 {
+func (node *node) GetState() uint32 {
 	return atomic.LoadUint32(&(node.state))
 }
 
-func (node node) getConn() net.Conn {
+func (node *node) getConn() net.Conn {
 	return node.conn
 }
 
-func (node node) GetPort() uint16 {
+func (node *node) GetPort() uint16 {
 	return node.port
 }
 
-func (node node) GetRelay() bool {
+func (node *node) GetRelay() bool {
 	return node.relay
 }
 
-func (node node) Version() uint32 {
+func (node *node) Version() uint32 {
 	return node.version
 }
 
-func (node node) Services() uint64 {
+func (node *node) Services() uint64 {
 	return node.services
 }
 
@@ -155,11 +167,11 @@ func (node *node) IncRxTxnCnt() {
 	node.rxTxnCnt++
 }
 
-func (node node) GetTxnCnt() uint64 {
+func (node *node) GetTxnCnt() uint64 {
 	return node.txnCnt
 }
 
-func (node node) GetRxTxnCnt() uint64 {
+func (node *node) GetRxTxnCnt() uint64 {
 	return node.rxTxnCnt
 }
 
@@ -171,11 +183,12 @@ func (node *node) CompareAndSetState(old, new uint32) bool {
 	return atomic.CompareAndSwapUint32(&(node.state), old, new)
 }
 
+
 func (node *node) LocalNode() Noder {
 	return node.local
 }
 
-func (node node) GetHeight() uint64 {
+func (node *node) GetHeight() uint64 {
 	return node.height
 }
 
@@ -194,7 +207,7 @@ func (node *node) Xmit(message interface{}) error {
 	var err error
 	switch message.(type) {
 	case *transaction.Transaction:
-		log.Info("****TX transaction message*****\n")
+		log.Debug("TX transaction message")
 		txn := message.(*transaction.Transaction)
 		buffer, err = NewTxn(txn)
 		if err != nil {
@@ -203,7 +216,7 @@ func (node *node) Xmit(message interface{}) error {
 		}
 		node.txnCnt++
 	case *ledger.Block:
-		log.Info("****TX block message****\n")
+		log.Debug("TX block message")
 		block := message.(*ledger.Block)
 		buffer, err = NewBlock(block)
 		if err != nil {
@@ -211,7 +224,7 @@ func (node *node) Xmit(message interface{}) error {
 			return err
 		}
 	case *ConsensusPayload:
-		log.Info("*****TX consensus message****\n")
+		log.Debug("TX consensus message")
 		consensusPayload := message.(*ConsensusPayload)
 		buffer, err = NewConsensus(consensusPayload)
 		if err != nil {
@@ -219,7 +232,7 @@ func (node *node) Xmit(message interface{}) error {
 			return err
 		}
 	case Uint256:
-		log.Info("*****TX block hash message****\n")
+		log.Debug("TX block hash message")
 		hash := message.(Uint256)
 		buf := bytes.NewBuffer([]byte{})
 		hash.Serialize(buf)
@@ -240,11 +253,11 @@ func (node *node) Xmit(message interface{}) error {
 	return nil
 }
 
-func (node node) GetAddr() string {
+func (node *node) GetAddr() string {
 	return node.addr
 }
 
-func (node node) GetAddr16() ([16]byte, error) {
+func (node *node) GetAddr16() ([16]byte, error) {
 	var result [16]byte
 	ip := net.ParseIP(node.addr).To16()
 	if ip == nil {
@@ -256,23 +269,23 @@ func (node node) GetAddr16() ([16]byte, error) {
 	return result, nil
 }
 
-func (node node) GetTime() int64 {
+func (node *node) GetTime() int64 {
 	t := time.Now()
 	return t.UnixNano()
 }
 
-func (node node) GetBookKeeperAddr() *crypto.PubKey {
+func (node *node) GetBookKeeperAddr() *crypto.PubKey {
 	return node.publicKey
 }
 
-func (node node) GetBookKeepersAddrs() ([]*crypto.PubKey, uint64) {
+func (node *node) GetBookKeepersAddrs() ([]*crypto.PubKey, uint64) {
 	pks := make([]*crypto.PubKey, 1)
 	pks[0] = node.publicKey
 	var i uint64
 	i = 1
 	//TODO read lock
 	for _, n := range node.nbrNodes.List {
-		if n.GetState() == ESTABLISH && n.services != SERVICE {
+		if n.GetState() == ESTABLISH && n.services != SERVICENODE {
 			pktmp := n.GetBookKeeperAddr()
 			pks = append(pks, pktmp)
 			i++
@@ -285,7 +298,7 @@ func (node *node) SetBookKeeperAddr(pk *crypto.PubKey) {
 	node.publicKey = pk
 }
 
-func (node node) SyncNodeHeight() {
+func (node *node) SyncNodeHeight() {
 	for {
 		heights, _ := node.GetNeighborHeights()
 		if CompareHeight(uint64(ledger.DefaultLedger.Blockchain.BlockHeight), heights) {
@@ -295,7 +308,7 @@ func (node node) SyncNodeHeight() {
 	}
 }
 
-func (node node) WaitForFourPeersStart() {
+func (node *node) WaitForFourPeersStart() {
 	for {
 		log.Debug("WaitForFourPeersStart...")
 		cnt := node.local.GetNbrNodeCnt()
@@ -306,7 +319,7 @@ func (node node) WaitForFourPeersStart() {
 	}
 }
 
-func (node node) IsSyncHeaders() bool {
+func (node *node) IsSyncHeaders() bool {
 	if (node.syncFlag & 0x01) == 0x01 {
 		return true
 	} else {
@@ -322,7 +335,7 @@ func (node *node) SetSyncHeaders(b bool) {
 	}
 }
 
-func (node node) IsSyncFailed() bool {
+func (node *node) IsSyncFailed() bool {
 	if (node.syncFlag & 0x02) == 0x02 {
 		return true
 	} else {
@@ -347,7 +360,7 @@ func (node *node) StartRetryTimer() {
 	}()
 }
 
-func (node node) StopRetryTimer() {
+func (node *node) StopRetryTimer() {
 	node.TxNotifyChan <- 1
 }
 
@@ -355,7 +368,7 @@ func (node *node) StoreFlightHeight(height uint32) {
 	node.flightHeights = append(node.flightHeights, height)
 }
 
-func (node node) GetFlightHeightCnt() int {
+func (node *node) GetFlightHeightCnt() int {
 	return len(node.flightHeights)
 }
 
@@ -386,6 +399,6 @@ func (node *node) RemoveFlightHeight(height uint32) {
 	}
 }
 
-func (node node) GetLastRXTime() time.Time {
+func (node *node) GetLastRXTime() time.Time {
 	return node.time
 }

@@ -1,7 +1,7 @@
 package dbft
 
 import (
-	cl "dad-go/client"
+	cl "dad-go/account"
 	. "dad-go/common"
 	"dad-go/common/config"
 	"dad-go/common/log"

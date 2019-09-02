@@ -1,8 +1,8 @@
 package node
 
 import (
-	"dad-go/common/log"
 	. "dad-go/common/config"
+	"dad-go/common/log"
 	. "dad-go/net/message"
 	. "dad-go/net/protocol"
 	"crypto/tls"
@@ -81,14 +81,14 @@ func (node *node) rx() error {
 			break
 		case io.EOF:
 			log.Error("Rx io.EOF ", err)
-			goto disconnect
+			goto DISCONNECT
 		default:
 			log.Error("Read connection error ", err)
-			goto disconnect
+			goto DISCONNECT
 		}
 	}
 
-disconnect:
+DISCONNECT:
 	err := conn.Close()
 	return err
 }
@@ -103,7 +103,7 @@ func printIPAddr() {
 	}
 }
 
-func (link link) CloseConn() {
+func (link *link) CloseConn() {
 	link.conn.Close()
 }
 
@@ -277,7 +277,7 @@ func TLSDial(nodeAddr string) (net.Conn, error) {
 	return conn, nil
 }
 
-func (node node) Tx(buf []byte) {
+func (node *node) Tx(buf []byte) {
 	log.Debug()
 	str := hex.EncodeToString(buf)
 	log.Debug(fmt.Sprintf("TX buf length: %d\n%s", len(buf), str))
