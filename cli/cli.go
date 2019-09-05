@@ -11,13 +11,14 @@ import (
 	"dad-go/cli/consensus"
 	"dad-go/cli/debug"
 	"dad-go/cli/info"
+	"dad-go/cli/privpayload"
 	"dad-go/cli/test"
 	"dad-go/cli/wallet"
 	"dad-go/common/log"
 	"dad-go/crypto"
 
-	"github.com/urfave/cli"
 	"dad-go/common/config"
+	"github.com/urfave/cli"
 )
 
 var Version string
@@ -50,6 +51,7 @@ func init() {
 		*test.NewCommand(),
 		*wallet.NewCommand(),
 		*asset.NewCommand(),
+		*privpayload.NewCommand(),
 	}
 	sort.Sort(cli.CommandsByName(app.Commands))
 	sort.Sort(cli.FlagsByName(app.Flags))
