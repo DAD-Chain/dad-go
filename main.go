@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dad-go/common/config"
 	"dad-go/account"
+	"dad-go/common/config"
 	"dad-go/common/log"
 	"dad-go/consensus/dbft"
 	"dad-go/core/ledger"
@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	DefaultMultiCoreNum    = 4
+	DefaultMultiCoreNum = 4
 )
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 	log.CreatePrintLog(path)
 
 	var coreNum int
-	if (config.Parameters.MultiCoreNum > DefaultMultiCoreNum) {
+	if config.Parameters.MultiCoreNum > DefaultMultiCoreNum {
 		coreNum = int(config.Parameters.MultiCoreNum)
 	} else {
 		coreNum = DefaultMultiCoreNum
@@ -36,7 +36,7 @@ func init() {
 }
 
 func main() {
-	var  acct *account.Account
+	var acct *account.Account
 	var blockChain *ledger.Blockchain
 	var err error
 	var noder protocol.Noder
