@@ -491,14 +491,14 @@ func sendSampleTransaction(params []interface{}) map[string]interface{} {
 			return dad-goRpcInvalidParameter
 		}
 
-		walletFile := "wallet" + strconv.Itoa(ind) + ".txt"
-		c := client.OpenClient(walletFile, []byte("\x12\x34\x56"))
+		walletFile := "wallet" + strconv.Itoa(ind) + ".dat"
+		c := account.Open(walletFile, []byte(account.DefaultPin))
 		if c == nil {
-			return dad-goRpc("do not have wallet file" + walletFile)
+			return dad-goRpc("do not have wallet file:" + walletFile)
 		}
 
 		account, _ := c.GetDefaultAccount()
-		pubKey := account.PublicKey
+		pubKey := account.PubKey()
 
 		cert := make([]byte, 100)
 		rand.Read(cert)
