@@ -4,7 +4,7 @@ import (
 	. "dad-go/common"
 	. "dad-go/core/asset"
 	tx "dad-go/core/transaction"
-	"dad-go/crypto"
+	"dad-go/core/account"
 )
 
 // ILedgerStore provides func with store package.
@@ -26,14 +26,15 @@ type ILedgerStore interface {
 	SaveAsset(assetid Uint256, asset *Asset) error
 	GetAsset(hash Uint256) (*Asset, error)
 
+	GetAccount(programHash Uint160) (*account.AccountState, error)
+
 	GetCurrentBlockHash() Uint256
 	GetCurrentHeaderHash() Uint256
 	GetHeaderHeight() uint32
 	GetHeight() uint32
 	GetHeaderHashByHeight(height uint32) Uint256
 
-	GetBookKeeperList() ([]*crypto.PubKey, []*crypto.PubKey, error)
-	InitLedgerStoreWithGenesisBlock(genesisblock *Block, defaultBookKeeper []*crypto.PubKey) (uint32, error)
+	InitLedgerStoreWithGenesisBlock(genesisblock *Block) (uint32, error)
 
 	GetQuantityIssued(assetid Uint256) (Fixed64, error)
 
