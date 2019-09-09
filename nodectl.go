@@ -8,6 +8,7 @@ import (
 	"dad-go/cli/asset"
 	. "dad-go/cli/common"
 	"dad-go/cli/consensus"
+	"dad-go/cli/data"
 	"dad-go/cli/debug"
 	"dad-go/cli/info"
 	"dad-go/cli/privpayload"
@@ -42,6 +43,7 @@ func main() {
 		*wallet.NewCommand(),
 		*asset.NewCommand(),
 		*privpayload.NewCommand(),
+		*data.NewCommand(),
 	}
 	sort.Sort(cli.CommandsByName(app.Commands))
 	sort.Sort(cli.FlagsByName(app.Flags))
