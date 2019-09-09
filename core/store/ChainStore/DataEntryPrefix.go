@@ -20,11 +20,11 @@ const (
 	// ASSET
 	ST_Info           DataEntryPrefix = 0xc0
 	ST_QuantityIssued DataEntryPrefix = 0xc1
+	ST_ACCOUNT        DataEntryPrefix = 0xc2
 
 	//SYSTEM
 	SYS_CurrentBlock  DataEntryPrefix = 0x40
 	SYS_CurrentHeader DataEntryPrefix = 0x41
-	SYS_CurrentBookKeeper DataEntryPrefix = 0x42
 
 	//CONFIG
 	CFG_Version DataEntryPrefix = 0xf0
