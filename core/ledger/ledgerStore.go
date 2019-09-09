@@ -5,6 +5,7 @@ import (
 	. "dad-go/core/asset"
 	tx "dad-go/core/transaction"
 	"dad-go/core/account"
+	"dad-go/crypto"
 )
 
 // ILedgerStore provides func with store package.
@@ -34,7 +35,8 @@ type ILedgerStore interface {
 	GetHeight() uint32
 	GetHeaderHashByHeight(height uint32) Uint256
 
-	InitLedgerStoreWithGenesisBlock(genesisblock *Block) (uint32, error)
+	GetBookKeeperList() ([]*crypto.PubKey, []*crypto.PubKey, error)
+	InitLedgerStoreWithGenesisBlock(genesisblock *Block, defaultBookKeeper []*crypto.PubKey) (uint32, error)
 
 	GetQuantityIssued(assetid Uint256) (Fixed64, error)
 
