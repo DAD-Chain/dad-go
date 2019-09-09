@@ -24,7 +24,7 @@ import (
 	. "dad-go/errors"
 	"dad-go/net/protocol"
 
-	"github.com/howeyc/gopass"
+	"github.com/DAD-Chain/gopass"
 )
 
 const (
