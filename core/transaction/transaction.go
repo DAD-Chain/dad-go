@@ -22,13 +22,13 @@ type TransactionType byte
 
 const (
 	BookKeeping    TransactionType = 0x00
-	BookKeeper     TransactionType = 0x02
-	RegisterAsset  TransactionType = 0x40
 	IssueAsset     TransactionType = 0x01
-	TransferAsset  TransactionType = 0x10
-	Record         TransactionType = 0x11
-	DeployCode     TransactionType = 0xd0
+	BookKeeper     TransactionType = 0x02
 	PrivacyPayload TransactionType = 0x20
+	RegisterAsset  TransactionType = 0x40
+	TransferAsset  TransactionType = 0x80
+	Record         TransactionType = 0x81
+	DeployCode     TransactionType = 0xd0
 	DataFile       TransactionType = 0x12
 )
 
@@ -303,14 +303,14 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 				return nil, NewDetailErr(err, ErrNoCode, fmt.Sprintf("[Transaction], GetTransaction failed With AssetID:=%x", k))
 			}
 			if tx.TxType != RegisterAsset {
-				return nil, NewDetailErr(err, ErrNoCode, fmt.Sprintf("[Transaction], Transaction Type ileage With AssetID:=%x", k))
+				return nil, NewDetailErr(errors.New("[Transaction] error"), ErrNoCode, fmt.Sprintf("[Transaction], Transaction Type ileage With AssetID:=%x", k))
 			}
 
 			switch v1 := tx.Payload.(type) {
 			case *payload.RegisterAsset:
 				hashs = append(hashs, v1.Controller)
 			default:
-				return nil, NewDetailErr(err, ErrNoCode, fmt.Sprintf("[Transaction], payload is illegal", k))
+				return nil, NewDetailErr(errors.New("[Transaction] error"), ErrNoCode, fmt.Sprintf("[Transaction], payload is illegal", k))
 			}
 		}
 	case DataFile:

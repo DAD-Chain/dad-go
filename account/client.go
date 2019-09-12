@@ -16,6 +16,7 @@ import (
 	. "dad-go/common"
 	"dad-go/common/config"
 	"dad-go/common/log"
+	"dad-go/common/password"
 	"dad-go/core/contract"
 	ct "dad-go/core/contract"
 	"dad-go/core/ledger"
@@ -23,16 +24,12 @@ import (
 	"dad-go/crypto"
 	. "dad-go/errors"
 	"dad-go/net/protocol"
-
-	"github.com/DAD-Chain/gopass"
 )
 
 const (
 	DefaultBookKeeperCount = 4
 	WalletFileName         = "wallet.dat"
 )
-
-var DefaultPin = "passwordtest"
 
 type Client interface {
 	Sign(context *ct.ContractContext) bool
@@ -508,8 +505,7 @@ func GetClient() Client {
 		log.Error(fmt.Sprintf("No %s detected, please create a wallet by using command line.", WalletFileName))
 		os.Exit(1)
 	}
-	fmt.Println("Password:")
-	passwd, err := gopass.GetPasswd()
+	passwd, err := password.GetAccountPassword()
 	if err != nil {
 		log.Error("Get password error.")
 		os.Exit(1)

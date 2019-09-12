@@ -474,8 +474,13 @@ func sendSampleTransaction(params []interface{}) map[string]interface{} {
 		}
 		return dad-goRpc(fmt.Sprintf("%d transaction(s) was sent", num))
 	case "bookkeeper":
-		// params:[type, ind, action]
+		//TODO Since each node only keep a wallet.dat for itself, the necessary public key
+		// and certification should be re-constructed. This bookkeeper test is invalid now
+		// and will be moved to nodectl as a subcommand then user could pass applicable
+		// public key and cert.
+		return dad-goRpcUnsupported
 
+		// params:[type, ind, action]
 		if len(params) < 3 {
 			return dad-goRpcNil
 		}
@@ -500,7 +505,7 @@ func sendSampleTransaction(params []interface{}) map[string]interface{} {
 		}
 
 		walletFile := "wallet" + strconv.Itoa(ind) + ".dat"
-		c := account.Open(walletFile, []byte(account.DefaultPin))
+		c := account.Open(walletFile, []byte("no default password"))
 		if c == nil {
 			return dad-goRpc("do not have wallet file:" + walletFile)
 		}
