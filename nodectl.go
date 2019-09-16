@@ -6,6 +6,7 @@ import (
 
 	_ "dad-go/cli"
 	"dad-go/cli/asset"
+	"dad-go/cli/bookkeeper"
 	. "dad-go/cli/common"
 	"dad-go/cli/consensus"
 	"dad-go/cli/data"
@@ -44,6 +45,7 @@ func main() {
 		*asset.NewCommand(),
 		*privpayload.NewCommand(),
 		*data.NewCommand(),
+		*bookkeeper.NewCommand(),
 	}
 	sort.Sort(cli.CommandsByName(app.Commands))
 	sort.Sort(cli.FlagsByName(app.Flags))
