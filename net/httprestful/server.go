@@ -2,15 +2,17 @@ package httprestful
 
 import (
 	. "dad-go/common/config"
+	"dad-go/common/log"
 	"dad-go/core/ledger"
 	"dad-go/events"
 	"dad-go/net/httprestful/common"
+	Err "dad-go/net/httprestful/error"
 	. "dad-go/net/httprestful/restful"
 	. "dad-go/net/protocol"
 	"strconv"
 )
 
-const OAUTH_SSUCCESS_CODE = "r0000"
+const OAUTH_SUCCESS_CODE = "r0000"
 
 func StartServer(n Noder) {
 	common.SetNode(n)
@@ -39,19 +41,27 @@ func SendBlock2NoticeServer(v interface{}) {
 	}()
 }
 
-func checkAccessToken(auth_type, access_token string) bool {
+func checkAccessToken(auth_type, access_token string) (cakey string, errCode int64, result interface{}) {
+
 	if len(Parameters.OauthServerAddr) == 0 {
-		return true
+		return "", Err.SUCCESS, ""
 	}
 	req := make(map[string]interface{})
 	req["token"] = access_token
 	req["auth_type"] = auth_type
-	repMsg, err := common.PostRequest(req, Parameters.OauthServerAddr)
+	repMsg, err := common.OauthRequest("GET", req, Parameters.OauthServerAddr)
 	if err != nil {
-		return false
+		log.Error("Oauth timeout:", err)
+		return "", Err.OAUTH_TIMEOUT, repMsg
 	}
-	if repMsg["code"] == OAUTH_SSUCCESS_CODE {
-		return true
+	if repMsg["code"] == OAUTH_SUCCESS_CODE {
+		msg, ok := repMsg["msg"].(map[string]interface{})
+		if !ok {
+			return "", Err.INVALID_TOKEN, repMsg
+		}
+		if CAkey, ok := msg["cakey"].(string); ok {
+			return CAkey, Err.SUCCESS, repMsg
+		}
 	}
-	return false
+	return "", Err.INVALID_TOKEN, repMsg
 }
