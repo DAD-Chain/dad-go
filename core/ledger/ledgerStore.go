@@ -2,9 +2,9 @@ package ledger
 
 import (
 	. "dad-go/common"
+	"dad-go/core/account"
 	. "dad-go/core/asset"
 	tx "dad-go/core/transaction"
-	"dad-go/core/account"
 	"dad-go/crypto"
 )
 
@@ -42,4 +42,5 @@ type ILedgerStore interface {
 
 	GetUnspent(txid Uint256, index uint16) (*tx.TxOutput, error)
 	ContainsUnspent(txid Uint256, index uint16) (bool, error)
+	IsTxHashDuplicate(txhash Uint256) bool
 }
