@@ -12,6 +12,7 @@ import (
 	"dad-go/net"
 	"dad-go/net/httpjsonrpc"
 	"dad-go/net/httprestful"
+	"dad-go/net/httpwebsocket"
 	"dad-go/net/protocol"
 	"os"
 	"runtime"
@@ -88,7 +89,8 @@ func main() {
 	log.Info("--Start the RPC interface")
 	go httpjsonrpc.StartRPCServer()
 	go httpjsonrpc.StartLocalServer()
-	httprestful.StartServer(noder)
+	go httprestful.StartServer(noder)
+	go httpwebsocket.StartServer(noder)
 
 	for {
 		time.Sleep(dbft.GenBlockTime)
