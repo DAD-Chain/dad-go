@@ -2,7 +2,7 @@
 DAD is a new generation of decentralized advertising public chain, committed to creating infrastructure to connect global advertising. Through blockchain technology, we could make advertising data more open and transparent; Through lightning network, small high-frequency settlement in the advertising field becomes possible. Through token economic incentive, each role will be more active to maintain the healthy development of DAD ecology.
 
 # Contact us
-For further reference, DAD’s whitepaper can be accessed via this link: https://dad.one/files/dad-whitepaper.pdf, please feel free to read it and ask any questions throughout the process; in the meantime, more information can be found at our website and our Medium account.
+For further reference, DAD’s whitepaper can be accessed via this link: https://dad.one/file/DAD_whitepaper.pdf, please feel free to read it and ask any questions throughout the process; in the meantime, more information can be found at our website and our Medium account.
 
 a. DAD Website: https://www.dad.one <br/>
 b. DAD Medium: https://medium.com/@dad_chain<br/>
