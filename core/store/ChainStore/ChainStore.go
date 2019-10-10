@@ -50,23 +50,31 @@ type ChainStore struct {
 func init() {
 }
 
-func NewStore() IStore {
-	ldbs, _ := NewLevelDBStore("Chain")
+func NewStore(file string) (IStore, error) {
+	ldbs, err := NewLevelDBStore(file)
 
-	return ldbs
+	return ldbs, err
 }
 
-func NewLedgerStore() ILedgerStore {
+func NewLedgerStore() (ILedgerStore, error) {
 	// TODO: read config file decide which db to use.
-	cs, _ := NewChainStore("Chain")
+	cs, err := NewChainStore("Chain")
+	if err != nil {
+		return nil, err
+	}
 
-	return cs
+	return cs, nil
 }
 
 func NewChainStore(file string) (*ChainStore, error) {
 
+	st, err := NewStore(file)
+	if err != nil {
+		return nil, err
+	}
+
 	return &ChainStore{
-		st:                 NewStore(),
+		st:                 st,
 		headerIndex:        map[uint32]Uint256{},
 		blockCache:         map[Uint256]*Block{},
 		headerCache:        map[Uint256]*Header{},
@@ -1277,6 +1285,40 @@ func (bd *ChainStore) GetAccount(programHash Uint160) (*account.AccountState, er
 	accountState.Deserialize(bytes.NewBuffer(state))
 
 	return accountState, nil
+}
+
+func (bd *ChainStore) IsBlockInStore(hash Uint256) bool {
+
+	var b *Block = new(Block)
+
+	b.Blockdata = new(Blockdata)
+	b.Blockdata.Program = new(program.Program)
+
+	prefix := []byte{byte(DATA_Header)}
+	blockData, err_get := bd.st.Get(append(prefix, hash.ToArray()...))
+	if err_get != nil {
+		return false
+	}
+
+	r := bytes.NewReader(blockData)
+
+	// first 8 bytes is sys_fee
+	_, err := serialization.ReadUint64(r)
+	if err != nil {
+		return false
+	}
+
+	// Deserialize block data
+	err = b.FromTrimmedData(r)
+	if err != nil {
+		return false
+	}
+
+	if b.Blockdata.Height > bd.currentBlockHeight {
+		return false
+	}
+
+	return true
 }
 
 func (bd *ChainStore) GetUnspentFromProgramHash(programHash Uint160, assetid Uint256) ([]*tx.UTXOUnspent, error) {

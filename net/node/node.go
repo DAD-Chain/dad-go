@@ -54,6 +54,12 @@ type node struct {
 	nodeDisconnectSubscriber events.Subscriber
 	tryTimes                 uint32
 	ConnectingNodes
+	RetryConnAddrs
+}
+
+type RetryConnAddrs struct {
+	sync.RWMutex
+	RetryAddrs map[string]int
 }
 
 type ConnectingNodes struct {
@@ -92,31 +98,28 @@ func (node *node) IsAddrInNbrList(addr string) bool {
 	return false
 }
 
-func (node *node) IsAddrInConnectingList(addr string) bool {
-	node.ConnectingNodes.RLock()
-	defer node.ConnectingNodes.RUnlock()
-	for _, a := range node.ConnectingAddrs {
-		if strings.Compare(a, addr) == 0 {
-			return true
-		}
-	}
-	return false
-}
-
-func (node *node) SetAddrInConnectingList(addr string) {
+func (node *node) SetAddrInConnectingList(addr string) (added bool) {
 	node.ConnectingNodes.Lock()
 	defer node.ConnectingNodes.Unlock()
+	for _, a := range node.ConnectingAddrs {
+		if strings.Compare(a, addr) == 0 {
+			return false
+		}
+	}
 	node.ConnectingAddrs = append(node.ConnectingAddrs, addr)
+	return true
 }
 
 func (node *node) RemoveAddrInConnectingList(addr string) {
 	node.ConnectingNodes.Lock()
 	defer node.ConnectingNodes.Unlock()
+	addrs := []string{}
 	for i, a := range node.ConnectingAddrs {
 		if strings.Compare(a, addr) == 0 {
-			node.ConnectingAddrs = append(node.ConnectingAddrs[:i], node.ConnectingAddrs[i+1:]...)
+			addrs = append(node.ConnectingAddrs[:i], node.ConnectingAddrs[i+1:]...)
 		}
 	}
+	node.ConnectingAddrs = addrs
 }
 
 func (node *node) UpdateInfo(t time.Time, version uint32, services uint64,
@@ -174,6 +177,7 @@ func InitNode(pubKey *crypto.PubKey) Noder {
 	n.eventQueue.init()
 	n.nodeDisconnectSubscriber = n.eventQueue.GetEvent("disconnect").Subscribe(events.EventNodeDisconnect, n.NodeDisconnect)
 	go n.initConnection()
+	go n.updateConnection()
 	go n.updateNodeInfo()
 
 	return n
@@ -466,4 +470,31 @@ func (node *node) RemoveFlightHeight(height uint32) {
 
 func (node *node) GetLastRXTime() time.Time {
 	return node.time
+}
+
+func (node *node) AddInRetryList(addr string) {
+	node.RetryConnAddrs.Lock()
+	defer node.RetryConnAddrs.Unlock()
+	if node.RetryAddrs == nil {
+		node.RetryAddrs = make(map[string]int)
+	}
+	if _, ok := node.RetryAddrs[addr]; ok {
+		delete(node.RetryAddrs, addr)
+		log.Debug("remove exsit addr from retry list", addr)
+	}
+	//alway set retry to 0
+	node.RetryAddrs[addr] = 0
+	log.Debug("add addr to retry list", addr)
+}
+
+func (node *node) RemoveFromRetryList(addr string) {
+	node.RetryConnAddrs.Lock()
+	defer node.RetryConnAddrs.Unlock()
+	if len(node.RetryAddrs) > 0 {
+		if _, ok := node.RetryAddrs[addr]; ok {
+			delete(node.RetryAddrs, addr)
+			log.Debug("remove addr from retry list", addr)
+		}
+	}
+
 }
