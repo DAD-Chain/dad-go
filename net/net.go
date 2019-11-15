@@ -5,6 +5,7 @@ import (
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
 	"dad-go/crypto"
+	. "dad-go/errors"
 	"dad-go/events"
 	"dad-go/net/node"
 	"dad-go/net/protocol"
@@ -18,7 +19,7 @@ type Neter interface {
 	CleanSubmittedTransactions(block *ledger.Block) error
 	GetNeighborNoder() []protocol.Noder
 	Tx(buf []byte)
-	AppendTxnPool(*transaction.Transaction) bool
+	AppendTxnPool(*transaction.Transaction) ErrCode
 }
 
 func StartProtocol(pubKey *crypto.PubKey) protocol.Noder {
