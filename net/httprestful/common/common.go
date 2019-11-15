@@ -4,6 +4,7 @@ import (
 	. "dad-go/common"
 	"dad-go/core/ledger"
 	tx "dad-go/core/transaction"
+	. "dad-go/errors"
 	. "dad-go/net/httpjsonrpc"
 	Err "dad-go/net/httprestful/error"
 	. "dad-go/net/protocol"
@@ -382,8 +383,8 @@ func SendRawTransaction(cmd map[string]interface{}) map[string]interface{} {
 	}
 	var hash Uint256
 	hash = txn.Hash()
-	if err := VerifyAndSendTx(&txn); err != nil {
-		resp["Error"] = Err.INTERNAL_ERROR
+	if errCode := VerifyAndSendTx(&txn); errCode != ErrNoError {
+		resp["Error"] = int64(errCode)
 		return resp
 	}
 	resp["Result"] = ToHexString(hash.ToArrayReverse())

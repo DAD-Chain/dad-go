@@ -5,6 +5,7 @@ import (
 	"dad-go/common/log"
 	"dad-go/core/ledger"
 	"dad-go/core/transaction"
+	. "dad-go/errors"
 	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
@@ -32,7 +33,7 @@ func (msg trn) Handle(node Noder) error {
 	log.Debug("RX Transaction message")
 	tx := &msg.txn
 	if !node.LocalNode().ExistedID(tx.Hash()) {
-		if !node.LocalNode().AppendTxnPool(&(msg.txn)) {
+		if errCode := node.LocalNode().AppendTxnPool(&(msg.txn)); errCode != ErrNoError {
 			return errors.New("[message] VerifyTransaction failed when AppendTxnPool.")
 		}
 		node.LocalNode().IncRxTxnCnt()
