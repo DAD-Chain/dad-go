@@ -13,6 +13,7 @@ import (
 	"dad-go/net/httpjsonrpc"
 	"dad-go/net/httprestful"
 	"dad-go/net/httpwebsocket"
+	"dad-go/net/httpnodeinfo"
 	"dad-go/net/protocol"
 	"os"
 	"runtime"
@@ -102,6 +103,10 @@ func main() {
 	go httpjsonrpc.StartLocalServer()
 	go httprestful.StartServer(noder)
 	go httpwebsocket.StartServer(noder)
+	if config.Parameters.HttpInfoStart {
+		go httpnodeinfo.StartServer(noder)
+	}
+
 
 	for {
 		time.Sleep(dbft.GenBlockTime)
