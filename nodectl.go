@@ -8,7 +8,6 @@ import (
 	"dad-go/cli/asset"
 	"dad-go/cli/bookkeeper"
 	. "dad-go/cli/common"
-	"dad-go/cli/consensus"
 	"dad-go/cli/data"
 	"dad-go/cli/debug"
 	"dad-go/cli/info"
@@ -37,7 +36,6 @@ func main() {
 	}
 	//commands
 	app.Commands = []cli.Command{
-		*consensus.NewCommand(),
 		*debug.NewCommand(),
 		*info.NewCommand(),
 		*test.NewCommand(),
