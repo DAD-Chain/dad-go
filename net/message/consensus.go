@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
@@ -12,6 +13,7 @@ import (
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/ledger"
 	sig "github.com/dad-go/core/signature"
+	"github.com/dad-go/core/validation"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/events"
@@ -44,6 +46,11 @@ func (cp *ConsensusPayload) Hash() common.Uint256 {
 }
 
 func (cp *ConsensusPayload) Verify() error {
+	res, err := validation.VerifySignableData(cp)
+	if res == false || err != nil {
+		return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
+	}
+
 	return nil
 }
 
