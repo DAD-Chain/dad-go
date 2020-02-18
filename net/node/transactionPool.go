@@ -7,6 +7,7 @@ import (
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/core/transaction/payload"
+	"github.com/dad-go/core/transaction/utxo"
 	va "github.com/dad-go/core/validation"
 	. "github.com/dad-go/errors"
 	"fmt"
@@ -256,13 +257,13 @@ func (this *TXNPool) GetTransactionCount() int {
 	return len(this.txnList)
 }
 
-func (this *TXNPool) getInputUTXOList(input *transaction.UTXOTxInput) *transaction.Transaction {
+func (this *TXNPool) getInputUTXOList(input *utxo.UTXOTxInput) *transaction.Transaction {
 	this.RLock()
 	defer this.RUnlock()
 	return this.inputUTXOList[input.ToString()]
 }
 
-func (this *TXNPool) addInputUTXOList(tx *transaction.Transaction, input *transaction.UTXOTxInput) bool {
+func (this *TXNPool) addInputUTXOList(tx *transaction.Transaction, input *utxo.UTXOTxInput) bool {
 	this.Lock()
 	defer this.Unlock()
 	id := input.ToString()
@@ -275,7 +276,7 @@ func (this *TXNPool) addInputUTXOList(tx *transaction.Transaction, input *transa
 	return true
 }
 
-func (this *TXNPool) delInputUTXOList(input *transaction.UTXOTxInput) bool {
+func (this *TXNPool) delInputUTXOList(input *utxo.UTXOTxInput) bool {
 	this.Lock()
 	defer this.Unlock()
 	id := input.ToString()

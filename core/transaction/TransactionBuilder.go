@@ -6,6 +6,7 @@ import (
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/transaction/payload"
 	"github.com/dad-go/crypto"
+	. "github.com/dad-go/core/transaction/utxo"
 )
 
 //initial a new transaction with asset registration payload

@@ -7,6 +7,7 @@ import (
 	"github.com/dad-go/core/ledger"
 	tx "github.com/dad-go/core/transaction"
 	"github.com/dad-go/core/transaction/payload"
+	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"errors"
@@ -176,7 +177,7 @@ func CheckAssetPrecision(Tx *tx.Transaction) error {
 	if len(Tx.Outputs) == 0 {
 		return nil
 	}
-	assetOutputs := make(map[common.Uint256][]*tx.TxOutput, len(Tx.Outputs))
+	assetOutputs := make(map[common.Uint256][]*utxo.TxOutput, len(Tx.Outputs))
 
 	for _, v := range Tx.Outputs {
 		assetOutputs[v.AssetID] = append(assetOutputs[v.AssetID], v)

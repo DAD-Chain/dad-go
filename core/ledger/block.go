@@ -8,6 +8,7 @@ import (
 	sig "github.com/dad-go/core/signature"
 	tx "github.com/dad-go/core/transaction"
 	"github.com/dad-go/core/transaction/payload"
+	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/vm"
@@ -175,9 +176,9 @@ func GenesisBlockInit(defaultBookKeeper []*crypto.PubKey) (*Block, error) {
 			Nonce: GenesisNonce,
 		},
 		Attributes:    []*tx.TxAttribute{},
-		UTXOInputs:    []*tx.UTXOTxInput{},
+		UTXOInputs:    []*utxo.UTXOTxInput{},
 		BalanceInputs: []*tx.BalanceTxInput{},
-		Outputs:       []*tx.TxOutput{},
+		Outputs:       []*utxo.TxOutput{},
 		Programs:      []*program.Program{},
 	}
 	//block
