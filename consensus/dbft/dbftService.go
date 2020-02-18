@@ -42,7 +42,6 @@ type DbftService struct {
 }
 
 func NewDbftService(client cl.Client, logDictionary string, localNet net.Neter) *DbftService {
-	log.Debug()
 
 	ds := &DbftService{
 		Client:        client,
@@ -55,7 +54,6 @@ func NewDbftService(client cl.Client, logDictionary string, localNet net.Neter) 
 	if !ds.timer.Stop() {
 		<-ds.timer.C
 	}
-	log.Debug()
 	go ds.timerRoutine()
 	return ds
 }
@@ -212,7 +210,6 @@ func (ds *DbftService) Halt() error {
 
 func (ds *DbftService) InitializeConsensus(viewNum byte) error {
 	log.Debug("[InitializeConsensus] Start InitializeConsensus.")
-	log.Debug()
 	ds.context.contextMu.Lock()
 	defer ds.context.contextMu.Unlock()
 
@@ -235,7 +232,6 @@ func (ds *DbftService) InitializeConsensus(viewNum byte) error {
 	if ds.context.BookKeeperIndex == int(ds.context.PrimaryIndex) {
 
 		//primary peer
-		log.Debug()
 		ds.context.State |= Primary
 		ds.timerHeight = ds.context.Height
 		ds.timeView = viewNum
@@ -305,6 +301,12 @@ func (ds *DbftService) NewConsensusPayload(payload *msg.ConsensusPayload) {
 		return
 	}
 
+	err = payload.Verify()
+	if err != nil {
+		log.Warn(err.Error())
+		return
+	}
+
 	switch message.Type() {
 	case ChangeViewMsg:
 		if cv, ok := message.(*ChangeView); ok {
@@ -350,7 +352,6 @@ func (ds *DbftService) VerifyTxs(txs []*tx.Transaction) error {
 }
 
 func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, message *PrepareRequest) {
-	log.Debug()
 	log.Info(fmt.Sprintf("Prepare Request Received: height=%d View=%d index=%d tx=%d", payload.Height, message.ViewNumber(), payload.BookKeeperIndex, len(message.Transactions)))
 
 	if !ds.context.State.HasFlag(Backup) || ds.context.State.HasFlag(RequestReceived) {
@@ -379,6 +380,8 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 		return
 	}
 
+	backupContext := ds.context
+
 	ds.context.State |= RequestReceived
 	ds.context.Timestamp = payload.Timestamp
 	ds.context.Nonce = message.Nonce
@@ -389,6 +392,8 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	_, err = va.VerifySignature(ds.context.MakeHeader(), ds.context.BookKeepers[payload.BookKeeperIndex], message.Signature)
 	if err != nil {
 		log.Warn("PrepareRequestReceived VerifySignature failed.", err)
+		ds.context = backupContext
+		ds.RequestChangeView()
 		return
 	}
 
@@ -400,6 +405,8 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	unverifyed := ds.GetUnverifiedTxs(ds.context.Transactions)
 	if err := ds.VerifyTxs(unverifyed); err != nil {
 		log.Error("PrepareRequestReceived new transaction verification failed, will not sent Prepare Response", err)
+		ds.context = backupContext
+		ds.RequestChangeView()
 		return
 	}
 
@@ -458,7 +465,9 @@ func (ds *DbftService) RefreshPolicy() {
 }
 
 func (ds *DbftService) RequestChangeView() {
-	log.Debug()
+	if ds.context.State.HasFlag(BlockGenerated) {
+		return
+	}
 	// FIXME if there is no save block notifcation, when the timeout call this function it will crash
 	if ds.context.ViewNumber > ds.context.ExpectedView[ds.context.BookKeeperIndex] {
 		ds.context.ExpectedView[ds.context.BookKeeperIndex] = ds.context.ViewNumber + 1
