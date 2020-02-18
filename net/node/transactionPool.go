@@ -1,14 +1,14 @@
 package node
 
 import (
-	"dad-go/common"
-	"dad-go/common/config"
-	"dad-go/common/log"
-	"dad-go/core/ledger"
-	"dad-go/core/transaction"
-	"dad-go/core/transaction/payload"
-	va "dad-go/core/validation"
-	. "dad-go/errors"
+	"github.com/dad-go/common"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/transaction"
+	"github.com/dad-go/core/transaction/payload"
+	va "github.com/dad-go/core/validation"
+	. "github.com/dad-go/errors"
 	"fmt"
 	"sync"
 )

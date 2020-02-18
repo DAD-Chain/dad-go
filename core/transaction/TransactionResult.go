@@ -1,6 +1,6 @@
 package transaction
 
-import "dad-go/common"
+import "github.com/dad-go/common"
 
 //	Key  : AssetId common.Uint256
 //	Value: Amount common.Fixed64

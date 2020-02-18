@@ -1,8 +1,8 @@
 package vm
 
 import (
-	"dad-go/vm/errors"
-	"dad-go/vm/types"
+	"github.com/dad-go/vm/errors"
+	"github.com/dad-go/vm/types"
 	"encoding/binary"
 	"math/big"
 	"reflect"

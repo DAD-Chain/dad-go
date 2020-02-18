@@ -1,11 +1,11 @@
 package httpjsonrpc
 
 import (
-	. "dad-go/common"
-	"dad-go/core/asset"
-	. "dad-go/core/contract"
-	. "dad-go/core/transaction"
-	"dad-go/core/transaction/payload"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/core/asset"
+	. "github.com/dad-go/core/contract"
+	. "github.com/dad-go/core/transaction"
+	"github.com/dad-go/core/transaction/payload"
 	"bytes"
 )
 

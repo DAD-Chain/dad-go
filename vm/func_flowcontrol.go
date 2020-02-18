@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"dad-go/vm/errors"
+	"github.com/dad-go/vm/errors"
 	"io"
 	"time"
 )

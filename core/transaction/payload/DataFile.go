@@ -1,9 +1,9 @@
 package payload
 
 import (
-	"dad-go/common/serialization"
-	"dad-go/crypto"
-	. "dad-go/errors"
+	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
 	"io"
 )
 

@@ -1,7 +1,7 @@
 package transaction
 
 import (
-. "dad-go/common"
+. "github.com/dad-go/common"
 )
 
 // ILedgerStore provides func with store package.

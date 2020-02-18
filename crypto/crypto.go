@@ -1,10 +1,10 @@
 package crypto
 
 import (
-	"dad-go/common/serialization"
-	"dad-go/crypto/p256r1"
-	"dad-go/crypto/sm2"
-	"dad-go/crypto/util"
+	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/crypto/p256r1"
+	"github.com/dad-go/crypto/sm2"
+	"github.com/dad-go/crypto/util"
 	"crypto/sha256"
 	"errors"
 	"fmt"

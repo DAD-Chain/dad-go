@@ -1,9 +1,9 @@
 package vm
 
 import (
-	"dad-go/crypto"
-	. "dad-go/errors"
-	"dad-go/common/log"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
+	"github.com/dad-go/common/log"
 	"errors"
 )
 

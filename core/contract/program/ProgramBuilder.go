@@ -1,8 +1,8 @@
 package program
 
 import (
-	. "dad-go/common"
-	"dad-go/vm"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/vm"
 	"bytes"
 	"math/big"
 )

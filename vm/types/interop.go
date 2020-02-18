@@ -2,7 +2,7 @@ package types
 
 import (
 	"math/big"
-	"dad-go/vm/interfaces"
+	"github.com/dad-go/vm/interfaces"
 )
 
 type InteropInterface struct {

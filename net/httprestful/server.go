@@ -1,12 +1,12 @@
 package httprestful
 
 import (
-	. "dad-go/common/config"
-	"dad-go/core/ledger"
-	"dad-go/events"
-	"dad-go/net/httprestful/common"
-	. "dad-go/net/httprestful/restful"
-	. "dad-go/net/protocol"
+	. "github.com/dad-go/common/config"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/events"
+	"github.com/dad-go/net/httprestful/common"
+	. "github.com/dad-go/net/httprestful/restful"
+	. "github.com/dad-go/net/protocol"
 	"strconv"
 )
 

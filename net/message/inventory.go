@@ -1,11 +1,11 @@
 package message
 
 import (
-	. "dad-go/common"
-	"dad-go/common/log"
-	"dad-go/common/serialization"
-	"dad-go/core/ledger"
-	. "dad-go/net/protocol"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/core/ledger"
+	. "github.com/dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"

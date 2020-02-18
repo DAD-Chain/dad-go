@@ -1,8 +1,8 @@
-package client
+package account
 
 import (
-	ct "dad-go/core/contract"
-	. "dad-go/errors"
+	ct "github.com/dad-go/core/contract"
+	. "github.com/dad-go/errors"
 	"encoding/hex"
 	"encoding/json"
 	"errors"

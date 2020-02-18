@@ -1,7 +1,7 @@
 package consensus
 
 import (
-	. "dad-go/common"
+	. "github.com/dad-go/common"
 )
 type Policy struct {
 	PolicyLevel PolicyLevel

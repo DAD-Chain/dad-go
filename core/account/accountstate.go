@@ -1,10 +1,10 @@
 package account
 
 import (
-	"dad-go/common"
+	"github.com/dad-go/common"
 	"io"
 	"bytes"
-	"dad-go/common/serialization"
+	"github.com/dad-go/common/serialization"
 )
 
 type AccountState struct {

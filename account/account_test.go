@@ -1,7 +1,7 @@
-package client
+package account
 
 import (
-	"dad-go/crypto"
+	"github.com/dad-go/crypto"
 	"fmt"
 	"os"
 	"path"
@@ -21,6 +21,6 @@ func TestClient(t *testing.T) {
 	for i := 0; i < 10000; i++ {
 		p := path.Join(dir, fmt.Sprintf("wallet%d.txt", i))
 		fmt.Println("client path", p)
-		CreateClient(p, []byte("\x12\x34\x56"))
+		CreateClient(p, []byte(DefaultPin))
 	}
 }

@@ -1,13 +1,13 @@
 package httpjsonrpc
 
 import (
-	"dad-go/account"
-	. "dad-go/common"
-	"dad-go/common/config"
-	"dad-go/common/log"
-	"dad-go/core/ledger"
-	tx "dad-go/core/transaction"
-	. "dad-go/errors"
+	"github.com/dad-go/account"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/ledger"
+	tx "github.com/dad-go/core/transaction"
+	. "github.com/dad-go/errors"
 	"bytes"
 	"encoding/base64"
 	"encoding/hex"

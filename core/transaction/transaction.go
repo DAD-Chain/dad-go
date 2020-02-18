@@ -1,13 +1,13 @@
 package transaction
 
 import (
-	. "dad-go/common"
-	"dad-go/common/serialization"
-	"dad-go/core/contract"
-	"dad-go/core/contract/program"
-	sig "dad-go/core/signature"
-	"dad-go/core/transaction/payload"
-	. "dad-go/errors"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/core/contract"
+	"github.com/dad-go/core/contract/program"
+	sig "github.com/dad-go/core/signature"
+	"github.com/dad-go/core/transaction/payload"
+	. "github.com/dad-go/errors"
 	"crypto/sha256"
 	"errors"
 	"fmt"

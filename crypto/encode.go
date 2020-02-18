@@ -1,7 +1,7 @@
 package crypto
 
 import (
-	. "dad-go/errors"
+	. "github.com/dad-go/errors"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"

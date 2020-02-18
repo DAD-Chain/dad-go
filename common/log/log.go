@@ -1,7 +1,7 @@
 package log
 
 import (
-	"dad-go/common/config"
+	"github.com/dad-go/common/config"
 	"bytes"
 	"errors"
 	"fmt"

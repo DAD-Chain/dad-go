@@ -1,9 +1,9 @@
 package common
 
 import (
-	. "dad-go/common/config"
-	"dad-go/common/log"
-	Err "dad-go/net/httprestful/error"
+	. "github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	Err "github.com/dad-go/net/httprestful/error"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"

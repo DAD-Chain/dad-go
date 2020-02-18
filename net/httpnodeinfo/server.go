@@ -1,9 +1,9 @@
 package httpnodeinfo
 
 import (
-	"dad-go/common/config"
-	"dad-go/core/ledger"
-	. "dad-go/net/protocol"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/core/ledger"
+	. "github.com/dad-go/net/protocol"
 	"fmt"
 	"html/template"
 	"net/http"

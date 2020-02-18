@@ -1,13 +1,13 @@
 package httpjsonrpc
 
 import (
-	. "dad-go/account"
-	. "dad-go/common"
-	"dad-go/common/log"
-	. "dad-go/core/asset"
-	"dad-go/core/contract"
-	"dad-go/core/signature"
-	"dad-go/core/transaction"
+	. "github.com/dad-go/account"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/core/asset"
+	"github.com/dad-go/core/contract"
+	"github.com/dad-go/core/signature"
+	"github.com/dad-go/core/transaction"
 	"strconv"
 )
 

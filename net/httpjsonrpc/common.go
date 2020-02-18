@@ -1,13 +1,13 @@
 package httpjsonrpc
 
 import (
-	. "dad-go/common"
-	"dad-go/common/log"
-	"dad-go/consensus/dbft"
-	. "dad-go/core/transaction"
-	tx "dad-go/core/transaction"
-	. "dad-go/errors"
-	. "dad-go/net/protocol"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/consensus/dbft"
+	. "github.com/dad-go/core/transaction"
+	tx "github.com/dad-go/core/transaction"
+	. "github.com/dad-go/errors"
+	. "github.com/dad-go/net/protocol"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

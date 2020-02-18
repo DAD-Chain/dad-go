@@ -1,7 +1,7 @@
 package util
 
 import (
-	"dad-go/crypto/sm3"
+	"github.com/dad-go/crypto/sm3"
 	"crypto/elliptic"
 	"crypto/hmac"
 	"crypto/rand"

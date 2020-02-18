@@ -1,8 +1,8 @@
 package sm2
 
 import (
-	"dad-go/crypto/sm3"
-	"dad-go/crypto/util"
+	"github.com/dad-go/crypto/sm3"
+	"github.com/dad-go/crypto/util"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/elliptic"

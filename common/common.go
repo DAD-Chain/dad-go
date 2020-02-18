@@ -1,14 +1,14 @@
 package common
 
 import (
-	"dad-go/common/log"
-	. "dad-go/errors"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/errors"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
-	"github.com/golang/crypto/ripemd160"
+	"golang.org/x/crypto/ripemd160"
 	"io"
 	"math/rand"
 	"os"

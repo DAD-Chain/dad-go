@@ -1,13 +1,13 @@
 package common
 
 import (
-	. "dad-go/common"
-	"dad-go/core/ledger"
-	tx "dad-go/core/transaction"
-	. "dad-go/errors"
-	. "dad-go/net/httpjsonrpc"
-	Err "dad-go/net/httprestful/error"
-	. "dad-go/net/protocol"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/core/ledger"
+	tx "github.com/dad-go/core/transaction"
+	. "github.com/dad-go/errors"
+	. "github.com/dad-go/net/httpjsonrpc"
+	Err "github.com/dad-go/net/httprestful/error"
+	. "github.com/dad-go/net/protocol"
 	"bytes"
 	"fmt"
 	"math"

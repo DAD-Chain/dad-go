@@ -1,10 +1,10 @@
-package client
+package account
 
 import (
-	. "dad-go/common"
-	"dad-go/core/contract"
-	"dad-go/crypto"
-	. "dad-go/errors"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/core/contract"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
 	"errors"
 )
 

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"io"
 
-	. "dad-go/common"
-	"dad-go/common/serialization"
-	. "dad-go/errors"
-	"dad-go/vm"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/serialization"
+	. "github.com/dad-go/errors"
+	"github.com/dad-go/vm"
 )
 
 //Contract address is the hash of contract program .

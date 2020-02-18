@@ -1,7 +1,7 @@
 package p256r1
 
 import (
-	"dad-go/crypto/util"
+	"github.com/dad-go/crypto/util"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"

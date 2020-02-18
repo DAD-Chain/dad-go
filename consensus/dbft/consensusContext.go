@@ -1,15 +1,15 @@
 package dbft
 
 import (
-	cl "dad-go/account"
-	. "dad-go/common"
-	"dad-go/common/log"
-	ser "dad-go/common/serialization"
-	"dad-go/core/ledger"
-	tx "dad-go/core/transaction"
-	"dad-go/crypto"
-	"dad-go/net"
-	msg "dad-go/net/message"
+	cl "github.com/dad-go/account"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	ser "github.com/dad-go/common/serialization"
+	"github.com/dad-go/core/ledger"
+	tx "github.com/dad-go/core/transaction"
+	"github.com/dad-go/crypto"
+	"github.com/dad-go/net"
+	msg "github.com/dad-go/net/message"
 	"fmt"
 	"sync"
 )

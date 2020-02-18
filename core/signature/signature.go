@@ -1,12 +1,12 @@
 package signature
 
 import (
-	"dad-go/common"
-	"dad-go/common/log"
-	"dad-go/core/contract/program"
-	"dad-go/crypto"
-	. "dad-go/errors"
-	"dad-go/vm/interfaces"
+	"github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/contract/program"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
+	"github.com/dad-go/vm/interfaces"
 	"bytes"
 	"crypto/sha256"
 	"io"

@@ -1,8 +1,8 @@
 package vm
 
 import (
-	"dad-go/vm/interfaces"
-	"dad-go/vm/utils"
+	"github.com/dad-go/vm/interfaces"
+	"github.com/dad-go/vm/utils"
 	"io"
 	_ "math/big"
 	_ "sort"

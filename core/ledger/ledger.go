@@ -1,13 +1,13 @@
 package ledger
 
 import (
-	"dad-go/common"
-	. "dad-go/common"
-	"dad-go/core/asset"
-	"dad-go/core/contract"
-	tx "dad-go/core/transaction"
-	"dad-go/crypto"
-	. "dad-go/errors"
+	"github.com/dad-go/common"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/core/asset"
+	"github.com/dad-go/core/contract"
+	tx "github.com/dad-go/core/transaction"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
 	"errors"
 )
 
