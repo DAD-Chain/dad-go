@@ -1,10 +1,10 @@
 package dbft
 
 import (
-	"dad-go/common/log"
-	ser "dad-go/common/serialization"
 	"bytes"
 	"errors"
+	"github.com/dad-go/common/log"
+	ser "github.com/dad-go/common/serialization"
 	"io"
 )
 

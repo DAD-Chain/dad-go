@@ -1,6 +1,6 @@
 package error
 
-import . "dad-go/errors"
+import . "github.com/dad-go/errors"
 
 const (
 	SUCCESS            int64 = 0

@@ -1,12 +1,12 @@
 package code
 
 import (
-	. "dad-go/common"
-	. "dad-go/core/contract"
+	. "github.com/dad-go/common"
+	. "github.com/dad-go/core/contract"
 )
+
 //ICode is the abstract interface of smart contract code.
 type ICode interface {
-
 	GetCode() []byte
 
 	GetParameterTypes() []ContractParameterType
@@ -14,6 +14,4 @@ type ICode interface {
 	GetReturnTypes() []ContractParameterType
 
 	CodeHash() Uint160
-
 }
-

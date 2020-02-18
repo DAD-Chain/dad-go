@@ -1,10 +1,10 @@
 package payload
 
 import (
-	"dad-go/common"
-	"dad-go/core/asset"
-	"dad-go/crypto"
-	. "dad-go/errors"
+	"github.com/dad-go/common"
+	"github.com/dad-go/core/asset"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
 	"io"
 )
 

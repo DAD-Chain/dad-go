@@ -1,11 +1,11 @@
 package main
 
 import (
-	"dad-go/crypto"
-	"dad-go/core/ledger"
-	"dad-go/core/store"
-	."dad-go/common"
-	"dad-go/common/log"
+	"github.com/dad-go/crypto"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/store"
+	."github.com/dad-go/common"
+	"github.com/dad-go/common/log"
 	"encoding/hex"
 	"os"
 	"fmt"

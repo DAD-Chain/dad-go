@@ -1,8 +1,8 @@
 package payload
 
 import (
-	"dad-go/common/serialization"
-	. "dad-go/core/code"
+	"github.com/dad-go/common/serialization"
+	. "github.com/dad-go/core/code"
 	"io"
 )
 

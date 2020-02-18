@@ -6,7 +6,7 @@ import (
 	"errors"
 	"io"
 
-	. "dad-go/errors"
+	. "github.com/dad-go/errors"
 )
 
 const UINT256SIZE int = 32

@@ -1,11 +1,12 @@
 package ledger
 
 import (
-	. "dad-go/common"
-	"dad-go/core/account"
-	. "dad-go/core/asset"
-	tx "dad-go/core/transaction"
-	"dad-go/crypto"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/core/account"
+	. "github.com/dad-go/core/asset"
+	tx "github.com/dad-go/core/transaction"
+	"github.com/dad-go/core/transaction/utxo"
+	"github.com/dad-go/crypto"
 )
 
 // ILedgerStore provides func with store package.
@@ -40,10 +41,10 @@ type ILedgerStore interface {
 
 	GetQuantityIssued(assetid Uint256) (Fixed64, error)
 
-	GetUnspent(txid Uint256, index uint16) (*tx.TxOutput, error)
+	GetUnspent(txid Uint256, index uint16) (*utxo.TxOutput, error)
 	ContainsUnspent(txid Uint256, index uint16) (bool, error)
-	GetUnspentFromProgramHash(programHash Uint160, assetid Uint256) ([]*tx.UTXOUnspent, error)
-	GetUnspentsFromProgramHash(programHash Uint160) (map[Uint256][]*tx.UTXOUnspent, error)
+	GetUnspentFromProgramHash(programHash Uint160, assetid Uint256) ([]*utxo.UTXOUnspent, error)
+	GetUnspentsFromProgramHash(programHash Uint160) (map[Uint256][]*utxo.UTXOUnspent, error)
 	GetAssets() map[Uint256]*Asset
 
 	IsTxHashDuplicate(txhash Uint256) bool

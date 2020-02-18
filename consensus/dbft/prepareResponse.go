@@ -1,8 +1,8 @@
 package dbft
 
 import (
-	"dad-go/common/log"
-	ser "dad-go/common/serialization"
+	"github.com/dad-go/common/log"
+	ser "github.com/dad-go/common/serialization"
 	"io"
 )
 

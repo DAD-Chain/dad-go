@@ -1,9 +1,9 @@
 package transaction
 
 import (
-	"dad-go/common/serialization"
-	. "dad-go/errors"
 	"errors"
+	"github.com/dad-go/common/serialization"
+	. "github.com/dad-go/errors"
 	"io"
 )
 

@@ -1,6 +1,6 @@
 package vm
 
-import "dad-go/vm/utils"
+import "github.com/dad-go/vm/utils"
 
 type ExecutionContext struct {
 	Script             []byte

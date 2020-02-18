@@ -1,8 +1,8 @@
 package asset
 
 import (
-	"dad-go/common/serialization"
-	. "dad-go/errors"
+	"github.com/dad-go/common/serialization"
+	. "github.com/dad-go/errors"
 	"errors"
 	"io"
 )
@@ -24,13 +24,13 @@ const (
 
 type AssetRecordType byte
 
-//DAD Chain is planed to support UTXO and Balance
+//dad-go is planed to support UTXO and Balance
 const (
 	UTXO    AssetRecordType = 0x00
 	Balance AssetRecordType = 0x01
 )
 
-//define the asset stucture in DAD Chain
+//define the asset stucture in dad-go
 //registered asset will be assigned to contract address
 type Asset struct {
 	Name        string

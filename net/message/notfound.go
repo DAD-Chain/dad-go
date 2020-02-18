@@ -1,13 +1,13 @@
 package message
 
 import (
-	"dad-go/common"
-	"dad-go/common/log"
-	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
+	"github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/net/protocol"
 )
 
 type notFound struct {

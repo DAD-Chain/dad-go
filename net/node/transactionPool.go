@@ -1,14 +1,15 @@
 package node
 
 import (
-	"dad-go/common"
-	"dad-go/common/config"
-	"dad-go/common/log"
-	"dad-go/core/ledger"
-	"dad-go/core/transaction"
-	"dad-go/core/transaction/payload"
-	va "dad-go/core/validation"
-	. "dad-go/errors"
+	"github.com/dad-go/common"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/transaction"
+	"github.com/dad-go/core/transaction/payload"
+	"github.com/dad-go/core/transaction/utxo"
+	va "github.com/dad-go/core/validation"
+	. "github.com/dad-go/errors"
 	"fmt"
 	"sync"
 )
@@ -256,13 +257,13 @@ func (this *TXNPool) GetTransactionCount() int {
 	return len(this.txnList)
 }
 
-func (this *TXNPool) getInputUTXOList(input *transaction.UTXOTxInput) *transaction.Transaction {
+func (this *TXNPool) getInputUTXOList(input *utxo.UTXOTxInput) *transaction.Transaction {
 	this.RLock()
 	defer this.RUnlock()
 	return this.inputUTXOList[input.ToString()]
 }
 
-func (this *TXNPool) addInputUTXOList(tx *transaction.Transaction, input *transaction.UTXOTxInput) bool {
+func (this *TXNPool) addInputUTXOList(tx *transaction.Transaction, input *utxo.UTXOTxInput) bool {
 	this.Lock()
 	defer this.Unlock()
 	id := input.ToString()
@@ -275,7 +276,7 @@ func (this *TXNPool) addInputUTXOList(tx *transaction.Transaction, input *transa
 	return true
 }
 
-func (this *TXNPool) delInputUTXOList(input *transaction.UTXOTxInput) bool {
+func (this *TXNPool) delInputUTXOList(input *utxo.UTXOTxInput) bool {
 	this.Lock()
 	defer this.Unlock()
 	id := input.ToString()

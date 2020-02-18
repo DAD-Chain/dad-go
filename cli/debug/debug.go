@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	. "dad-go/cli/common"
-	"dad-go/net/httpjsonrpc"
+	. "github.com/dad-go/cli/common"
+	"github.com/dad-go/net/httpjsonrpc"
 
 	"github.com/urfave/cli"
 )

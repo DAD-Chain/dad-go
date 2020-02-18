@@ -7,8 +7,8 @@ import (
 	"os"
 	"strconv"
 
-	"dad-go/common/config"
-	"dad-go/common/password"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/password"
 
 	"github.com/urfave/cli"
 )

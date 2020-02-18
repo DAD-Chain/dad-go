@@ -1,15 +1,15 @@
 package websocket
 
 import (
-	. "dad-go/common/config"
-	"dad-go/common/log"
-	. "dad-go/net/httprestful/common"
-	Err "dad-go/net/httprestful/error"
-	. "dad-go/net/httpwebsocket/session"
 	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	. "github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/net/httprestful/common"
+	Err "github.com/dad-go/net/httprestful/error"
+	. "github.com/dad-go/net/httpwebsocket/session"
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"

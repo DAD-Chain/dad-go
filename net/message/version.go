@@ -1,16 +1,16 @@
 package message
 
 import (
-	"dad-go/common/config"
-	"dad-go/common/log"
-	"dad-go/core/ledger"
-	"dad-go/crypto"
-	. "dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/net/protocol"
 	"time"
 )
 

@@ -1,15 +1,15 @@
 package httpwebsocket
 
 import (
-	. "dad-go/common"
-	. "dad-go/common/config"
-	"dad-go/core/ledger"
-	"dad-go/events"
-	"dad-go/net/httprestful/common"
-	Err "dad-go/net/httprestful/error"
-	"dad-go/net/httpwebsocket/websocket"
-	. "dad-go/net/protocol"
 	"bytes"
+	. "github.com/dad-go/common"
+	. "github.com/dad-go/common/config"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/events"
+	"github.com/dad-go/net/httprestful/common"
+	Err "github.com/dad-go/net/httprestful/error"
+	"github.com/dad-go/net/httpwebsocket/websocket"
+	. "github.com/dad-go/net/protocol"
 )
 
 var ws *websocket.WsServer

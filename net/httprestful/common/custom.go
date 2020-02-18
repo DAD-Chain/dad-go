@@ -1,14 +1,15 @@
 package common
 
 import (
-	. "dad-go/common"
-	tx "dad-go/core/transaction"
-	. "dad-go/errors"
-	. "dad-go/net/httpjsonrpc"
-	Err "dad-go/net/httprestful/error"
+	. "github.com/dad-go/common"
+	tx "github.com/dad-go/core/transaction"
+	. "github.com/dad-go/errors"
+	. "github.com/dad-go/net/httpjsonrpc"
+	Err "github.com/dad-go/net/httprestful/error"
 	"bytes"
 	"encoding/json"
 	"time"
+	"github.com/dad-go/core/transaction/utxo"
 )
 
 const AttributeMaxLen = 252
@@ -86,8 +87,8 @@ func SendRecord(cmd map[string]interface{}) map[string]interface{} {
 		return resp
 	}
 
-	var inputs []*tx.UTXOTxInput
-	var outputs []*tx.TxOutput
+	var inputs []*utxo.UTXOTxInput
+	var outputs []*utxo.TxOutput
 
 	transferTx, _ := tx.NewTransferAssetTransaction(inputs, outputs)
 

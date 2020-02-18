@@ -1,19 +1,19 @@
 package privpayload
 
 import (
-	"dad-go/account"
-	. "dad-go/cli/common"
-	"dad-go/core/contract"
-	"dad-go/core/signature"
-	"dad-go/core/transaction"
-	"dad-go/core/transaction/payload"
-	"dad-go/crypto"
-	"dad-go/net/httpjsonrpc"
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dad-go/account"
+	. "github.com/dad-go/cli/common"
+	"github.com/dad-go/core/contract"
+	"github.com/dad-go/core/signature"
+	"github.com/dad-go/core/transaction"
+	"github.com/dad-go/core/transaction/payload"
+	"github.com/dad-go/crypto"
+	"github.com/dad-go/net/httpjsonrpc"
 	"math/rand"
 	"os"
 

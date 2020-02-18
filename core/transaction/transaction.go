@@ -1,18 +1,19 @@
 package transaction
 
 import (
-	. "dad-go/common"
-	"dad-go/common/serialization"
-	"dad-go/core/contract"
-	"dad-go/core/contract/program"
-	sig "dad-go/core/signature"
-	"dad-go/core/transaction/payload"
-	. "dad-go/errors"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/core/contract"
+	"github.com/dad-go/core/contract/program"
+	sig "github.com/dad-go/core/signature"
+	"github.com/dad-go/core/transaction/payload"
+	. "github.com/dad-go/errors"
 	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
 	"sort"
+	. "github.com/dad-go/core/transaction/utxo"
 )
 
 //for different transaction types with different payload format
@@ -23,6 +24,7 @@ const (
 	BookKeeping    TransactionType = 0x00
 	IssueAsset     TransactionType = 0x01
 	BookKeeper     TransactionType = 0x02
+	Claim          TransactionType = 0x03
 	PrivacyPayload TransactionType = 0x20
 	RegisterAsset  TransactionType = 0x40
 	TransferAsset  TransactionType = 0x80

@@ -1,8 +1,8 @@
 package node
 
 import (
-	"dad-go/events"
 	"fmt"
+	"github.com/dad-go/events"
 )
 
 type eventQueue struct {

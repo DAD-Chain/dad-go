@@ -1,11 +1,11 @@
 package crypto
 
 import (
-	. "dad-go/common"
-	. "dad-go/errors"
 	"bytes"
 	"crypto/sha256"
 	"errors"
+	. "github.com/dad-go/common"
+	. "github.com/dad-go/errors"
 )
 
 var (

@@ -13,17 +13,17 @@ import (
 	"sync"
 	"time"
 
-	. "dad-go/common"
-	"dad-go/common/config"
-	"dad-go/common/log"
-	"dad-go/common/password"
-	"dad-go/core/contract"
-	ct "dad-go/core/contract"
-	"dad-go/core/ledger"
-	sig "dad-go/core/signature"
-	"dad-go/crypto"
-	. "dad-go/errors"
-	"dad-go/net/protocol"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/common/password"
+	"github.com/dad-go/core/contract"
+	ct "github.com/dad-go/core/contract"
+	"github.com/dad-go/core/ledger"
+	sig "github.com/dad-go/core/signature"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
+	"github.com/dad-go/net/protocol"
 )
 
 const (

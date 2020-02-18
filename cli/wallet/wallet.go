@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"os"
 
-	"dad-go/account"
-	. "dad-go/cli/common"
-	. "dad-go/common"
-	"dad-go/common/password"
-	"dad-go/core/contract"
-	"dad-go/net/httpjsonrpc"
+	"github.com/dad-go/account"
+	. "github.com/dad-go/cli/common"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/password"
+	"github.com/dad-go/core/contract"
+	"github.com/dad-go/net/httpjsonrpc"
 
 	"github.com/urfave/cli"
 )

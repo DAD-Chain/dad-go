@@ -1,11 +1,11 @@
 package dbft
 
 import (
-	. "dad-go/common"
-	"dad-go/common/log"
-	ser "dad-go/common/serialization"
-	tx "dad-go/core/transaction"
-	. "dad-go/errors"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	ser "github.com/dad-go/common/serialization"
+	tx "github.com/dad-go/core/transaction"
+	. "github.com/dad-go/errors"
 	"io"
 )
 
