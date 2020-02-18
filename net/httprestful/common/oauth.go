@@ -1,11 +1,11 @@
 package common
 
 import (
+	"bytes"
+	"encoding/json"
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	Err "github.com/dad-go/net/httprestful/error"
-	"bytes"
-	"encoding/json"
 	"io/ioutil"
 	"net"
 	"net/http"

@@ -1,15 +1,15 @@
 package node
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"errors"
+	"fmt"
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/events"
 	msg "github.com/dad-go/net/message"
 	. "github.com/dad-go/net/protocol"
-	"crypto/tls"
-	"crypto/x509"
-	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net"

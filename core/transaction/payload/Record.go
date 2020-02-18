@@ -1,9 +1,9 @@
 package payload
 
 import (
+	"errors"
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
-	"errors"
 	"io"
 )
 

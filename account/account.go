@@ -1,11 +1,11 @@
 package account
 
 import (
+	"errors"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"errors"
 )
 
 type Account struct {

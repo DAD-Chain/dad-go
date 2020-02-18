@@ -1,12 +1,12 @@
 package payload
 
 import (
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"errors"
+	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/crypto"
 	"io"
 	mrand "math/rand"
 	"time"

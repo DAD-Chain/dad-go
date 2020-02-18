@@ -1,13 +1,13 @@
 package contract
 
 import (
+	"errors"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	pg "github.com/dad-go/core/contract/program"
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/crypto"
 	_ "github.com/dad-go/errors"
-	"errors"
 	"math/big"
 	"sort"
 )

@@ -10,31 +10,31 @@ type DetailError interface {
 	error
 	ErrCoder
 	CallStacker
-	GetRoot()  error
+	GetRoot() error
 }
 
-
-func  NewErr(errmsg string) error {
+func NewErr(errmsg string) error {
 	return errors.New(errmsg)
 }
 
-func NewDetailErr(err error,errcode ErrCode,errmsg string) DetailError{
-	if err == nil {return nil}
+func NewDetailErr(err error, errcode ErrCode, errmsg string) DetailError {
+	if err == nil {
+		return nil
+	}
 
-	dnaerr, ok := err.(dnaError)
+	dad-goerr, ok := err.(dad-goError)
 	if !ok {
-		dnaerr.root = err
-		dnaerr.errmsg = err.Error()
-		dnaerr.callstack = getCallStack(0, callStackDepth)
-		dnaerr.code = errcode
+		dad-goerr.root = err
+		dad-goerr.errmsg = err.Error()
+		dad-goerr.callstack = getCallStack(0, callStackDepth)
+		dad-goerr.code = errcode
 
 	}
 	if errmsg != "" {
-		dnaerr.errmsg = errmsg + ": " + dnaerr.errmsg
+		dad-goerr.errmsg = errmsg + ": " + dad-goerr.errmsg
 	}
 
-
-	return dnaerr
+	return dad-goerr
 }
 
 func RootErr(err error) error {
@@ -43,6 +43,3 @@ func RootErr(err error) error {
 	}
 	return err
 }
-
-
-

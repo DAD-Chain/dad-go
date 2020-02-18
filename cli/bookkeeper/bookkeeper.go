@@ -1,6 +1,9 @@
 package bookkeeper
 
 import (
+	"bytes"
+	"encoding/hex"
+	"fmt"
 	"github.com/dad-go/account"
 	. "github.com/dad-go/cli/common"
 	"github.com/dad-go/core/contract"
@@ -8,9 +11,6 @@ import (
 	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/net/httpjsonrpc"
-	"bytes"
-	"encoding/hex"
-	"fmt"
 	"math/rand"
 	"os"
 	"strconv"

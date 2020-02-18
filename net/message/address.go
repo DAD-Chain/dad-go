@@ -1,13 +1,13 @@
 package message
 
 import (
-	"github.com/dad-go/common/log"
-	. "github.com/dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/net/protocol"
 	"net"
 	"strconv"
 )

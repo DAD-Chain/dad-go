@@ -1,6 +1,11 @@
 package privpayload
 
 import (
+	"bytes"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/dad-go/account"
 	. "github.com/dad-go/cli/common"
 	"github.com/dad-go/core/contract"
@@ -9,11 +14,6 @@ import (
 	"github.com/dad-go/core/transaction/payload"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/net/httpjsonrpc"
-	"bytes"
-	"encoding/hex"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"math/rand"
 	"os"
 

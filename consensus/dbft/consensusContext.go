@@ -1,6 +1,7 @@
 package dbft
 
 import (
+	"fmt"
 	cl "github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
@@ -10,7 +11,6 @@ import (
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/net"
 	msg "github.com/dad-go/net/message"
-	"fmt"
 	"sync"
 )
 

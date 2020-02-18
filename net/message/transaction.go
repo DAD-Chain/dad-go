@@ -1,16 +1,16 @@
 package message
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/binary"
+	"errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/transaction"
 	. "github.com/dad-go/errors"
 	. "github.com/dad-go/net/protocol"
-	"bytes"
-	"crypto/sha256"
-	"encoding/binary"
-	"errors"
 )
 
 type dataReq struct {

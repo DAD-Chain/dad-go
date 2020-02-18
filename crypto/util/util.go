@@ -1,11 +1,11 @@
 package util
 
 import (
-	"github.com/dad-go/crypto/sm3"
 	"crypto/elliptic"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
+	"github.com/dad-go/crypto/sm3"
 	//"math/big"
 )
 

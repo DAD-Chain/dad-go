@@ -1,13 +1,13 @@
 package validation
 
 import (
+	"errors"
 	. "github.com/dad-go/common"
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/vm"
 	"github.com/dad-go/vm/interfaces"
-	"errors"
 )
 
 func VerifySignableData(signableData sig.SignableData) (bool, error) {

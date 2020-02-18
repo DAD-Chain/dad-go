@@ -1,10 +1,10 @@
 package payload
 
 import (
+	"bytes"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"bytes"
 	"io"
 )
 

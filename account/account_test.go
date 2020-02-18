@@ -1,8 +1,8 @@
 package account
 
 import (
-	"github.com/dad-go/crypto"
 	"fmt"
+	"github.com/dad-go/crypto"
 	"os"
 	"path"
 	"testing"

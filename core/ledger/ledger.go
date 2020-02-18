@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"errors"
 	"github.com/dad-go/common"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/core/asset"
@@ -8,7 +9,6 @@ import (
 	tx "github.com/dad-go/core/transaction"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"errors"
 )
 
 var DefaultLedger *Ledger

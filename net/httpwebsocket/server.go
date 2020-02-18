@@ -1,6 +1,7 @@
 package httpwebsocket
 
 import (
+	"bytes"
 	. "github.com/dad-go/common"
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/core/ledger"
@@ -9,7 +10,6 @@ import (
 	Err "github.com/dad-go/net/httprestful/error"
 	"github.com/dad-go/net/httpwebsocket/websocket"
 	. "github.com/dad-go/net/protocol"
-	"bytes"
 )
 
 var ws *websocket.WsServer

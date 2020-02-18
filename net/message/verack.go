@@ -1,10 +1,10 @@
 package message
 
 import (
-	"github.com/dad-go/common/log"
-	. "github.com/dad-go/net/protocol"
 	"encoding/hex"
 	"errors"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/net/protocol"
 	"strconv"
 )
 

@@ -1,6 +1,10 @@
 package message
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/binary"
+	"errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
@@ -12,10 +16,6 @@ import (
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
-	"bytes"
-	"crypto/sha256"
-	"encoding/binary"
-	"errors"
 	"io"
 )
 

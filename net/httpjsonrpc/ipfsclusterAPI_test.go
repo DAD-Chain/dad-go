@@ -1,8 +1,8 @@
 package httpjsonrpc
 
 import (
-	"github.com/dad-go/common/log"
 	"fmt"
+	"github.com/dad-go/common/log"
 	"os"
 	"os/exec"
 	"testing"

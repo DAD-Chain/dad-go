@@ -1,14 +1,14 @@
 package message
 
 import (
-	"github.com/dad-go/common/log"
-	. "github.com/dad-go/net/protocol"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/net/protocol"
 )
 
 type Messager interface {
@@ -232,7 +232,7 @@ func ValidMsgHdr(buf []byte) bool {
 	return magicVerify(h.Magic)
 }
 
-func PayloadLen(buf []byte) (int) {
+func PayloadLen(buf []byte) int {
 	var h msgHdr
 	h.Deserialization(buf)
 	return int(h.Length)

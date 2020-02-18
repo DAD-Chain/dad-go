@@ -1,10 +1,10 @@
 package log
 
 import (
-	"github.com/dad-go/common/config"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/dad-go/common/config"
 	"io"
 	"io/ioutil"
 	"log"
