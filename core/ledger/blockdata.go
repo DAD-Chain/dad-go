@@ -10,6 +10,7 @@ import (
 	"github.com/dad-go/core/contract/program"
 	sig "github.com/dad-go/core/signature"
 	. "github.com/dad-go/errors"
+	"bytes"
 )
 
 type Blockdata struct {
@@ -164,4 +165,10 @@ func (bd *Blockdata) Hash() Uint256 {
 
 func (bd *Blockdata) GetMessage() []byte {
 	return sig.GetHashData(bd)
+}
+
+func (bd *Blockdata) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	bd.Serialize(bf)
+	return bf.Bytes()
 }

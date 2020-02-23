@@ -3,7 +3,7 @@ package program
 import (
 	"bytes"
 	. "github.com/dad-go/common"
-	"github.com/dad-go/vm"
+	vm "github.com/dad-go/vm/neovm"
 	"math/big"
 )
 

@@ -8,7 +8,7 @@ import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/vm"
+	vm "github.com/dad-go/vm/neovm"
 )
 
 //Contract address is the hash of contract program .
