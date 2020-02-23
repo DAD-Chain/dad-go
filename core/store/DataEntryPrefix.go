@@ -5,25 +5,28 @@ type DataEntryPrefix byte
 
 const (
 	// DATA
-	DATA_Header 		DataEntryPrefix = 0x01
-	DATA_Transaction 	DataEntryPrefix = 0x02
-	DATA_Contract 		DataEntryPrefix = 0x03
-
-	// INDEX
-	IX_HeaderHashList	DataEntryPrefix = 0x80
-	IX_Enrollment		DataEntryPrefix = 0x84
-	IX_Unspent		DataEntryPrefix = 0x90
-	IX_Unclaimed		DataEntryPrefix = 0x91
-	IX_Vote			DataEntryPrefix = 0x94
+	DATA_Block   DataEntryPrefix = iota
+	DATA_Header
+	DATA_Transaction
 
 	// ASSET
-	ST_QuantityIssued	DataEntryPrefix = 0xc1
+	ST_Account
+	ST_Coin
+	ST_SpentCoin
+	ST_BookKeeper
+	ST_Asset
+	ST_Contract
+	ST_Storage
+	ST_Identity
+	ST_Program_Coin
+	ST_Validator
+	ST_Vote
+
+	IX_HeaderHashList
 
 	//SYSTEM
-	SYS_CurrentBlock	DataEntryPrefix = 0x40
-	SYS_CurrentHeader	DataEntryPrefix = 0x41
-
-	//CONFIG
-	CFG_Version		DataEntryPrefix = 0xf0
-
+	SYS_CurrentBlock
+	SYS_Version
+	Sys_CurrentStateRoot
+	SYS_BlockMerkleTree
 )

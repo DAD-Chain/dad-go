@@ -5,6 +5,7 @@ import (
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
 	"io"
+	"bytes"
 )
 
 type TransactionAttributeUsage byte
@@ -68,4 +69,10 @@ func (tx *TxAttribute) Deserialize(r io.Reader) error {
 	}
 	return nil
 
+}
+
+func (tx *TxAttribute) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	tx.Serialize(bf)
+	return bf.Bytes()
 }

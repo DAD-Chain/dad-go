@@ -3,7 +3,6 @@ package neovm
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/vm/neovm/errors"
 	"github.com/dad-go/vm/neovm/types"
@@ -266,20 +265,17 @@ func validatorSetItem(e *ExecutionEngine) error {
 		log.Error("[validatorSetItem] newItem = nil")
 		return ErrBadValue
 	}
-	fmt.Println(newItem.GetStackItem())
 	index := PeekNInt(1, e)
 	if index < 0 {
 		log.Error("[validatorSetItem] index < 0")
 		return ErrBadValue
 	}
-	fmt.Println("index", index)
 	arrItem := PeekN(2, e)
 	if arrItem == nil {
 		log.Error("[validatorSetItem] arrItem = nil")
 		return ErrBadValue
 	}
 	item := arrItem.GetStackItem()
-	fmt.Println(item)
 	if _, ok := item.(*types.Array); !ok {
 		if _, ok := item.(*types.ByteArray); ok {
 			l := len(item.GetByteArray())
