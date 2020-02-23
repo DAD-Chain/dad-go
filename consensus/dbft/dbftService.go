@@ -5,7 +5,6 @@ import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	con "github.com/dad-go/consensus"
 	ct "github.com/dad-go/core/contract"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/ledger"
@@ -461,7 +460,7 @@ func (ds *DbftService) PrepareResponseReceived(payload *msg.ConsensusPayload, me
 
 func (ds *DbftService) RefreshPolicy() {
 	log.Debug()
-	con.DefaultPolicy.Refresh()
+	//con.DefaultPolicy.Refresh()
 }
 
 func (ds *DbftService) RequestChangeView() {
