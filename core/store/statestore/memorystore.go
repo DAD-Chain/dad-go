@@ -5,7 +5,6 @@ import (
 	. "github.com/dad-go/core/store"
 )
 
-
 type MemoryStore struct {
 	memory map[string]*StateItem
 }

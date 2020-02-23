@@ -7,7 +7,6 @@ import (
 	"github.com/dad-go/core/code"
 	"github.com/dad-go/smartcontract/types"
 	. "github.com/dad-go/errors"
-
 )
 
 type ContractState struct {
