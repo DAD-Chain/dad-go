@@ -14,6 +14,7 @@ import (
 	"io"
 	"sort"
 	. "github.com/dad-go/core/transaction/utxo"
+	"bytes"
 )
 
 //for different transaction types with different payload format
@@ -21,16 +22,17 @@ import (
 type TransactionType byte
 
 const (
-	BookKeeping    TransactionType = 0x00
-	IssueAsset     TransactionType = 0x01
-	BookKeeper     TransactionType = 0x02
-	Claim          TransactionType = 0x03
+	BookKeeping TransactionType = 0x00
+	IssueAsset TransactionType = 0x01
+	BookKeeper TransactionType = 0x02
+	Claim TransactionType = 0x03
 	PrivacyPayload TransactionType = 0x20
-	RegisterAsset  TransactionType = 0x40
-	TransferAsset  TransactionType = 0x80
-	Record         TransactionType = 0x81
-	DeployCode     TransactionType = 0xd0
-	DataFile       TransactionType = 0x12
+	RegisterAsset TransactionType = 0x40
+	TransferAsset TransactionType = 0x80
+	Record TransactionType = 0x81
+	Deploy TransactionType = 0xd0
+	Invoke TransactionType = 0xd1
+	DataFile TransactionType = 0x12
 )
 
 //Payload define the func for loading the payload data
@@ -51,21 +53,21 @@ type Payload interface {
 var TxStore ILedgerStore
 
 type Transaction struct {
-	TxType         TransactionType
-	PayloadVersion byte
-	Payload        Payload
-	Attributes     []*TxAttribute
-	UTXOInputs     []*UTXOTxInput
-	BalanceInputs  []*BalanceTxInput
-	Outputs        []*TxOutput
-	Programs       []*program.Program
+	TxType            TransactionType
+	PayloadVersion    byte
+	Payload           Payload
+	Attributes        []*TxAttribute
+	UTXOInputs        []*UTXOTxInput
+	BalanceInputs     []*BalanceTxInput
+	Outputs           []*TxOutput
+	Programs          []*program.Program
 
 	//Inputs/Outputs map base on Asset (needn't serialize)
 	AssetOutputs      map[Uint256][]*TxOutput
 	AssetInputAmount  map[Uint256]Fixed64
 	AssetOutputAmount map[Uint256]Fixed64
 
-	hash *Uint256
+	hash              *Uint256
 }
 
 //Serialize the Transaction
@@ -201,6 +203,10 @@ func (tx *Transaction) DeserializeUnsignedWithoutType(r io.Reader) error {
 		tx.Payload = new(payload.PrivacyPayload)
 	case DataFile:
 		tx.Payload = new(payload.DataFile)
+	case Deploy:
+		tx.Payload = new(payload.DeployCode)
+	case Invoke:
+		tx.Payload = new(payload.InvokeCode)
 	default:
 		return errors.New("[Transaction],invalide transaction type.")
 	}
@@ -387,6 +393,12 @@ func (tx *Transaction) GetMessage() []byte {
 	return sig.GetHashData(tx)
 }
 
+func (tx *Transaction) ToArray() []byte {
+	b := new(bytes.Buffer)
+	tx.Serialize(b)
+	return b.Bytes()
+}
+
 func (tx *Transaction) Hash() Uint256 {
 	if tx.hash == nil {
 		d := sig.GetHashData(tx)
@@ -482,8 +494,12 @@ func (tx *Transaction) GetMergedAssetIDValueFromReference() (TransactionResult, 
 
 type byProgramHashes []Uint160
 
-func (a byProgramHashes) Len() int      { return len(a) }
-func (a byProgramHashes) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a byProgramHashes) Len() int {
+	return len(a)
+}
+func (a byProgramHashes) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
 func (a byProgramHashes) Less(i, j int) bool {
 	if a[i].CompareTo(a[j]) > 0 {
 		return false

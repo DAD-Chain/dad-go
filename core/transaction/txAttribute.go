@@ -5,15 +5,16 @@ import (
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
 	"io"
+	"bytes"
 )
 
 type TransactionAttributeUsage byte
 
 const (
-	Nonce          TransactionAttributeUsage = 0x00
-	Script         TransactionAttributeUsage = 0x20
+	Nonce TransactionAttributeUsage = 0x00
+	Script TransactionAttributeUsage = 0x20
 	DescriptionUrl TransactionAttributeUsage = 0x81
-	Description    TransactionAttributeUsage = 0x90
+	Description TransactionAttributeUsage = 0x90
 )
 
 func IsValidAttributeType(usage TransactionAttributeUsage) bool {
@@ -68,4 +69,10 @@ func (tx *TxAttribute) Deserialize(r io.Reader) error {
 	}
 	return nil
 
+}
+
+func (tx *TxAttribute) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	tx.Serialize(bf)
+	return bf.Bytes()
 }

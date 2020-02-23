@@ -1,9 +1,10 @@
-package transaction
+package utxo
 
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	"io"
+	"bytes"
 )
 
 type UTXOUnspent struct {
@@ -30,4 +31,10 @@ func (uu *UTXOUnspent) Deserialize(r io.Reader) error {
 	uu.Value.Deserialize(r)
 
 	return nil
+}
+
+func (uu *UTXOUnspent) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	uu.Serialize(bf)
+	return bf.Bytes()
 }

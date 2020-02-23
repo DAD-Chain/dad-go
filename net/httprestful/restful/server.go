@@ -34,28 +34,28 @@ type restServer struct {
 }
 
 const (
-	Api_Getconnectioncount  = "/api/v1/node/connectioncount"
+	Api_Getconnectioncount = "/api/v1/node/connectioncount"
 	Api_GetblockTxsByHeight = "/api/v1/block/transactions/height/:height"
-	Api_Getblockbyheight    = "/api/v1/block/details/height/:height"
-	Api_Getblockbyhash      = "/api/v1/block/details/hash/:hash"
-	Api_Getblockheight      = "/api/v1/block/height"
-	Api_Getblockhash        = "/api/v1/block/hash/:height"
-	Api_GetTotalIssued      = "/api/v1/totalissued/:assetid"
-	Api_Gettransaction      = "/api/v1/transaction/:hash"
-	Api_Getasset            = "/api/v1/asset/:hash"
-	Api_GetBalanceByAddr    = "/api/v1/asset/balances/:addr"
-	Api_GetBalancebyAsset   = "/api/v1/asset/balance/:addr/:assetid"
-	Api_GetUTXObyAsset      = "/api/v1/asset/utxo/:addr/:assetid"
-	Api_GetUTXObyAddr       = "/api/v1/asset/utxos/:addr"
-	Api_SendRawTx           = "/api/v1/transaction"
-	Api_SendRcdTxByTrans    = "/api/v1/custom/transaction/record"
-	Api_GetStateUpdate      = "/api/v1/stateupdate/:namespace/:key"
-	Api_OauthServerUrl      = "/api/v1/config/oauthserver/url"
-	Api_NoticeServerUrl     = "/api/v1/config/noticeserver/url"
-	Api_NoticeServerState   = "/api/v1/config/noticeserver/state"
-	Api_WebsocketState      = "/api/v1/config/websocket/state"
-	Api_Restart             = "/api/v1/restart"
-	Api_GetContract         = "/api/v1/contract/:hash"
+	Api_Getblockbyheight = "/api/v1/block/details/height/:height"
+	Api_Getblockbyhash = "/api/v1/block/details/hash/:hash"
+	Api_Getblockheight = "/api/v1/block/height"
+	Api_Getblockhash = "/api/v1/block/hash/:height"
+	Api_GetTotalIssued = "/api/v1/totalissued/:assetid"
+	Api_Gettransaction = "/api/v1/transaction/:hash"
+	Api_Getasset = "/api/v1/asset/:hash"
+	Api_GetBalanceByAddr = "/api/v1/asset/balances/:addr"
+	Api_GetBalancebyAsset = "/api/v1/asset/balance/:addr/:assetid"
+	Api_GetUTXObyAsset = "/api/v1/asset/utxo/:addr/:assetid"
+	Api_GetUTXObyAddr = "/api/v1/asset/utxos/:addr"
+	Api_SendRawTx = "/api/v1/transaction"
+	Api_SendRcdTxByTrans = "/api/v1/custom/transaction/record"
+	Api_GetStateUpdate = "/api/v1/stateupdate/:namespace/:key"
+	Api_OauthServerUrl = "/api/v1/config/oauthserver/url"
+	Api_NoticeServerUrl = "/api/v1/config/noticeserver/url"
+	Api_NoticeServerState = "/api/v1/config/noticeserver/state"
+	Api_WebsocketState = "/api/v1/config/websocket/state"
+	Api_Restart = "/api/v1/restart"
+	Api_GetContract = "/api/v1/contract/:hash"
 )
 
 func InitRestServer(checkAccessToken func(string, string) (string, int64, interface{})) ApiServer {
@@ -76,7 +76,7 @@ func (rt *restServer) Start() error {
 	}
 
 	tlsFlag := false
-	if tlsFlag || Parameters.HttpRestPort%1000 == TlsPort {
+	if tlsFlag || Parameters.HttpRestPort % 1000 == TlsPort {
 		var err error
 		rt.listener, err = rt.initTlsListen()
 		if err != nil {
@@ -85,7 +85,7 @@ func (rt *restServer) Start() error {
 		}
 	} else {
 		var err error
-		rt.listener, err = net.Listen("tcp", ":"+strconv.Itoa(Parameters.HttpRestPort))
+		rt.listener, err = net.Listen("tcp", ":" + strconv.Itoa(Parameters.HttpRestPort))
 		if err != nil {
 			log.Fatal("net.Listen: ", err.Error())
 			return err
@@ -147,7 +147,6 @@ func (rt *restServer) registryMethod() {
 		Api_Gettransaction:      {name: "gettransaction", handler: GetTransactionByHash},
 		Api_Getasset:            {name: "getasset", handler: GetAssetByHash},
 		Api_GetContract:         {name: "getcontract", handler: GetContract},
-		Api_GetUTXObyAddr:       {name: "getutxobyaddr", handler: GetUnspends},
 		Api_GetUTXObyAsset:      {name: "getutxobyasset", handler: GetUnspendOutput},
 		Api_GetBalanceByAddr:    {name: "getbalancebyaddr", handler: GetBalanceByAddr},
 		Api_GetBalancebyAsset:   {name: "getbalancebyasset", handler: GetBalanceByAsset},
@@ -405,7 +404,7 @@ func (rt *restServer) initTlsListen() (net.Listener, error) {
 	}
 
 	log.Info("TLS listen port is ", strconv.Itoa(Parameters.HttpRestPort))
-	listener, err := tls.Listen("tcp", ":"+strconv.Itoa(Parameters.HttpRestPort), tlsConfig)
+	listener, err := tls.Listen("tcp", ":" + strconv.Itoa(Parameters.HttpRestPort), tlsConfig)
 	if err != nil {
 		log.Error(err)
 		return nil, err

@@ -1,16 +1,16 @@
-package transaction
+package utxo
 
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	"fmt"
 	"io"
+	"bytes"
 )
 
 type UTXOTxInput struct {
-
 	//Indicate the previous Tx which include the UTXO output for usage
-	ReferTxID common.Uint256
+	ReferTxID          common.Uint256
 
 	//The index of output in the referTx output list
 	ReferTxOutputIndex uint16
@@ -54,4 +54,10 @@ func (ui *UTXOTxInput) Equals(other *UTXOTxInput) bool {
 	} else {
 		return false
 	}
+}
+
+func (ui *UTXOTxInput) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	ui.Serialize(bf)
+	return bf.Bytes()
 }

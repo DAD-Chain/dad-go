@@ -8,13 +8,13 @@ import (
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/vm/interfaces"
+	"github.com/dad-go/vm/neovm/interfaces"
 	"io"
 )
 
 //SignableData describe the data need be signed.
 type SignableData interface {
-	interfaces.ISignableObject
+	interfaces.ICodeContainer
 
 	//Get the the SignableData's program hashes
 	GetProgramHashes() ([]common.Uint160, error)

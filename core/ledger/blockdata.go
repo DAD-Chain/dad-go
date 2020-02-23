@@ -10,12 +10,14 @@ import (
 	"github.com/dad-go/core/contract/program"
 	sig "github.com/dad-go/core/signature"
 	. "github.com/dad-go/errors"
+	"bytes"
 )
 
 type Blockdata struct {
 	Version          uint32
 	PrevBlockHash    Uint256
 	TransactionsRoot Uint256
+	StateRoot        Uint256
 	BlockRoot        Uint256
 	Timestamp        uint32
 	Height           uint32
@@ -23,7 +25,7 @@ type Blockdata struct {
 	NextBookKeeper   Uint160
 	Program          *program.Program
 
-	hash Uint256
+	hash             Uint256
 }
 
 //Serialize the blockheader
@@ -41,6 +43,7 @@ func (bd *Blockdata) SerializeUnsigned(w io.Writer) error {
 	serialization.WriteUint32(w, bd.Version)
 	bd.PrevBlockHash.Serialize(w)
 	bd.TransactionsRoot.Serialize(w)
+	bd.StateRoot.Serialize(w)
 	bd.BlockRoot.Serialize(w)
 	serialization.WriteUint32(w, bd.Timestamp)
 	serialization.WriteUint32(w, bd.Height)
@@ -97,6 +100,13 @@ func (bd *Blockdata) DeserializeUnsigned(r io.Reader) error {
 	}
 	bd.TransactionsRoot = *txRoot
 
+	//StateRoot
+	stateRoot := new(Uint256)
+	err = stateRoot.Deserialize(r)
+	if err != nil {
+		return err
+	}
+	bd.StateRoot = *stateRoot
 	err = bd.BlockRoot.Deserialize(r)
 	if err != nil {
 		return err
@@ -164,4 +174,10 @@ func (bd *Blockdata) Hash() Uint256 {
 
 func (bd *Blockdata) GetMessage() []byte {
 	return sig.GetHashData(bd)
+}
+
+func (bd *Blockdata) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	bd.Serialize(bf)
+	return bf.Bytes()
 }

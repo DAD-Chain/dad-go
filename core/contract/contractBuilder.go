@@ -5,7 +5,7 @@ import (
 	pg "github.com/dad-go/core/contract/program"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/vm"
+	vm "github.com/dad-go/vm/neovm"
 	"math/big"
 	"sort"
 )

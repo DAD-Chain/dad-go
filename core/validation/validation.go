@@ -6,8 +6,8 @@ import (
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/vm"
-	"github.com/dad-go/vm/interfaces"
+	vm "github.com/dad-go/vm/neovm"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 func VerifySignableData(signableData sig.SignableData) (bool, error) {
@@ -32,9 +32,9 @@ func VerifySignableData(signableData sig.SignableData) (bool, error) {
 		//execute program on VM
 		var cryptos interfaces.ICrypto
 		cryptos = new(vm.ECDsaCrypto)
-		se := vm.NewExecutionEngine(signableData, cryptos, 1200, nil, nil)
-		se.LoadScript(programs[i].Code, false)
-		se.LoadScript(programs[i].Parameter, true)
+		se := vm.NewExecutionEngine(signableData, cryptos, nil, nil, 0)
+		se.LoadCode(programs[i].Code, false)
+		se.LoadCode(programs[i].Parameter, true)
 		se.Execute()
 
 		if se.GetState() != vm.HALT {

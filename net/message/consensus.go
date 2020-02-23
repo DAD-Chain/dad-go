@@ -31,7 +31,7 @@ type ConsensusPayload struct {
 	Owner           *crypto.PubKey
 	Program         *program.Program
 
-	hash common.Uint256
+	hash            common.Uint256
 }
 
 type consensus struct {
@@ -52,6 +52,12 @@ func (cp *ConsensusPayload) Verify() error {
 	}
 
 	return nil
+}
+
+func (cp *ConsensusPayload) ToArray() []byte {
+	b := new(bytes.Buffer)
+	cp.Serialize(b)
+	return b.Bytes()
 }
 
 func (cp *ConsensusPayload) InvertoryType() common.InventoryType {

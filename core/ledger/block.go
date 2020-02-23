@@ -11,9 +11,10 @@ import (
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/vm"
+	vm "github.com/dad-go/vm/neovm"
 	"io"
 	"time"
+	"bytes"
 )
 
 const BlockVersion uint32 = 0
@@ -23,7 +24,7 @@ type Block struct {
 	Blockdata    *Blockdata
 	Transactions []*tx.Transaction
 
-	hash *Uint256
+	hash         *Uint256
 }
 
 func (b *Block) Serialize(w io.Writer) error {
@@ -120,6 +121,12 @@ func (b *Block) GetMessage() []byte {
 func (b *Block) GetProgramHashes() ([]Uint160, error) {
 
 	return b.Blockdata.GetProgramHashes()
+}
+
+func (b *Block) ToArray() []byte {
+	bf := new(bytes.Buffer)
+	b.Serialize(bf)
+	return bf.Bytes()
 }
 
 func (b *Block) SetPrograms(prog []*program.Program) {

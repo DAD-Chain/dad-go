@@ -27,15 +27,15 @@ import (
 var GenBlockTime = (config.DEFAULTGENBLOCKTIME * time.Second)
 
 type DbftService struct {
-	context           ConsensusContext
-	Client            cl.Client
-	timer             *time.Timer
-	timerHeight       uint32
-	timeView          byte
-	blockReceivedTime time.Time
-	logDictionary     string
-	started           bool
-	localNet          net.Neter
+	context                         ConsensusContext
+	Client                          cl.Client
+	timer                           *time.Timer
+	timerHeight                     uint32
+	timeView                        byte
+	blockReceivedTime               time.Time
+	logDictionary                   string
+	started                         bool
+	localNet                        net.Neter
 
 	newInventorySubscriber          events.Subscriber
 	blockPersistCompletedSubscriber events.Subscriber
@@ -369,7 +369,7 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 
 	//TODO Add Error Catch
 	prevBlockTimestamp := header.Blockdata.Timestamp
-	if payload.Timestamp <= prevBlockTimestamp || payload.Timestamp > uint32(time.Now().Add(time.Minute*10).Unix()) {
+	if payload.Timestamp <= prevBlockTimestamp || payload.Timestamp > uint32(time.Now().Add(time.Minute * 10).Unix()) {
 		log.Info(fmt.Sprintf("Prepare Reques tReceived: Timestamp incorrect: %d", payload.Timestamp))
 		return
 	}
@@ -541,8 +541,10 @@ func (ds *DbftService) Timeout() {
 		ds.context.State |= RequestSent
 		if !ds.context.State.HasFlag(SignatureSent) {
 			now := uint32(time.Now().Unix())
-			header, _ := ledger.DefaultLedger.Blockchain.GetHeader(ds.context.PrevHash)
-
+			header, err := ledger.DefaultLedger.Blockchain.GetHeader(ds.context.PrevHash)
+			if err != nil {
+				log.Error("[Timeout] GetHeader error:", err)
+			}
 			//set context Timestamp
 			blockTime := header.Blockdata.Timestamp + 1
 			if blockTime > now {
