@@ -2,8 +2,8 @@ package httpjsonrpc
 
 import (
 	. "github.com/dad-go/common"
+	."github.com/dad-go/consensus"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/consensus/dbft"
 	. "github.com/dad-go/core/transaction"
 	tx "github.com/dad-go/core/transaction"
 	. "github.com/dad-go/errors"
@@ -25,7 +25,7 @@ func init() {
 //an instance of the multiplexer
 var mainMux ServeMux
 var node Noder
-var dBFT *dbft.DbftService
+var consensusSrv ConsensusService
 
 //multiplexer that keeps track of every function to be called on specific rpc call
 type ServeMux struct {
@@ -143,10 +143,8 @@ func RegistRpcNode(n Noder) {
 	}
 }
 
-func RegistDbftService(d *dbft.DbftService) {
-	if dBFT == nil {
-		dBFT = d
-	}
+func RegistConsensusService(consensus ConsensusService) {
+	consensusSrv = consensus
 }
 
 //a function to register functions to be called for specific rpc calls
