@@ -1,20 +1,21 @@
 package types
 
 import (
+	"github.com/dad-go/vm/neovm/interfaces"
 	"math/big"
 )
 
 type Array struct {
-	_array []StackItem
+	_array []StackItemInterface
 }
 
-func NewArray(value []StackItem) *Array {
+func NewArray(value []StackItemInterface) *Array {
 	var a Array
 	a._array = value
 	return &a
 }
 
-func (a *Array) Equals(other StackItem) bool {
+func (a *Array) Equals(other StackItemInterface) bool {
 	if _, ok := other.(*Array); !ok {
 		return false
 	}
@@ -31,7 +32,6 @@ func (a *Array) Equals(other StackItem) bool {
 		}
 	}
 	return true
-
 }
 
 func (a *Array) GetBigInteger() *big.Int {
@@ -52,10 +52,10 @@ func (a *Array) GetByteArray() []byte {
 	return []byte{}
 }
 
-func (a *Array) GetInterface() {
-
+func (a *Array) GetInterface() interfaces.IInteropInterface {
+	return nil
 }
 
-func (a *Array) GetArray() []StackItem {
+func (a *Array) GetArray() []StackItemInterface {
 	return a._array
 }

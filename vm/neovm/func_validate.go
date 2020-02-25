@@ -10,7 +10,7 @@ import (
 
 func validateCount1(e *ExecutionEngine) error {
 	if EvaluationStackCount(e) < 1 {
-		log.Error("[validateCount1]", EvaluationStackCount(e) < 1)
+		log.Error("[validateCount1]", EvaluationStackCount(e), 1)
 		return ErrUnderStackLen
 	}
 	return nil
@@ -18,7 +18,7 @@ func validateCount1(e *ExecutionEngine) error {
 
 func validateCount2(e *ExecutionEngine) error {
 	if EvaluationStackCount(e) < 2 {
-		log.Error("[validateCount2]", EvaluationStackCount(e) < 2)
+		log.Error("[validateCount2]", EvaluationStackCount(e), 2)
 		return ErrUnderStackLen
 	}
 	return nil
@@ -26,7 +26,7 @@ func validateCount2(e *ExecutionEngine) error {
 
 func validateCount3(e *ExecutionEngine) error {
 	if EvaluationStackCount(e) < 3 {
-		log.Error("[validateCount3]", EvaluationStackCount(e) < 3)
+		log.Error("[validateCount3]", EvaluationStackCount(e), 3)
 		return ErrUnderStackLen
 	}
 	return nil
@@ -34,7 +34,7 @@ func validateCount3(e *ExecutionEngine) error {
 
 func validateDivMod(e *ExecutionEngine) error {
 	if EvaluationStackCount(e) < 2 {
-		log.Error("[validateDivMod]", EvaluationStackCount(e) < 2)
+		log.Error("[validateDivMod]", EvaluationStackCount(e), 2)
 		return ErrUnderStackLen
 	}
 	if PeekInt(e) == 0 {
@@ -123,9 +123,17 @@ func validateXDrop(e *ExecutionEngine) error {
 }
 
 func validateXSwap(e *ExecutionEngine) error {
-	if err := validateOpStack(e); err != nil {
-		return err
+	total := EvaluationStackCount(e)
+	if total < 1 {
+		log.Error("[validateXSwap]", total, 1)
+		return ErrUnderStackLen
 	}
+	index := PeekNInt(0, e)
+	if index < 0 || index+2 > total {
+		log.Error("[validateXSwap] index < 0 || index > EvaluationStackCount(e)-2")
+		return ErrBadValue
+	}
+
 	return nil
 }
 
@@ -212,7 +220,7 @@ func validateLeft(e *ExecutionEngine) error {
 
 func validateRight(e *ExecutionEngine) error {
 	if EvaluationStackCount(e) < 2 {
-		log.Error("[validateRight]", EvaluationStackCount(e) < 2)
+		log.Error("[validateRight]", EvaluationStackCount(e), 2)
 		return ErrUnderStackLen
 	}
 	count := PeekNInt(0, e)
@@ -229,13 +237,19 @@ func validateRight(e *ExecutionEngine) error {
 }
 
 func validatePack(e *ExecutionEngine) error {
+	total := EvaluationStackCount(e)
+	if total < 1 {
+		log.Error("[validatePack]", total, 1)
+		return ErrUnderStackLen
+	}
+
 	count := PeekInt(e)
 	if uint32(count) > MaxArraySize {
 		log.Error("[validateRight] uint32(count) > MaxArraySize")
 		return ErrOverMaxArraySize
 	}
-	if count > EvaluationStackCount(e) {
-		log.Error("[validateRight] count > EvaluationStackCount(e)")
+	if count+1 > total {
+		log.Error("[validateRight] count+1 > EvaluationStackCount(e)")
 		return ErrOverStackLen
 	}
 	return nil
@@ -314,6 +328,11 @@ func validatorSetItem(e *ExecutionEngine) error {
 }
 
 func validateNewArray(e *ExecutionEngine) error {
+	if EvaluationStackCount(e) < 1 {
+		log.Error("[validateNewArray]", EvaluationStackCount(e), 1)
+		return ErrUnderStackLen
+	}
+
 	count := PeekInt(e)
 	if uint32(count) > MaxArraySize {
 		log.Error("[validateNewArray] uint32(count) > MaxArraySize ")

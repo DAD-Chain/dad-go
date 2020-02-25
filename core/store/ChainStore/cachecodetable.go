@@ -1,9 +1,11 @@
 package ChainStore
 
 import (
+	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
 	"github.com/dad-go/errors"
-	"github.com/dad-go/core/states"
+
+	"fmt"
 )
 
 type CacheCodeTable struct {
@@ -11,9 +13,10 @@ type CacheCodeTable struct {
 }
 
 func (table *CacheCodeTable) GetCode(codeHash []byte) ([]byte, error) {
-	value, err := table.store.TryGet(store.ST_Contract, codeHash)
-	if err != nil {
-		return nil, errors.NewErr("[GetCode] TryGet contract error!")
+	value, _ := table.store.TryGet(store.ST_Contract, codeHash)
+	if value == nil {
+		return nil, errors.NewErr(fmt.Sprintf("[GetCode] TryGet contract error! codeHash:%x", codeHash))
 	}
+
 	return value.Value.(*states.ContractState).Code.Code, nil
 }
