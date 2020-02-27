@@ -8,6 +8,8 @@ import (
 	. "github.com/dad-go/errors"
 	vm "github.com/dad-go/vm/neovm"
 	"github.com/dad-go/vm/neovm/interfaces"
+	"github.com/dad-go/smartcontract/service"
+	"github.com/dad-go/smartcontract/types"
 )
 
 func VerifySignableData(signableData sig.SignableData) (bool, error) {
@@ -32,7 +34,8 @@ func VerifySignableData(signableData sig.SignableData) (bool, error) {
 		//execute program on VM
 		var cryptos interfaces.ICrypto
 		cryptos = new(vm.ECDsaCrypto)
-		se := vm.NewExecutionEngine(signableData, cryptos, nil, nil)
+		stateReader := service.NewStateReader(types.Verification)
+		se := vm.NewExecutionEngine(signableData, cryptos, nil, stateReader)
 		se.LoadCode(programs[i].Code, false)
 		se.LoadCode(programs[i].Parameter, true)
 		se.Execute()
