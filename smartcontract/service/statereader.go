@@ -93,9 +93,6 @@ func NewStateReader(trigger trigger.TriggerType) *StateReader {
 }
 
 func (s *StateReader) Register(methodad-gome string, handler func(*vm.ExecutionEngine) (bool, error)) bool {
-	if _, ok := s.serviceMap[methodad-gome]; ok {
-		return false
-	}
 	s.serviceMap[methodad-gome] = handler
 	return true
 }
