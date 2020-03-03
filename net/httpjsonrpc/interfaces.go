@@ -16,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"github.com/dad-go/core/states"
 )
 
 const (
@@ -248,6 +249,41 @@ func getRawTransaction(params []interface{}) map[string]interface{} {
 	default:
 		return dad-goRpcInvalidParameter
 	}
+}
+
+//   {"jsonrpc": "2.0", "method": "getstorage", "params": ["code hash", "key"], "id": 0}
+func getStorage(params []interface{})map[string]interface{} {
+	if len(params) < 2 {
+		return dad-goRpcNil
+	}
+
+	var codeHash Uint160
+	var key string
+	switch params[0].(type) {
+	case string:
+		str := params[0].(string)
+		hex, err := hex.DecodeString(str)
+		if err != nil {
+			return dad-goRpcInvalidParameter
+		}
+		if err := codeHash.Deserialize(bytes.NewReader(hex)); err != nil {
+			return dad-goRpcInvalidHash
+		}
+	default:
+		return dad-goRpcInvalidParameter
+	}
+
+	switch params[1].(type) {
+	case string:
+		key = params[1].(string)
+	default:
+		return dad-goRpcInvalidParameter
+	}
+	item, err := ledger.DefaultLedger.Store.GetStorageItem(&states.StorageKey{CodeHash: codeHash, Key: []byte(key)})
+	if err != nil {
+		return dad-goRpcInternalError
+	}
+	return dad-goRpc(ToHexString(item.Value))
 }
 
 // A JSON example for sendrawtransaction method as following:
