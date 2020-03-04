@@ -571,7 +571,22 @@ func uploadDataFile(params []interface{}) map[string]interface{} {
 	return dad-goRpc(refpath)
 
 }
+func getSmartCodeEvent(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return dad-goRpcNil
+	}
 
+	switch (params[0]).(type) {
+	// block height
+	case float64:
+		height := uint32(params[0].(float64))
+		//TODO resp
+		return dad-goRpc(map[string]interface{}{"Height": height})
+	default:
+		return dad-goRpcInvalidParameter
+	}
+	return dad-goRpcInvalidParameter
+}
 func regDataFile(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
