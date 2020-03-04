@@ -1,15 +1,15 @@
 package data
 
 import (
+	"bytes"
+	"encoding/hex"
+	"fmt"
 	"github.com/dad-go/account"
 	. "github.com/dad-go/cli/common"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/net/httpjsonrpc"
-	"bytes"
-	"encoding/hex"
-	"fmt"
 	"github.com/urfave/cli"
 	"math/rand"
 	"os"

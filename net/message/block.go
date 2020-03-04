@@ -1,15 +1,15 @@
 package message
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/binary"
+	"errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
-	"bytes"
-	"crypto/sha256"
-	"encoding/binary"
-	"errors"
 )
 
 type blockReq struct {
@@ -33,7 +33,7 @@ func (msg block) Handle(node Noder) error {
 		return nil
 	}
 	if err := ledger.DefaultLedger.Blockchain.AddBlock(&msg.blk); err != nil {
-		log.Warn("Block add failed: ", err, " ,block hash is ", hash)
+		log.Warnf("Block add failed: %s,block hash is %x\n", err, hash)
 		return err
 	}
 	node.RemoveFlightHeight(msg.blk.Blockdata.Height)

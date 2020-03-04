@@ -1,24 +1,24 @@
 package message
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/binary"
+	"errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/ledger"
 	. "github.com/dad-go/net/protocol"
-	"bytes"
-	"crypto/sha256"
-	"encoding/binary"
-	"errors"
 )
 
 type headersReq struct {
 	hdr msgHdr
 	p   struct {
-		    len       uint8
-		    hashStart [HASHLEN]byte
-		    hashEnd   [HASHLEN]byte
-	    }
+		len       uint8
+		hashStart [HASHLEN]byte
+		hashEnd   [HASHLEN]byte
+	}
 }
 
 type blkHeader struct {
@@ -143,7 +143,7 @@ func (msg *blkHeader) Deserialization(p []byte) error {
 		}
 	}
 
-	blkHdrErr:
+blkHdrErr:
 	return err
 }
 
@@ -251,7 +251,7 @@ func GetHeadersFromHash(startHash common.Uint256, stopHash common.Uint256) ([]le
 		hash, err := ledger.DefaultLedger.Store.GetBlockHash(stopHeight + i)
 		hd, err := ledger.DefaultLedger.Store.GetHeader(hash)
 		if err != nil {
-			log.Error("GetBlockWithHeight failed ", err.Error())
+			log.Errorf("GetBlockWithHeight failed with err=%s, hash=%x,height=%d\n", err.Error(), hash, stopHeight+i)
 			return nil, 0, err
 		}
 		headers = append(headers, *hd)
