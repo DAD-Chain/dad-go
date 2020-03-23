@@ -5,6 +5,7 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	"bytes"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type StorageKey struct {
@@ -37,5 +38,10 @@ func (this *StorageKey) ToArray() []byte {
 	b := new(bytes.Buffer)
 	this.Serialize(b)
 	return b.Bytes()
+}
+
+func (this *StorageKey) Clone() interfaces.IInteropInterface {
+	sk := *this
+	return &sk
 }
 
