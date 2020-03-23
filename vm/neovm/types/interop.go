@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/dad-go/vm/interfaces"
 	"math/big"
+	"github.com/dad-go/vm/neovm/interfaces"
+	"github.com/dad-go/common"
 )
 
 type InteropInterface struct {
@@ -15,12 +16,18 @@ func NewInteropInterface(value interfaces.IInteropInterface) *InteropInterface {
 	return &ii
 }
 
-func (ii *InteropInterface) Equals() bool {
-	return false
+func (ii *InteropInterface) Equals(other StackItemInterface) bool {
+	if _, ok := other.(*InteropInterface); !ok {
+		return false
+	}
+	if !common.IsEqualBytes(ii._object.ToArray(), other.GetInterface().ToArray()) {
+		return false
+	}
+	return true
 }
 
-func (ii *InteropInterface) GetBigInteger() big.Int {
-	return big.Int{}
+func (ii *InteropInterface) GetBigInteger() *big.Int {
+	return big.NewInt(0)
 }
 
 func (ii *InteropInterface) GetBoolean() bool {
@@ -34,9 +41,10 @@ func (ii *InteropInterface) GetByteArray() []byte {
 	return ii._object.ToArray()
 }
 
-func (ii *InteropInterface) GetInterface() {
+func (ii *InteropInterface) GetInterface() interfaces.IInteropInterface {
+	return ii._object
 }
 
-func (ii *InteropInterface) GetArray() []StackItem {
-	return []StackItem{}
+func (ii *InteropInterface) GetArray() []StackItemInterface {
+	return []StackItemInterface{}
 }
