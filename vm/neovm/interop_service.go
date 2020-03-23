@@ -3,7 +3,6 @@ package neovm
 import (
 	. "github.com/dad-go/vm/neovm/errors"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/common"
 )
 
 type IInteropService interface {
@@ -59,11 +58,11 @@ func (i *InteropService) GetCodeContainer(engine *ExecutionEngine) (bool, error)
 }
 
 func (i *InteropService) GetExecutingCodeHash(engine *ExecutionEngine) (bool, error) {
-	code, err := engine.ExecutingCode()
+	context, err := engine.CurrentContext()
 	if err != nil {
 		return false, err
 	}
-	codeHash, err := common.ToCodeHash(code)
+	codeHash, err := context.GetCodeHash()
 	if err != nil {
 		return false, err
 	}
