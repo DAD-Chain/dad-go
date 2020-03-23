@@ -253,6 +253,13 @@ func validateDec(e *ExecutionEngine) error {
 	return nil
 }
 
+func validateSign(e *ExecutionEngine) error {
+	if err := LogStackTrace(e, 1, "[validateSign]"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func validateAdd(e *ExecutionEngine) error {
 	if err := LogStackTrace(e, 2, "[validateAdd]"); err != nil {
 		return err
@@ -352,6 +359,17 @@ func validatePack(e *ExecutionEngine) error {
 	return nil
 }
 
+func validateUnpack(e *ExecutionEngine) error {
+	if err := LogStackTrace(e, 1, "[validateUnpack]"); err != nil {
+		return err
+	}
+	item := PeekStackItem(e)
+	if _, ok := item.(*types.Array); !ok {
+		return ErrNotArray
+	}
+	return nil
+}
+
 func validatePickItem(e *ExecutionEngine) error {
 	if err := LogStackTrace(e, 2, "[validatePickItem]"); err != nil {
 		return err
@@ -399,25 +417,11 @@ func validatorSetItem(e *ExecutionEngine) error {
 	}
 	item := arrItem.GetStackItem()
 	if _, ok := item.(*types.Array); !ok {
-		if _, ok := item.(*types.ByteArray); ok {
-			l := len(item.GetByteArray())
-			if index.Cmp(big.NewInt(int64(l))) >= 0 {
-				log.Error("[validatorSetItem] index >= l")
-				return ErrOverMaxArraySize
-			}
-			if len(newItem.GetStackItem().GetByteArray()) == 0 {
-				log.Error("[validatorSetItem] len(newItem.GetStackItem().GetByteArray()) = 0 ")
-				return ErrBadValue
-			}
-		} else {
-			log.Error("[validatorSetItem] ErrBadValue")
-			return ErrBadValue
-		}
-	} else {
-		if index.Cmp(big.NewInt(int64(len(item.GetArray())))) >= 0 {
-			log.Error("[validatorSetItem] index >= len(item.GetArray())")
-			return ErrOverMaxArraySize
-		}
+		return ErrNotArray
+	}
+	if index.Cmp(big.NewInt(int64(len(item.GetArray())))) >= 0 {
+		log.Error("[validatorSetItem] index >= len(item.GetArray())")
+		return ErrOverMaxArraySize
 	}
 	return nil
 }
@@ -434,6 +438,35 @@ func validateNewArray(e *ExecutionEngine) error {
 	if count.Cmp(big.NewInt(int64(MaxArraySize))) > 0 {
 		log.Error("[validateNewArray] uint32(count) > MaxArraySize ")
 		return ErrOverMaxArraySize
+	}
+	return nil
+}
+
+func validateAppend(e *ExecutionEngine) error {
+	if err := LogStackTrace(e, 2, "[validateAppend]"); err != nil {
+		return err
+	}
+	arrItem := PeekNStackItem(1, e)
+	if _, ok := arrItem.(*types.Array); !ok {
+		return ErrNotArray
+	}
+	return nil
+}
+
+func validatorReverse(e *ExecutionEngine) error {
+	if err := LogStackTrace(e, 1, "[validatorReverse]"); err != nil {
+		return err
+	}
+	arrItem := PeekStackItem(e)
+	if _, ok := arrItem.(*types.Array); !ok {
+		return ErrNotArray
+	}
+	return nil
+}
+
+func validatorThrowIfNot(e *ExecutionEngine) error {
+	if err := LogStackTrace(e, 1, "[validatorThrowIfNot]"); err != nil {
+		return err
 	}
 	return nil
 }

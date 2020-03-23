@@ -80,6 +80,7 @@ var (
 		//Arithmetic
 		INC:         {Opcode: INC, Name: "INC", Exec: opBigInt, Validator: validateInc},
 		DEC:         {Opcode: DEC, Name: "DEC", Exec: opBigInt, Validator: validateDec},
+		SIGN:        {Opcode: SIGN, Name: "SIGN", Exec: opSign, Validator: validateSign},
 		NEGATE:      {Opcode: NEGATE, Name: "NEGATE", Exec: opBigInt, Validator: validateCount1},
 		ABS:         {Opcode: ABS, Name: "ABS", Exec: opBigInt, Validator: validateCount1},
 		NOT:         {Opcode: NOT, Name: "NOT", Exec: opNot, Validator: validateCount1},
@@ -114,9 +115,15 @@ var (
 		//Array
 		ARRAYSIZE: {Opcode: ARRAYSIZE, Name: "ARRAYSIZE", Exec: opArraySize, Validator: validateCount1},
 		PACK:      {Opcode: PACK, Name: "PACK", Exec: opPack, Validator: validatePack},
-		UNPACK:    {Opcode: UNPACK, Name: "UNPACK", Exec: opUnpack, Validator: validateCount1},
+		UNPACK:    {Opcode: UNPACK, Name: "UNPACK", Exec: opUnpack, Validator: validateUnpack},
 		PICKITEM:  {Opcode: PICKITEM, Name: "PICKITEM", Exec: opPickItem, Validator: validatePickItem},
 		SETITEM:   {Opcode: SETITEM, Name: "SETITEM", Exec: opSetItem, Validator: validatorSetItem},
 		NEWARRAY:  {Opcode: NEWARRAY, Name: "NEWARRAY", Exec: opNewArray, Validator: validateNewArray},
+		APPEND:    {Opcode: APPEND, Name: "APPEND", Exec: opAppend, Validator: validateAppend},
+		REVERSE:   {Opcode: REVERSE, Name: "REVERSE", Exec: opReverse, Validator: validatorReverse},
+
+		//Exceptions
+		THROW:      {Opcode: THROW, Name: "THROW", Exec: opThrow},
+		THROWIFNOT: {Opcode: THROWIFNOT, Name: "THROWIFNOT", Exec: opThrowIfNot, Validator: validatorThrowIfNot},
 	}
 )

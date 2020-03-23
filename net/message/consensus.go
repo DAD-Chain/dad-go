@@ -19,6 +19,7 @@ import (
 	"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
 	"io"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type ConsensusPayload struct {
@@ -58,6 +59,11 @@ func (cp *ConsensusPayload) ToArray() []byte {
 	b := new(bytes.Buffer)
 	cp.Serialize(b)
 	return b.Bytes()
+}
+
+func (cp *ConsensusPayload) Clone() interfaces.IInteropInterface {
+	c := *cp
+	return &c
 }
 
 func (cp *ConsensusPayload) InvertoryType() common.InventoryType {

@@ -44,15 +44,12 @@ func opPickItem(e *ExecutionEngine) (VMState, error) {
 
 func opSetItem(e *ExecutionEngine) (VMState, error) {
 	newItem := PopStackItem(e)
-	index := PopInt(e)
-	itemArr := PopStackItem(e)
-	if _, ok := itemArr.(*types.Array); ok {
-		items := itemArr.GetArray()
-		items[index] = newItem
-	} else {
-		items := itemArr.GetByteArray()
-		items[index] = newItem.GetByteArray()[0]
+	if _, ok := newItem.(*types.Struct); ok {
+		newItem = newItem.Clone()
 	}
+	index := PopInt(e)
+	items := PopArray(e)
+	items[index] = newItem
 	return NONE, nil
 }
 
@@ -66,4 +63,21 @@ func opNewArray(e *ExecutionEngine) (VMState, error) {
 	return NONE, nil
 }
 
+func opAppend(e *ExecutionEngine) (VMState, error) {
+	newItem := PopStackItem(e)
+	if _, ok := newItem.(*types.Struct); ok {
+		newItem = newItem.Clone()
+	}
+	itemArr := PopArray(e)
+	itemArr = append(itemArr, newItem)
+	return NONE, nil
+}
+
+func opReverse(e *ExecutionEngine) (VMState, error) {
+	itemArr := PopArray(e)
+	for i, j := 0, len(itemArr) - 1; i < j; i, j = i + 1, j - 1 {
+		itemArr[i], itemArr[j] = itemArr[j], itemArr[i]
+	}
+	return NONE, nil
+}
 

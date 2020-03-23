@@ -2,6 +2,7 @@ package types
 
 import (
 	"math/big"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type Boolean struct {
@@ -14,7 +15,7 @@ func NewBoolean(value bool) *Boolean {
 	return &b
 }
 
-func (b *Boolean) Equals(other StackItem) bool {
+func (b *Boolean) Equals(other StackItemInterface) bool {
 	if _, ok := other.(*Boolean); !ok {
 		return false
 	}
@@ -42,10 +43,18 @@ func (b *Boolean) GetByteArray() []byte {
 	return []byte{0}
 }
 
-func (b *Boolean) GetInterface() {
-
+func (b *Boolean) GetInterface() interfaces.IInteropInterface {
+	return nil
 }
 
-func (b *Boolean) GetArray() []StackItem {
-	return []StackItem{b}
+func (b *Boolean) GetArray() []StackItemInterface {
+	return []StackItemInterface{b}
+}
+
+func (b *Boolean) GetStruct() []StackItemInterface {
+	return []StackItemInterface{b}
+}
+
+func (b *Boolean) Clone() StackItemInterface {
+	return &Boolean{b.value}
 }
