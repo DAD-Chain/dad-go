@@ -11,15 +11,15 @@ import (
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/net"
 	"github.com/dad-go/net/httpjsonrpc"
+	"github.com/dad-go/net/httpnodeinfo"
 	"github.com/dad-go/net/httprestful"
 	"github.com/dad-go/net/httpwebsocket"
-	"github.com/dad-go/net/httpnodeinfo"
 	"github.com/dad-go/net/protocol"
 	"os"
-	"runtime"
-	"time"
 	"os/signal"
+	"runtime"
 	"syscall"
+	"time"
 )
 
 const (
@@ -53,11 +53,12 @@ func main() {
 	log.Info("0. Loading the Ledger")
 	ledger.DefaultLedger = new(ledger.Ledger)
 	ledger.DefaultLedger.Store, err = ChainStore.NewLedgerStore()
-	defer ledger.DefaultLedger.Store.Close()
 	if err != nil {
 		log.Fatal("open LedgerStore err:", err)
 		os.Exit(1)
 	}
+	defer ledger.DefaultLedger.Store.Close()
+
 	ledger.DefaultLedger.Store.InitLedgerStore(ledger.DefaultLedger)
 	transaction.TxStore = ledger.DefaultLedger.Store
 	crypto.SetAlg(config.Parameters.EncryptAlg)
@@ -74,7 +75,7 @@ func main() {
 		goto ERROR
 	}
 	log.Debug("The Node's PublicKey ", acct.PublicKey)
-	ledger.StandbyBookKeepers, err= client.GetBookKeepers()
+	ledger.StandbyBookKeepers, err = client.GetBookKeepers()
 	if err != nil {
 		log.Fatalf("GetBookKeepers error:%s", err)
 		goto ERROR
@@ -143,6 +144,6 @@ func main() {
 		<-exit
 	}()
 
-	ERROR:
+ERROR:
 	os.Exit(1)
 }
