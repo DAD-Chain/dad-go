@@ -24,9 +24,6 @@ import (
 	. "github.com/dad-go/vm/neovm/errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
-	"fmt"
-	"reflect"
-	"github.com/dad-go/vm/neovm/types"
 )
 
 func NewExecutionEngine(container interfaces.ICodeContainer, crypto interfaces.ICrypto, table interfaces.ICodeTable, service IInteropService) *ExecutionEngine {
