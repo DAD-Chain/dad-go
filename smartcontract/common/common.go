@@ -3,6 +3,8 @@ package common
 import (
 	"github.com/dad-go/vm/neovm/types"
 	"github.com/dad-go/common"
+	"fmt"
+	"reflect"
 )
 
 type States struct {
@@ -11,6 +13,9 @@ type States struct {
 }
 
 func ConvertTypes(item types.StackItemInterface) (results []States) {
+	if item == nil {
+		return
+	}
 	switch v := item.(type) {
 	case *types.ByteArray:
 		results = append(results, States{"ByteArray", common.ToHexString(v.GetByteArray())})
@@ -37,12 +42,15 @@ func ConvertTypes(item types.StackItemInterface) (results []States) {
 	case types.StackItemInterface:
 		ConvertTypes(v)
 	default:
-		panic("[ConvertTypes] Invalid Types!")
+		panic(fmt.Sprintf("[ConvertTypes] Invalid Types: %v", reflect.TypeOf(v)))
 	}
 	return
 }
 
 func ConvertReturnTypes(item types.StackItemInterface) (results []interface{}) {
+	if item == nil {
+		return
+	}
 	switch v := item.(type) {
 	case *types.ByteArray:
 		results = append(results, common.ToHexString(v.GetByteArray()))
