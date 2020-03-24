@@ -11,7 +11,6 @@ import (
 	sig "github.com/dad-go/core/signature"
 	. "github.com/dad-go/errors"
 	"bytes"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type Blockdata struct {
@@ -183,7 +182,3 @@ func (bd *Blockdata) ToArray() []byte {
 	return bf.Bytes()
 }
 
-func (bd *Blockdata) Clone() interfaces.IInteropInterface {
-	blockdata := *bd
-	return &blockdata
-}
