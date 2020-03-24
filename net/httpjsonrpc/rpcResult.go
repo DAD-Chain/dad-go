@@ -16,6 +16,7 @@ var (
 	dad-goRpcAPIError = responsePacking("internal API error")
 	dad-goRpcSuccess = responsePacking(true)
 	dad-goRpcFailed = responsePacking(false)
+	dad-goRpcAccountNotFound = responsePacking(("Account not found"))
 
 	dad-goRpc = responsePacking
 )
