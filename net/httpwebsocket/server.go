@@ -10,6 +10,8 @@ import (
 	Err "github.com/dad-go/net/httprestful/error"
 	"github.com/dad-go/net/httpwebsocket/websocket"
 	. "github.com/dad-go/net/protocol"
+	"github.com/dad-go/smartcontract/event"
+	sc "github.com/dad-go/smartcontract/common"
 )
 
 var ws *websocket.WsServer
@@ -86,7 +88,41 @@ func PushSmartCodeEvent(v interface{}) {
 			return
 		}
 		go func() {
-			PushEvent(rs["TxHash"].(string),rs["Error"].(int64),rs["Action"].(string),rs["Result"])
+			switch object := rs["Result"].(type) {
+			case event.LogEventArgs:
+				type LogEventArgsInfo struct {
+					Container string
+					CodeHash  string
+					Message   string
+					BlockHeight uint32
+				}
+				msg :=LogEventArgsInfo{
+					Container: ToHexString(object.Container.ToArray()),
+					CodeHash:  ToHexString(object.CodeHash.ToArray()),
+					Message:   object.Message,
+					BlockHeight: ledger.DefaultLedger.Store.GetHeight(),
+				}
+				PushEvent(rs["TxHash"].(string),rs["Error"].(int64),rs["Action"].(string),msg)
+				return
+			case event.NotifyEventArgs:
+				type NotifyEventArgsInfo struct {
+					Container string
+					CodeHash  string
+					State     []sc.States
+					BlockHeight uint32
+				}
+				msg := NotifyEventArgsInfo{
+					Container: ToHexString(object.Container.ToArray()),
+					CodeHash:  ToHexString(object.CodeHash.ToArray()),
+					State:   sc.ConvertTypes(object.State),
+					BlockHeight: ledger.DefaultLedger.Store.GetHeight(),
+				}
+				PushEvent(rs["TxHash"].(string),rs["Error"].(int64),rs["Action"].(string),msg)
+				return
+			default:
+				PushEvent(rs["TxHash"].(string),rs["Error"].(int64),rs["Action"].(string),rs["Result"])
+				return
+			}
 		}()
 	}
 }
