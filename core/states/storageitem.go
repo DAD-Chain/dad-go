@@ -4,7 +4,6 @@ import (
 	"io"
 	"bytes"
 	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type StorageItem struct {
@@ -40,7 +39,3 @@ func (storageItem *StorageItem) ToArray() []byte {
 	return b.Bytes()
 }
 
-func (storageItem *StorageItem) Clone() interfaces.IInteropInterface {
-	si := *storageItem
-	return &si
-}

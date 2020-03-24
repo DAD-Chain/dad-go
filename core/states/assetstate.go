@@ -9,7 +9,6 @@ import (
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"fmt"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type AssetState struct {
@@ -126,7 +125,3 @@ func (assetState *AssetState) ToArray() []byte {
 	return b.Bytes()
 }
 
-func (assetState *AssetState) Clone() interfaces.IInteropInterface {
-	as := *assetState
-	return &as
-}

@@ -16,7 +16,6 @@ import (
 	"time"
 	"bytes"
 	"github.com/dad-go/common/config"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 const BlockVersion uint32 = 0
@@ -119,11 +118,6 @@ func (b *Block) FromTrimmedData(r io.Reader) error {
 
 func (b *Block) GetMessage() []byte {
 	return sig.GetHashData(b)
-}
-
-func (b *Block) Clone() interfaces.IInteropInterface {
-	block := *b
-	return &block
 }
 
 func (b *Block) GetProgramHashes() ([]Uint160, error) {

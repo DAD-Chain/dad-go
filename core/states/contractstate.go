@@ -7,7 +7,6 @@ import (
 	"github.com/dad-go/core/code"
 	"github.com/dad-go/smartcontract/types"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type ContractState struct {
@@ -115,11 +114,6 @@ func (contractState *ContractState) ToArray() []byte {
 	b := new(bytes.Buffer)
 	contractState.Serialize(b)
 	return b.Bytes()
-}
-
-func (contractState *ContractState) Clone() interfaces.IInteropInterface {
-	cs := *contractState
-	return &cs
 }
 
 

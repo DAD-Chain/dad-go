@@ -4,7 +4,6 @@ import (
 	"github.com/dad-go/common"
 	"io"
 	"bytes"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type TxOutput struct {
@@ -30,10 +29,4 @@ func (o *TxOutput) ToArray() []byte {
 	o.Serialize(bf)
 	return bf.Bytes()
 }
-
-func (o *TxOutput) Clone() interfaces.IInteropInterface {
-	to := *o
-	return &to
-}
-
 

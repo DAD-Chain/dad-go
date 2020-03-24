@@ -6,7 +6,6 @@ import (
 	. "github.com/dad-go/errors"
 	"io"
 	"bytes"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type TransactionAttributeUsage byte
@@ -78,7 +77,3 @@ func (tx *TxAttribute) ToArray() []byte {
 	return bf.Bytes()
 }
 
-func (this *TxAttribute) Clone() interfaces.IInteropInterface {
-	ta := *this
-	return &ta
-}
