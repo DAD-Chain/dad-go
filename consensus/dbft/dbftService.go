@@ -1,6 +1,8 @@
 package dbft
 
 import (
+	"errors"
+	"fmt"
 	cl "github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
@@ -12,27 +14,25 @@ import (
 	sig "github.com/dad-go/core/signature"
 	tx "github.com/dad-go/core/transaction"
 	"github.com/dad-go/core/transaction/payload"
+	"github.com/dad-go/core/transaction/utxo"
 	va "github.com/dad-go/core/validation"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/events"
 	"github.com/dad-go/net"
 	msg "github.com/dad-go/net/message"
-	"errors"
-	"fmt"
 	"time"
-	"github.com/dad-go/core/transaction/utxo"
 )
 
 type DbftService struct {
-	context                         ConsensusContext
-	Client                          cl.Client
-	timer                           *time.Timer
-	timerHeight                     uint32
-	timeView                        byte
-	blockReceivedTime               time.Time
-	logDictionary                   string
-	started                         bool
-	localNet                        net.Neter
+	context           ConsensusContext
+	Client            cl.Client
+	timer             *time.Timer
+	timerHeight       uint32
+	timeView          byte
+	blockReceivedTime time.Time
+	logDictionary     string
+	started           bool
+	localNet          net.Neter
 
 	newInventorySubscriber          events.Subscriber
 	blockPersistCompletedSubscriber events.Subscriber
@@ -365,8 +365,8 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	}
 
 	//TODO Add Error Catch
-	prevBlockTimestamp := header.Blockdata.Timestamp
-	if payload.Timestamp <= prevBlockTimestamp || payload.Timestamp > uint32(time.Now().Add(time.Minute * 10).Unix()) {
+	prevBlockTimestamp := header.Timestamp
+	if payload.Timestamp <= prevBlockTimestamp || payload.Timestamp > uint32(time.Now().Add(time.Minute*10).Unix()) {
 		log.Info(fmt.Sprintf("Prepare Reques tReceived: Timestamp incorrect: %d", payload.Timestamp))
 		return
 	}
@@ -543,7 +543,7 @@ func (ds *DbftService) Timeout() {
 				log.Error("[Timeout] GetHeader error:", err)
 			}
 			//set context Timestamp
-			blockTime := header.Blockdata.Timestamp + 1
+			blockTime := header.Timestamp + 1
 			if blockTime > now {
 				ds.context.Timestamp = blockTime
 			} else {

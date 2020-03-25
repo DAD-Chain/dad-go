@@ -1,22 +1,22 @@
 package httpjsonrpc
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/hex"
+	"fmt"
 	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/states"
 	tx "github.com/dad-go/core/transaction"
 	. "github.com/dad-go/errors"
-	"bytes"
-	"encoding/base64"
-	"encoding/hex"
-	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
-	"github.com/dad-go/core/states"
 )
 
 const (
@@ -155,18 +155,18 @@ func getBlock(params []interface{}) map[string]interface{} {
 	}
 
 	blockHead := &BlockHead{
-		Version:          block.Blockdata.Version,
-		PrevBlockHash:    ToHexString(block.Blockdata.PrevBlockHash.ToArray()),
-		TransactionsRoot: ToHexString(block.Blockdata.TransactionsRoot.ToArray()),
-		BlockRoot:        ToHexString(block.Blockdata.BlockRoot.ToArray()),
-		StateRoot:        ToHexString(block.Blockdata.StateRoot.ToArray()),
-		Timestamp:        block.Blockdata.Timestamp,
-		Height:           block.Blockdata.Height,
-		ConsensusData:    block.Blockdata.ConsensusData,
-		NextBookKeeper:   ToHexString(block.Blockdata.NextBookKeeper.ToArray()),
+		Version:          block.Header.Version,
+		PrevBlockHash:    ToHexString(block.Header.PrevBlockHash.ToArray()),
+		TransactionsRoot: ToHexString(block.Header.TransactionsRoot.ToArray()),
+		BlockRoot:        ToHexString(block.Header.BlockRoot.ToArray()),
+		StateRoot:        ToHexString(block.Header.StateRoot.ToArray()),
+		Timestamp:        block.Header.Timestamp,
+		Height:           block.Header.Height,
+		ConsensusData:    block.Header.ConsensusData,
+		NextBookKeeper:   ToHexString(block.Header.NextBookKeeper.ToArray()),
 		Program: ProgramInfo{
-			Code:      ToHexString(block.Blockdata.Program.Code),
-			Parameter: ToHexString(block.Blockdata.Program.Parameter),
+			Code:      ToHexString(block.Header.Program.Code),
+			Parameter: ToHexString(block.Header.Program.Parameter),
 		},
 		Hash: ToHexString(hash.ToArray()),
 	}
@@ -271,7 +271,7 @@ func getBalance(params []interface{}) map[string]interface{} {
 		return dad-goRpcInvalidParameter
 	}
 	account, err := ledger.DefaultLedger.Store.GetAccount(programHash)
-	if err !=nil{
+	if err != nil {
 		return dad-goRpcAccountNotFound
 	}
 	c, err := HexToBytes(assetId)
@@ -290,7 +290,7 @@ func getBalance(params []interface{}) map[string]interface{} {
 }
 
 //   {"jsonrpc": "2.0", "method": "getstorage", "params": ["code hash", "key"], "id": 0}
-func getStorage(params []interface{})map[string]interface{} {
+func getStorage(params []interface{}) map[string]interface{} {
 	if len(params) < 2 {
 		return dad-goRpcNil
 	}
@@ -549,7 +549,7 @@ func uploadDataFile(params []interface{}) map[string]interface{} {
 	if err != nil {
 		return dad-goRpcInvalidParameter
 	}
-	f, err := os.OpenFile(tmpname, os.O_WRONLY | os.O_CREATE, 0664)
+	f, err := os.OpenFile(tmpname, os.O_WRONLY|os.O_CREATE, 0664)
 	if err != nil {
 		return dad-goRpcIOError
 	}
