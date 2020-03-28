@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"errors"
+	"fmt"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/asset"
@@ -10,8 +12,6 @@ import (
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"errors"
-	"fmt"
 	"math"
 )
 
@@ -115,7 +115,7 @@ func VerifyTransactionWithBlock(TxPool []*tx.Transaction) error {
 				//AssetReg.Amount : amount when RegisterAsset of this assedID
 				//quantity_issued : amount has been issued of this assedID
 				//txPoolAmounts   : amount in transactionPool of this assedID of issue transaction.
-				if AssetReg.Amount - quantity_issued < txPoolAmounts {
+				if AssetReg.Amount-quantity_issued < txPoolAmounts {
 					return errors.New("[VerifyTransaction], Amount check error.")
 				}
 			}
@@ -228,28 +228,17 @@ func CheckAttributeProgram(Tx *tx.Transaction) error {
 }
 
 func CheckTransactionContracts(Tx *tx.Transaction) error {
-	flag, err := VerifySignableData(Tx)
-	if flag && err == nil {
+	err := VerifySignableDataSignature(Tx)
+	if err == nil {
 		return nil
-	} else {
-		return err
 	}
+
+	err = VerifySignableDataProgramHashes(Tx)
+	return err
 }
 
 func checkAmountPrecise(amount common.Fixed64, precision byte) bool {
-	return amount.GetData() % int64(math.Pow(10, 8 - float64(precision))) != 0
-}
-
-func checkIssuerInBookkeeperList(issuer *crypto.PubKey, bookKeepers []*crypto.PubKey) bool {
-	for _, bk := range bookKeepers {
-		r := crypto.Equal(issuer, bk)
-		if r == true {
-			log.Debug("issuer is in bookkeeperlist")
-			return true
-		}
-	}
-	log.Debug("issuer is NOT in bookkeeperlist")
-	return false
+	return amount.GetData()%int64(math.Pow(10, 8-float64(precision))) != 0
 }
 
 func CheckTransactionPayload(Tx *tx.Transaction) error {
@@ -259,8 +248,9 @@ func CheckTransactionPayload(Tx *tx.Transaction) error {
 		//Todo: validate bookKeeper Cert
 		_ = pld.Cert
 		bookKeepers, _, _ := ledger.DefaultLedger.Store.GetBookKeeperList()
-		r := checkIssuerInBookkeeperList(pld.Issuer, bookKeepers)
-		if r == false {
+
+		index := crypto.ContainPubKey(pld.Issuer, bookKeepers)
+		if index == -1 {
 			return errors.New("The issuer isn't bookekeeper, can't add other in bookkeepers list.")
 		}
 		return nil

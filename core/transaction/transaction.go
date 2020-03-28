@@ -1,21 +1,21 @@
 package transaction
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"errors"
+	"fmt"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/contract/program"
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/core/transaction/payload"
+	. "github.com/dad-go/core/transaction/utxo"
 	. "github.com/dad-go/errors"
-	"crypto/sha256"
-	"errors"
-	"fmt"
+	"github.com/dad-go/vm/neovm/interfaces"
 	"io"
 	"sort"
-	. "github.com/dad-go/core/transaction/utxo"
-	"bytes"
-	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 //for different transaction types with different payload format
@@ -23,17 +23,17 @@ import (
 type TransactionType byte
 
 const (
-	BookKeeping TransactionType = 0x00
-	IssueAsset TransactionType = 0x01
-	BookKeeper TransactionType = 0x02
-	Claim TransactionType = 0x03
+	BookKeeping    TransactionType = 0x00
+	IssueAsset     TransactionType = 0x01
+	BookKeeper     TransactionType = 0x02
+	Claim          TransactionType = 0x03
 	PrivacyPayload TransactionType = 0x20
-	RegisterAsset TransactionType = 0x40
-	TransferAsset TransactionType = 0x80
-	Record TransactionType = 0x81
-	Deploy TransactionType = 0xd0
-	Invoke TransactionType = 0xd1
-	DataFile TransactionType = 0x12
+	RegisterAsset  TransactionType = 0x40
+	TransferAsset  TransactionType = 0x80
+	Record         TransactionType = 0x81
+	Deploy         TransactionType = 0xd0
+	Invoke         TransactionType = 0xd1
+	DataFile       TransactionType = 0x12
 )
 
 //Payload define the func for loading the payload data
@@ -54,21 +54,18 @@ type Payload interface {
 var TxStore ILedgerStore
 
 type Transaction struct {
-	TxType            TransactionType
-	PayloadVersion    byte
-	Payload           Payload
-	Attributes        []*TxAttribute
-	UTXOInputs        []*UTXOTxInput
-	BalanceInputs     []*BalanceTxInput
-	Outputs           []*TxOutput
-	Programs          []*program.Program
+	TxType         TransactionType
+	PayloadVersion byte
+	Payload        Payload
+	Attributes     []*TxAttribute
+	UTXOInputs     []*UTXOTxInput
+	BalanceInputs  []*BalanceTxInput
+	Outputs        []*TxOutput
+	Programs       []*program.Program
 
-	//Inputs/Outputs map base on Asset (needn't serialize)
-	AssetOutputs      map[Uint256][]*TxOutput
-	AssetInputAmount  map[Uint256]Fixed64
-	AssetOutputAmount map[Uint256]Fixed64
-
-	hash              *Uint256
+	//cache only, needn't serialize
+	referTx []*TxOutput
+	hash    *Uint256
 }
 
 //Serialize the Transaction
@@ -269,11 +266,11 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 	hashs := []Uint160{}
 	uniqHashes := []Uint160{}
 	// add inputUTXO's transaction
-	referenceWithUTXO_Output, err := tx.GetReference()
+	referOutput, err := tx.GetReference()
 	if err != nil {
 		return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes failed.")
 	}
-	for _, output := range referenceWithUTXO_Output {
+	for _, output := range referOutput {
 		programHash := output.ProgramHash
 		hashs = append(hashs, programHash)
 	}
@@ -294,10 +291,7 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes CreateSignatureRedeemScript failed.")
 		}
 
-		astHash, err := ToCodeHash(signatureRedeemScript)
-		if err != nil {
-			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes ToCodeHash failed.")
-		}
+		astHash := ToCodeHash(signatureRedeemScript)
 		hashs = append(hashs, astHash)
 	case IssueAsset:
 		result := tx.GetMergedAssetIDValueFromOutputs()
@@ -327,10 +321,7 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes CreateSignatureRedeemScript failed.")
 		}
 
-		astHash, err := ToCodeHash(signatureRedeemScript)
-		if err != nil {
-			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes ToCodeHash failed.")
-		}
+		astHash := ToCodeHash(signatureRedeemScript)
 		hashs = append(hashs, astHash)
 	case TransferAsset:
 	case Record:
@@ -341,10 +332,7 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 			return nil, NewDetailErr(err, ErrNoCode, "[Transaction - BookKeeper], GetProgramHashes CreateSignatureRedeemScript failed.")
 		}
 
-		astHash, err := ToCodeHash(signatureRedeemScript)
-		if err != nil {
-			return nil, NewDetailErr(err, ErrNoCode, "[Transaction - BookKeeper], GetProgramHashes ToCodeHash failed.")
-		}
+		astHash := ToCodeHash(signatureRedeemScript)
 		hashs = append(hashs, astHash)
 	case PrivacyPayload:
 		issuer := tx.Payload.(*payload.PrivacyPayload).EncryptAttr.(*payload.EcdhAes256).FromPubkey
@@ -353,10 +341,7 @@ func (tx *Transaction) GetProgramHashes() ([]Uint160, error) {
 			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes CreateSignatureRedeemScript failed.")
 		}
 
-		astHash, err := ToCodeHash(signatureRedeemScript)
-		if err != nil {
-			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetProgramHashes ToCodeHash failed.")
-		}
+		astHash := ToCodeHash(signatureRedeemScript)
 		hashs = append(hashs, astHash)
 	default:
 	}
@@ -428,12 +413,17 @@ func (tx *Transaction) Verify() error {
 	return nil
 }
 
-func (tx *Transaction) GetReference() (map[*UTXOTxInput]*TxOutput, error) {
+func (tx *Transaction) GetReference() ([]*TxOutput, error) {
+	if tx.referTx != nil {
+		return tx.referTx, nil
+	}
+
 	if tx.TxType == RegisterAsset {
-		return nil, nil
+		tx.referTx = []*TxOutput{}
+		return tx.referTx, nil
 	}
 	//UTXO input /  Outputs
-	reference := make(map[*UTXOTxInput]*TxOutput)
+	reference := make([]*TxOutput, 0, len(tx.UTXOInputs))
 	// Key index，v UTXOInput
 	for _, utxo := range tx.UTXOInputs {
 		transaction, err := TxStore.GetTransaction(utxo.ReferTxID)
@@ -441,10 +431,12 @@ func (tx *Transaction) GetReference() (map[*UTXOTxInput]*TxOutput, error) {
 			return nil, NewDetailErr(err, ErrNoCode, "[Transaction], GetReference failed.")
 		}
 		index := utxo.ReferTxOutputIndex
-		reference[utxo] = transaction.Outputs[index]
+		reference = append(reference, transaction.Outputs[index])
 	}
+	tx.referTx = reference
 	return reference, nil
 }
+
 func (tx *Transaction) GetTransactionResults() (TransactionResult, error) {
 	result := make(map[Uint256]Fixed64)
 	outputResult := tx.GetMergedAssetIDValueFromOutputs()

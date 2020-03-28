@@ -11,7 +11,6 @@ import (
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/contract/program"
-	"github.com/dad-go/core/ledger"
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/core/validation"
 	"github.com/dad-go/crypto"
@@ -31,7 +30,7 @@ type ConsensusPayload struct {
 	Owner           *crypto.PubKey
 	Program         *program.Program
 
-	hash            common.Uint256
+	hash common.Uint256
 }
 
 type consensus struct {
@@ -46,8 +45,12 @@ func (cp *ConsensusPayload) Hash() common.Uint256 {
 }
 
 func (cp *ConsensusPayload) Verify() error {
-	res, err := validation.VerifySignableData(cp)
-	if res == false || err != nil {
+	err := validation.VerifySignableDataSignature(cp)
+	if err != nil {
+		return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
+	}
+	err = validation.VerifySignableDataProgramHashes(cp)
+	if err != nil {
 		return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
 	}
 
@@ -65,30 +68,13 @@ func (cp *ConsensusPayload) InvertoryType() common.InventoryType {
 }
 
 func (cp *ConsensusPayload) GetProgramHashes() ([]common.Uint160, error) {
-	log.Debug()
-
-	if ledger.DefaultLedger == nil {
-		return nil, errors.New("The Default ledger not exists.")
-	}
-	if cp.PrevHash != ledger.DefaultLedger.Store.GetCurrentBlockHash() {
-		return nil, errors.New("The PreHash Not matched.")
-	}
-
 	contract, err := contract.CreateSignatureContract(cp.Owner)
-	hash := contract.ProgramHash
-	log.Debug("program hash == ", hash)
-
-	//signatureRedeemScript, err := contract.CreateSignatureRedeemScript(bookKeepers[cp.BookKeeperIndex])
 	if err != nil {
 		return nil, NewDetailErr(err, ErrNoCode, "[Consensus], CreateSignatureContract failed.")
 	}
 
-	//hash, err:=common.ToCodeHash(signatureRedeemScript)
-	//if err != nil {
-	//	return  nil, NewDetailErr(err, ErrNoCode, "[Consensus], ToCodeHash failed.")
-	//}
-	programhashes := []common.Uint160{}
-	programhashes = append(programhashes, hash)
+	hash := contract.ProgramHash
+	programhashes := []common.Uint160{hash}
 	return programhashes, nil
 }
 
@@ -106,15 +92,13 @@ func (cp *ConsensusPayload) SetPrograms(programs []*program.Program) {
 }
 
 func (cp *ConsensusPayload) GetPrograms() []*program.Program {
-	cpg := []*program.Program{}
-	cpg = append(cpg, cp.Program)
+	cpg := []*program.Program{cp.Program}
 	return cpg
 }
 
 func (cp *ConsensusPayload) GetMessage() []byte {
 	//TODO: GetMessage
 	return sig.GetHashData(cp)
-	//return []byte{}
 }
 
 func (msg consensus) Handle(node Noder) error {

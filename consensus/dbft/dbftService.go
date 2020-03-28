@@ -115,10 +115,7 @@ func (ds *DbftService) CheckSignatures() error {
 		if err != nil {
 			return NewDetailErr(err, ErrNoCode, "[DbftService] ,EncodePoint failed")
 		}
-		codehash, err := ToCodeHash(ep)
-		if err != nil {
-			return NewDetailErr(err, ErrNoCode, "[DbftService] ,ToCodeHash failed")
-		}
+		codehash := ToCodeHash(ep)
 
 		//create multi-sig contract with all bookKeepers
 		contract, err := ct.CreateMultiSigContract(codehash, ds.context.M(), ds.context.BookKeepers)
@@ -386,7 +383,7 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	ds.context.header = nil
 
 	//block header verification
-	_, err = va.VerifySignature(ds.context.MakeHeader(), ds.context.BookKeepers[payload.BookKeeperIndex], message.Signature)
+	err = va.VerifySignature(ds.context.MakeHeader(), ds.context.BookKeepers[payload.BookKeeperIndex], message.Signature)
 	if err != nil {
 		log.Warn("PrepareRequestReceived VerifySignature failed.", err)
 		ds.context = backupContext
@@ -443,7 +440,7 @@ func (ds *DbftService) PrepareResponseReceived(payload *msg.ConsensusPayload, me
 	if header == nil {
 		return
 	}
-	if _, err := va.VerifySignature(header, ds.context.BookKeepers[payload.BookKeeperIndex], message.Signature); err != nil {
+	if err := va.VerifySignature(header, ds.context.BookKeepers[payload.BookKeeperIndex], message.Signature); err != nil {
 		return
 	}
 

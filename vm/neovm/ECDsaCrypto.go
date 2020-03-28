@@ -1,19 +1,19 @@
 package neovm
 
 import (
-	"github.com/dad-go/crypto"
-	. "github.com/dad-go/errors"
-	"github.com/dad-go/common/log"
+	"crypto/sha256"
 	"errors"
 	"github.com/dad-go/common"
-	"crypto/sha256"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/crypto"
+	. "github.com/dad-go/errors"
 )
 
 type ECDsaCrypto struct {
 }
 
 func (c *ECDsaCrypto) Hash160(message []byte) []byte {
-	temp, _ := common.ToCodeHash(message)
+	temp := common.ToCodeHash(message)
 	return temp.ToArray()
 }
 

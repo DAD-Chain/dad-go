@@ -6,31 +6,37 @@ import (
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	vm "github.com/dad-go/vm/neovm"
-	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/dad-go/smartcontract/service"
 	"github.com/dad-go/smartcontract/types"
+	vm "github.com/dad-go/vm/neovm"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
-func VerifySignableData(signableData sig.SignableData) (bool, error) {
-
+func VerifySignableDataProgramHashes(signableData sig.SignableData) error {
 	hashes, err := signableData.GetProgramHashes()
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	programs := signableData.GetPrograms()
 	Length := len(hashes)
 	if Length != len(programs) {
-		return false, errors.New("The number of data hashes is different with number of programs.")
+		return errors.New("the number of data hashes is different with number of programs")
 	}
 
-	programs = signableData.GetPrograms()
 	for i := 0; i < len(programs); i++ {
-		temp, _ := ToCodeHash(programs[i].Code)
+		temp := ToCodeHash(programs[i].Code)
 		if hashes[i] != temp {
-			return false, errors.New("The data hashes is different with corresponding program code.")
+			return errors.New("the data hashes is different with corresponding program code")
 		}
+	}
+
+	return nil
+}
+
+func VerifySignableDataSignature(signableData sig.SignableData) error {
+	programs := signableData.GetPrograms()
+	for i := 0; i < len(programs); i++ {
 		//execute program on VM
 		var cryptos interfaces.ICrypto
 		cryptos = new(vm.ECDsaCrypto)
@@ -41,27 +47,27 @@ func VerifySignableData(signableData sig.SignableData) (bool, error) {
 		se.Execute()
 
 		if se.GetState() != vm.HALT {
-			return false, NewDetailErr(errors.New("[VM] Finish State not equal to HALT."), ErrNoCode, "")
+			return NewDetailErr(errors.New("[VM] Finish State not equal to HALT."), ErrNoCode, "")
 		}
 
 		if se.GetEvaluationStack().Count() != 1 {
-			return false, NewDetailErr(errors.New("[VM] Execute Engine Stack Count Error."), ErrNoCode, "")
+			return NewDetailErr(errors.New("[VM] Execute Engine Stack Count Error."), ErrNoCode, "")
 		}
 
 		flag := se.GetExecuteResult()
 		if !flag {
-			return false, NewDetailErr(errors.New("[VM] Check Sig FALSE."), ErrNoCode, "")
+			return NewDetailErr(errors.New("[VM] Check Sig FALSE."), ErrNoCode, "")
 		}
 	}
 
-	return true, nil
+	return nil
 }
 
-func VerifySignature(signableData sig.SignableData, pubkey *crypto.PubKey, signature []byte) (bool, error) {
+func VerifySignature(signableData sig.SignableData, pubkey *crypto.PubKey, signature []byte) error {
 	err := crypto.Verify(*pubkey, sig.GetHashData(signableData), signature)
 	if err != nil {
-		return false, NewDetailErr(err, ErrNoCode, "[Validation], VerifySignature failed.")
+		return NewDetailErr(err, ErrNoCode, "[Validation], VerifySignature failed.")
 	} else {
-		return true, nil
+		return nil
 	}
 }
