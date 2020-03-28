@@ -6,10 +6,10 @@ import (
 	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	vm "github.com/dad-go/vm/neovm"
-	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/dad-go/smartcontract/service"
 	"github.com/dad-go/smartcontract/types"
+	vm "github.com/dad-go/vm/neovm"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 func VerifySignableData(signableData sig.SignableData) (bool, error) {
@@ -27,7 +27,7 @@ func VerifySignableData(signableData sig.SignableData) (bool, error) {
 
 	programs = signableData.GetPrograms()
 	for i := 0; i < len(programs); i++ {
-		temp, _ := ToCodeHash(programs[i].Code)
+		temp := ToCodeHash(programs[i].Code)
 		if hashes[i] != temp {
 			return false, errors.New("The data hashes is different with corresponding program code.")
 		}
