@@ -1,14 +1,14 @@
 package utxo
 
 import (
+	"errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
-	"errors"
 	"io"
 )
 
-//define the gas stucture in DAD Chain
+//define the gas stucture in onchain dad-go
 type SpentCoinState struct {
 	TransactionHash   common.Uint256
 	TransactionHeight uint32
@@ -68,14 +68,19 @@ func (this *SpentCoinState) Deserialize(r io.Reader) error {
 	return nil
 }
 
+func (this *SpentCoinState) RemoveItem(i int) {
+	this.Items[i] = this.Items[len(this.Items)-1]
+	this.Items = this.Items[:len(this.Items)-1]
+}
+
 type Item struct {
-	PrevIndex uint32
+	PrevIndex uint16
 	EndHeight uint32
 }
 
 // Serialize is the implement of SignableData interface.
 func (this *Item) Serialize(w io.Writer) error {
-	err := serialization.WriteUint32(w, this.PrevIndex)
+	err := serialization.WriteUint16(w, this.PrevIndex)
 	if err != nil {
 		return NewDetailErr(err, ErrNoCode, "[Items], PrevIndex serialize failed.")
 	}
@@ -92,7 +97,7 @@ func (this *Item) Deserialize(r io.Reader) error {
 		this = new(Item)
 	}
 	var err error
-	this.PrevIndex, err = serialization.ReadUint32(r)
+	this.PrevIndex, err = serialization.ReadUint16(r)
 	if err != nil {
 		return NewDetailErr(errors.New("[Items], PrevIndex deserialize failed."), ErrNoCode, "")
 	}
