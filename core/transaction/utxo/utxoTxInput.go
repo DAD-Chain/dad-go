@@ -1,9 +1,9 @@
 package utxo
 
 import (
+	"fmt"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
-	"fmt"
 	"io"
 	"bytes"
 )

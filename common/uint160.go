@@ -1,12 +1,12 @@
 package common
 
 import (
-	"github.com/dad-go/common/log"
-	. "github.com/dad-go/errors"
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/errors"
 	"io"
 	"math/big"
 
@@ -131,4 +131,11 @@ func ToScriptHash(address string) (Uint160, error) {
 	}
 
 	return ph, nil
+}
+
+func (u *Uint160) SetBytes(b []byte) {
+	if len(b) > len(u) {
+		b = b[len(b)-UINT160SIZE:]
+	}
+	copy(u[UINT160SIZE-len(b):], b)
 }

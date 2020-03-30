@@ -1,14 +1,14 @@
 package protocol
 
 import (
+	"bytes"
+	"encoding/binary"
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/events"
-	"bytes"
-	"encoding/binary"
 	"time"
 )
 
@@ -95,7 +95,7 @@ type Noder interface {
 	CloseConn()
 	GetHeight() uint64
 	GetConnectionCnt() uint
-	GetTxnPool(bool) map[common.Uint256]*transaction.Transaction
+	GetTxnPool(bool) (map[common.Uint256]*transaction.Transaction, common.Fixed64)
 	AppendTxnPool(*transaction.Transaction) ErrCode
 	ExistedID(id common.Uint256) bool
 	ReqNeighborList()

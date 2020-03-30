@@ -4,7 +4,6 @@ import (
 	. "github.com/dad-go/common"
 	."github.com/dad-go/consensus"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/core/transaction"
 	tx "github.com/dad-go/core/transaction"
 	. "github.com/dad-go/errors"
 	. "github.com/dad-go/net/protocol"
@@ -35,7 +34,7 @@ type ServeMux struct {
 }
 
 type TxAttributeInfo struct {
-	Usage TransactionAttributeUsage
+	Usage tx.TransactionAttributeUsage
 	Data  string
 }
 
@@ -46,13 +45,13 @@ type UTXOTxInputInfo struct {
 
 type BalanceTxInputInfo struct {
 	AssetID     string
-	Value       Fixed64
+	Value       string
 	ProgramHash string
 }
 
 type TxoutputInfo struct {
 	AssetID     string
-	Value       Fixed64
+	Value       string
 	ProgramHash string
 }
 
@@ -72,7 +71,7 @@ type ProgramInfo struct {
 }
 
 type Transactions struct {
-	TxType            TransactionType
+	TxType            tx.TransactionType
 	PayloadVersion    byte
 	Payload           PayloadInfo
 	Attributes        []TxAttributeInfo
@@ -80,6 +79,8 @@ type Transactions struct {
 	BalanceInputs     []BalanceTxInputInfo
 	Outputs           []TxoutputInfo
 	Programs          []ProgramInfo
+	NetworkFee        string
+	SystemFee         string
 
 	AssetOutputs      []TxoutputMap
 	AssetInputAmount  []AmountMap
