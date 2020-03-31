@@ -3,11 +3,11 @@ package transaction
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/asset"
+	"github.com/dad-go/core/code"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/transaction/payload"
-	"github.com/dad-go/crypto"
 	. "github.com/dad-go/core/transaction/utxo"
-	"github.com/dad-go/core/code"
+	"github.com/dad-go/crypto"
 	"github.com/dad-go/smartcontract/types"
 )
 
@@ -201,3 +201,31 @@ func NewInvokeTransaction(fc []byte, codeHash common.Uint160) (*Transaction, err
 	}, nil
 }
 
+func NewEnrollmentTransaction(pk *crypto.PubKey) (*Transaction, error) {
+	enrollmentPayload := &payload.Enrollment{
+		PublicKey: pk,
+	}
+	return &Transaction{
+		TxType:        Enrollment,
+		Payload:       enrollmentPayload,
+		Attributes:    []*TxAttribute{},
+		UTXOInputs:    []*UTXOTxInput{},
+		BalanceInputs: []*BalanceTxInput{},
+		Programs:      []*program.Program{},
+	}, nil
+}
+
+func NewVoteTransaction(pks []*crypto.PubKey, voter common.Uint160) (*Transaction, error) {
+	votePayload := &payload.Vote{
+		PubKeys: pks,
+		Account: voter,
+	}
+	return &Transaction{
+		TxType:        Vote,
+		Payload:       votePayload,
+		Attributes:    []*TxAttribute{},
+		UTXOInputs:    []*UTXOTxInput{},
+		BalanceInputs: []*BalanceTxInput{},
+		Programs:      []*program.Program{},
+	}, nil
+}
