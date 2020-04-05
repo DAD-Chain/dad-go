@@ -302,9 +302,12 @@ func getBalance(params []interface{}) map[string]interface{} {
 		return dad-goRpcInvalidParameter
 	}
 
-	if v, ok := account.Balances[ass]; ok {
-		return dad-goRpc(v.GetData())
+	for _, v := range account.Balances {
+		if v.AssetId.CompareTo(ass) == 0 {
+			return dad-goRpc(v.Amount.GetData())
+		}
 	}
+
 	return dad-goRpcNil
 }
 

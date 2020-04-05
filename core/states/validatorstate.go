@@ -3,6 +3,7 @@ package states
 import (
 	"github.com/dad-go/crypto"
 	"io"
+	. "github.com/dad-go/errors"
 )
 
 type ValidatorState struct {
@@ -24,11 +25,11 @@ func (this *ValidatorState) Deserialize(r io.Reader) error {
 	}
 	err := this.StateBase.Deserialize(r)
 	if err != nil {
-		return err
+		return NewDetailErr(err, ErrNoCode, "[ValidatorState], StateBase Deserialize failed.")
 	}
 	pk := new(crypto.PubKey)
 	if err := pk.DeSerialize(r); err != nil {
-		return err
+		return NewDetailErr(err, ErrNoCode, "[ValidatorState], PublicKey Deserialize failed.")
 	}
 	this.PublicKey = pk
 	return nil
