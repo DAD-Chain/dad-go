@@ -5,15 +5,12 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/states"
-	tx "github.com/dad-go/core/transaction"
-	"github.com/dad-go/core/transaction/payload"
-	"github.com/dad-go/core/transaction/utxo"
+	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
 	"math/rand"
 	"os"
@@ -25,11 +22,11 @@ const (
 	RANDBYTELEN = 4
 )
 
-func TransArryByteToHexString(ptx *tx.Transaction) *Transactions {
+func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
+	panic("Transaction structure has changed need reimplement ")
 
 	trans := new(Transactions)
 	trans.TxType = ptx.TxType
-	trans.PayloadVersion = ptx.PayloadVersion
 	trans.Payload = TransPayloadToHex(ptx.Payload)
 
 	n := 0
@@ -40,43 +37,8 @@ func TransArryByteToHexString(ptx *tx.Transaction) *Transactions {
 		n++
 	}
 
-	n = 0
-	trans.UTXOInputs = make([]UTXOTxInputInfo, len(ptx.UTXOInputs))
-	for _, v := range ptx.UTXOInputs {
-		trans.UTXOInputs[n].ReferTxID = ToHexString(v.ReferTxID.ToArray())
-		trans.UTXOInputs[n].ReferTxOutputIndex = v.ReferTxOutputIndex
-		n++
-	}
-
-	n = 0
-	trans.BalanceInputs = make([]BalanceTxInputInfo, len(ptx.BalanceInputs))
-	for _, v := range ptx.BalanceInputs {
-		trans.BalanceInputs[n].AssetID = ToHexString(v.AssetID.ToArray())
-		trans.BalanceInputs[n].Value = strconv.FormatInt(int64(v.Value), 10)
-		trans.BalanceInputs[n].ProgramHash = ToHexString(v.ProgramHash.ToArray())
-		n++
-	}
-
-	n = 0
-	trans.Outputs = make([]TxoutputInfo, len(ptx.Outputs))
-	for _, v := range ptx.Outputs {
-		trans.Outputs[n].AssetID = ToHexString(v.AssetID.ToArray())
-		trans.Outputs[n].Value = strconv.FormatInt(int64(v.Value), 10)
-		trans.Outputs[n].ProgramHash = ToHexString(v.ProgramHash.ToArray())
-		n++
-	}
-
-	n = 0
-	trans.Programs = make([]ProgramInfo, len(ptx.Programs))
-	for _, v := range ptx.Programs {
-		trans.Programs[n].Code = ToHexString(v.Code)
-		trans.Programs[n].Parameter = ToHexString(v.Parameter)
-		n++
-	}
-
-	networkfee,_:=ptx.GetNetworkFee()
-	trans.NetworkFee = strconv.FormatInt(int64(networkfee),10)
-	trans.SystemFee = strconv.FormatInt(int64(ptx.SystemFee),10)
+	networkfee := ptx.GetNetworkFee()
+	trans.NetworkFee = strconv.FormatInt(int64(networkfee), 10)
 
 	mhash := ptx.Hash()
 	trans.Hash = ToHexString(mhash.ToArray())
@@ -140,7 +102,7 @@ func getBlock(params []interface{}) map[string]interface{} {
 		Timestamp:        block.Header.Timestamp,
 		Height:           block.Header.Height,
 		ConsensusData:    block.Header.ConsensusData,
-		NextBookKeeper:   ToHexString(block.Header.NextBookKeeper.ToArray()),
+		NextBookKeeper:   ToHexString(block.Header.NextBookKeeper[:]),
 		Program: ProgramInfo{
 			Code:      ToHexString(block.Header.Program.Code),
 			Parameter: ToHexString(block.Header.Program.Parameter),
@@ -224,48 +186,6 @@ func getRawTransaction(params []interface{}) map[string]interface{} {
 		}
 		tran := TransArryByteToHexString(tx)
 		return dad-goRpc(tran)
-	default:
-		return dad-goRpcInvalidParameter
-	}
-}
-
-// A JSON example for getrawtransaction method as following:
-//   {"jsonrpc": "2.0", "method": "getrawtransaction", "params": ["transactioin hash in hex"], "id": 0}
-func getCalculateBouns(params []interface{}) map[string]interface{} {
-	if len(params) < 2 {
-		return dad-goRpcNil
-	}
-	switch params[0].(type) {
-	case string:
-		//get Transaction hash
-		str := params[0].(string)
-		hex, err := hex.DecodeString(str)
-		if err != nil {
-			return dad-goRpcInvalidParameter
-		}
-		var hash Uint256
-		err = hash.Deserialize(bytes.NewReader(hex))
-		if err != nil {
-			return dad-goRpcInvalidParameter
-		}
-		//get Transaction index
-		temp := params[1].(string)
-		num, err := strconv.Atoi(temp)
-		if err != nil {
-			return dad-goRpcInvalidParameter
-		}
-		utxoInput:=&utxo.UTXOTxInput{
-			ReferTxID:         hash,
-			ReferTxOutputIndex:  uint16(num),
-		}
-		claimData := &payload.Claim{
-			[]*utxo.UTXOTxInput{utxoInput},
-		}
-		amount, err := ledger.CalculateBouns(claimData.Claims, false)
-		if err != nil {
-			return dad-goRpcInvalidHash
-		}
-		return dad-goRpc(strconv.FormatInt(int64(amount),10))
 	default:
 		return dad-goRpcInvalidParameter
 	}
@@ -365,7 +285,7 @@ func sendRawTransaction(params []interface{}) map[string]interface{} {
 		if err != nil {
 			return dad-goRpcInvalidParameter
 		}
-		var txn tx.Transaction
+		var txn types.Transaction
 		if err := txn.Deserialize(bytes.NewReader(hex)); err != nil {
 			return dad-goRpcInvalidTransaction
 		}
@@ -379,62 +299,6 @@ func sendRawTransaction(params []interface{}) map[string]interface{} {
 	return dad-goRpc(ToHexString(hash.ToArray()))
 }
 
-func getUnspendOutput(params []interface{}) map[string]interface{} {
-	if len(params) < 2 {
-		return dad-goRpcNil
-	}
-	var programHash Uint160
-	var assetHash Uint256
-	switch params[0].(type) {
-	case string:
-		str := params[0].(string)
-		hex, err := hex.DecodeString(str)
-		if err != nil {
-			return dad-goRpcInvalidParameter
-		}
-		if err := programHash.Deserialize(bytes.NewReader(hex)); err != nil {
-			return dad-goRpcInvalidHash
-		}
-	default:
-		return dad-goRpcInvalidParameter
-	}
-
-	switch params[1].(type) {
-	case string:
-		str := params[1].(string)
-		hex, err := hex.DecodeString(str)
-		if err != nil {
-			return dad-goRpcInvalidParameter
-		}
-		if err := assetHash.Deserialize(bytes.NewReader(hex)); err != nil {
-			return dad-goRpcInvalidHash
-		}
-	default:
-		return dad-goRpcInvalidParameter
-	}
-	type UTXOUnspentInfo struct {
-		Txid  string
-		Index string
-		Value string
-	}
-	infos, err := ledger.DefaultLedger.Store.GetUnspentFromProgramHash(programHash, assetHash)
-	if err != nil {
-		return dad-goRpcInvalidParameter
-	}
-	var UTXOoutputs []UTXOUnspentInfo
-	for _, v := range infos {
-		val := strconv.FormatInt(int64(v.Value), 10)
-		index := strconv.FormatInt(int64(v.Index), 10)
-		UTXOoutputs = append(UTXOoutputs, UTXOUnspentInfo{Txid: ToHexString(v.Txid.ToArray()), Index: index, Value: val})
-	}
-	return dad-goRpc(UTXOoutputs)
-}
-
-func getTxout(params []interface{}) map[string]interface{} {
-	//TODO
-	return dad-goRpcUnsupported
-}
-
 // A JSON example for submitblock method as following:
 //   {"jsonrpc": "2.0", "method": "submitblock", "params": ["raw block in hex"], "id": 0}
 func submitBlock(params []interface{}) map[string]interface{} {
@@ -445,7 +309,7 @@ func submitBlock(params []interface{}) map[string]interface{} {
 	case string:
 		str := params[0].(string)
 		hex, _ := hex.DecodeString(str)
-		var block ledger.Block
+		var block types.Block
 		if err := block.Deserialize(bytes.NewReader(hex)); err != nil {
 			return dad-goRpcInvalidBlock
 		}
@@ -497,43 +361,48 @@ func stopConsensus(params []interface{}) map[string]interface{} {
 }
 
 func sendSampleTransaction(params []interface{}) map[string]interface{} {
-	if len(params) < 1 {
-		return dad-goRpcNil
-	}
-	var txType string
-	switch params[0].(type) {
-	case string:
-		txType = params[0].(string)
-	default:
-		return dad-goRpcInvalidParameter
-	}
+	panic("need reimplementation")
+	return nil
 
-	issuer, err := account.NewAccount()
-	if err != nil {
-		return dad-goRpc("Failed to create account")
-	}
-	admin := issuer
+	/*
+		if len(params) < 1 {
+			return dad-goRpcNil
+		}
+		var txType string
+		switch params[0].(type) {
+		case string:
+			txType = params[0].(string)
+		default:
+			return dad-goRpcInvalidParameter
+		}
 
-	rbuf := make([]byte, RANDBYTELEN)
-	rand.Read(rbuf)
-	switch string(txType) {
-	case "perf":
-		num := 1
-		if len(params) == 2 {
-			switch params[1].(type) {
-			case float64:
-				num = int(params[1].(float64))
+		issuer, err := account.NewAccount()
+		if err != nil {
+			return dad-goRpc("Failed to create account")
+		}
+		admin := issuer
+
+		rbuf := make([]byte, RANDBYTELEN)
+		rand.Read(rbuf)
+		switch string(txType) {
+		case "perf":
+			num := 1
+			if len(params) == 2 {
+				switch params[1].(type) {
+				case float64:
+					num = int(params[1].(float64))
+				}
 			}
+			for i := 0; i < num; i++ {
+				regTx := NewRegTx(ToHexString(rbuf), i, admin, issuer)
+				SignTx(admin, regTx)
+				VerifyAndSendTx(regTx)
+			}
+			return dad-goRpc(fmt.Sprintf("%d transaction(s) was sent", num))
+		default:
+			return dad-goRpc("Invalid transacion type")
 		}
-		for i := 0; i < num; i++ {
-			regTx := NewRegTx(ToHexString(rbuf), i, admin, issuer)
-			SignTx(admin, regTx)
-			VerifyAndSendTx(regTx)
-		}
-		return dad-goRpc(fmt.Sprintf("%d transaction(s) was sent", num))
-	default:
-		return dad-goRpc("Invalid transacion type")
-	}
+	*/
 }
 
 func setDebugInfo(params []interface{}) map[string]interface{} {
@@ -614,7 +483,7 @@ func regDataFile(params []interface{}) map[string]interface{} {
 		if err != nil {
 			return dad-goRpcInvalidParameter
 		}
-		var txn tx.Transaction
+		var txn types.Transaction
 		if err := txn.Deserialize(bytes.NewReader(hex)); err != nil {
 			return dad-goRpcInvalidTransaction
 		}

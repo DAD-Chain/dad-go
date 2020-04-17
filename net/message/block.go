@@ -8,6 +8,7 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/types"
 	"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
 )
@@ -19,7 +20,7 @@ type blockReq struct {
 
 type block struct {
 	msgHdr
-	blk ledger.Block
+	blk types.Block
 	// TBD
 	//event *events.Event
 }
@@ -76,7 +77,7 @@ func (msg dataReq) Handle(node Noder) error {
 	return nil
 }
 
-func NewBlockFromHash(hash common.Uint256) (*ledger.Block, error) {
+func NewBlockFromHash(hash common.Uint256) (*types.Block, error) {
 	bk, err := ledger.DefaultLedger.Store.GetBlock(hash)
 	if err != nil {
 		log.Errorf("Get Block error: %s, block hash: %x", err.Error(), hash)
@@ -85,7 +86,7 @@ func NewBlockFromHash(hash common.Uint256) (*ledger.Block, error) {
 	return bk, nil
 }
 
-func NewBlock(bk *ledger.Block) ([]byte, error) {
+func NewBlock(bk *types.Block) ([]byte, error) {
 	log.Debug()
 	var msg block
 	msg.blk = *bk

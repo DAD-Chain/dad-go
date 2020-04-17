@@ -7,7 +7,6 @@ import (
 	"github.com/dad-go/consensus"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/store/ChainStore"
-	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/net"
 	"github.com/dad-go/net/httpjsonrpc"
@@ -60,7 +59,6 @@ func main() {
 	defer ledger.DefaultLedger.Store.Close()
 
 	ledger.DefaultLedger.Store.InitLedgerStore(ledger.DefaultLedger)
-	transaction.TxStore = ledger.DefaultLedger.Store
 	crypto.SetAlg(config.Parameters.EncryptAlg)
 
 	log.Info("1. Open the account")

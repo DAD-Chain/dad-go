@@ -11,12 +11,12 @@ import (
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
-	"github.com/dad-go/core/transaction"
+	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/errors"
 	. "github.com/dad-go/smartcontract/errors"
 	"github.com/dad-go/smartcontract/storage"
-	"github.com/dad-go/smartcontract/types"
+	vmtypes "github.com/dad-go/smartcontract/types"
 	vm "github.com/dad-go/vm/neovm"
 	"math"
 )
@@ -24,11 +24,11 @@ import (
 type StateMachine struct {
 	*StateReader
 	CloneCache *storage.CloneCache
-	trigger    types.TriggerType
-	block      *ledger.Block
+	trigger    vmtypes.TriggerType
+	block      *types.Block
 }
 
-func NewStateMachine(dbCache store.IStateStore, trigger types.TriggerType, block *ledger.Block) *StateMachine {
+func NewStateMachine(dbCache store.IStateStore, trigger vmtypes.TriggerType, block *types.Block) *StateMachine {
 	var stateMachine StateMachine
 	stateMachine.CloneCache = storage.NewCloneCache(dbCache)
 	stateMachine.StateReader = NewStateReader(trigger)
@@ -72,7 +72,7 @@ func (s *StateMachine) CreateAsset(engine *vm.ExecutionEngine) (bool, error) {
 		log.Error("[CreateAsset] Get container fail!")
 		return false, errors.NewErr("[CreateAsset] Get container fail!")
 	}
-	tran, ok := container.(*transaction.Transaction)
+	tran, ok := container.(*types.Transaction)
 	if !ok {
 		log.Error("[CreateAsset] Container not transaction!")
 		return false, errors.NewErr("[CreateAsset] Container not transaction!")

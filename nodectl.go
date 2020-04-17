@@ -5,7 +5,6 @@ import (
 	"sort"
 
 	_ "github.com/dad-go/cli"
-	"github.com/dad-go/cli/asset"
 	"github.com/dad-go/cli/bookkeeper"
 	. "github.com/dad-go/cli/common"
 	"github.com/dad-go/cli/data"
