@@ -1,16 +1,24 @@
 package vote
 
 import (
+	//"math"
 	"sort"
-	tx "github.com/dad-go/core/transaction"
-	"github.com/dad-go/crypto"
-	"math"
+
 	. "github.com/dad-go/common"
-	"github.com/dad-go/core/ledger"
+	//"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/states"
+	"github.com/dad-go/core/types"
+	"github.com/dad-go/crypto"
 )
 
-func GetValidators(txs []*tx.Transaction) ([]*crypto.PubKey, error) {
+func GetValidators(txs []*types.Transaction) ([]*crypto.PubKey, error) {
+	// TODO implement vote
+	return genesis.GenesisBookKeepers, nil
+}
+
+/*
+func GetValidators(txs []*types.Transaction) ([]*crypto.PubKey, error) {
 	votes, validators, err := ledger.DefaultLedger.Store.GetVotesAndEnrollments(txs)
 	if err != nil {
 		return nil, err
@@ -45,6 +53,7 @@ func GetValidators(txs []*tx.Transaction) ([]*crypto.PubKey, error) {
 	sort.Sort(keys)
 	return keys, nil
 }
+*/
 
 func weightedAverage(votes []*states.VoteState) int64 {
 	var sumWeight, sumValue int64

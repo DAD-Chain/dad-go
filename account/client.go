@@ -6,6 +6,13 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"math/rand"
+	"os"
+	"sort"
+	"strings"
+	"sync"
+	"time"
+
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
@@ -14,15 +21,10 @@ import (
 	ct "github.com/dad-go/core/contract"
 	"github.com/dad-go/core/ledger"
 	sig "github.com/dad-go/core/signature"
+	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/net/protocol"
-	"math/rand"
-	"os"
-	"sort"
-	"strings"
-	"sync"
-	"time"
 )
 
 const (
@@ -330,7 +332,7 @@ func (cl *ClientImpl) ProcessBlocks() {
 	}
 }
 
-func (cl *ClientImpl) ProcessNewBlock(block *ledger.Block) {
+func (cl *ClientImpl) ProcessNewBlock(block *types.Block) {
 	//TODO: ProcessNewBlock
 
 }

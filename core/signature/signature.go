@@ -3,20 +3,21 @@ package signature
 import (
 	"bytes"
 	"crypto/sha256"
+	"io"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/vm/neovm/interfaces"
-	"io"
 )
 
 //SignableData describe the data need be signed.
 type SignableData interface {
 	interfaces.ICodeContainer
 
-	//Get the the SignableData's program hashes
+	////Get the the SignableData's program hashes
 	GetProgramHashes() ([]common.Uint160, error)
 
 	SetPrograms([]*program.Program)
@@ -30,11 +31,11 @@ type SignableData interface {
 func SignBySigner(data SignableData, signer Signer) ([]byte, error) {
 	log.Debug()
 	//fmt.Println("data",data)
-	rtx, err := Sign(data, signer.PrivKey())
+	signature, err := crypto.Sign(signer.PrivKey(), GetHashData(data))
 	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "[Signature],SignBySigner failed.")
+		return nil, NewDetailErr(err, ErrNoCode, "[Signature],Sign failed.")
 	}
-	return rtx, nil
+	return signature, nil
 }
 
 func GetHashData(data SignableData) []byte {

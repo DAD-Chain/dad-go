@@ -1,20 +1,20 @@
 package httpjsonrpc
 
 import (
-	. "github.com/dad-go/common"
-	."github.com/dad-go/consensus"
-	"github.com/dad-go/common/log"
-	tx "github.com/dad-go/core/transaction"
-	. "github.com/dad-go/errors"
-	. "github.com/dad-go/net/protocol"
 	"encoding/json"
 	"fmt"
+	. "github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	. "github.com/dad-go/consensus"
+	"github.com/dad-go/core/transaction/utxo"
+	tx "github.com/dad-go/core/types"
+	. "github.com/dad-go/errors"
+	. "github.com/dad-go/net/protocol"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
-	"github.com/dad-go/core/transaction/utxo"
 )
 
 func init() {
@@ -71,22 +71,22 @@ type ProgramInfo struct {
 }
 
 type Transactions struct {
-	TxType            tx.TransactionType
-	PayloadVersion    byte
-	Payload           PayloadInfo
-	Attributes        []TxAttributeInfo
-	UTXOInputs        []UTXOTxInputInfo
-	BalanceInputs     []BalanceTxInputInfo
-	Outputs           []TxoutputInfo
-	Programs          []ProgramInfo
-	NetworkFee        string
-	SystemFee         string
+	TxType         tx.TransactionType
+	PayloadVersion byte
+	Payload        PayloadInfo
+	Attributes     []TxAttributeInfo
+	UTXOInputs     []UTXOTxInputInfo
+	BalanceInputs  []BalanceTxInputInfo
+	Outputs        []TxoutputInfo
+	Programs       []ProgramInfo
+	NetworkFee     string
+	SystemFee      string
 
 	AssetOutputs      []TxoutputMap
 	AssetInputAmount  []AmountMap
 	AssetOutputAmount []AmountMap
 
-	Hash              string
+	Hash string
 }
 
 type BlockHead struct {
@@ -101,7 +101,7 @@ type BlockHead struct {
 	NextBookKeeper   string
 	Program          ProgramInfo
 
-	Hash             string
+	Hash string
 }
 
 type BlockInfo struct {

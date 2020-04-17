@@ -5,13 +5,14 @@ import (
 	. "github.com/dad-go/common"
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/types"
 	"github.com/dad-go/events"
 	"github.com/dad-go/net/httprestful/common"
 	Err "github.com/dad-go/net/httprestful/error"
 	"github.com/dad-go/net/httpwebsocket/websocket"
 	. "github.com/dad-go/net/protocol"
-	"github.com/dad-go/smartcontract/event"
 	sc "github.com/dad-go/smartcontract/common"
+	"github.com/dad-go/smartcontract/event"
 )
 
 var ws *websocket.WsServer
@@ -144,7 +145,7 @@ func PushBlock(v interface{}) {
 		return
 	}
 	resp := common.ResponsePack(Err.SUCCESS)
-	if block, ok := v.(*ledger.Block); ok {
+	if block, ok := v.(*types.Block); ok {
 		if pushRawBlockFlag {
 			w := bytes.NewBuffer(nil)
 			block.Serialize(w)
@@ -161,7 +162,7 @@ func PushBlockTransactions(v interface{}) {
 		return
 	}
 	resp := common.ResponsePack(Err.SUCCESS)
-	if block, ok := v.(*ledger.Block); ok {
+	if block, ok := v.(*types.Block); ok {
 		if pushBlockTxsFlag {
 			resp["Result"] = common.GetBlockTransactions(block)
 		}
