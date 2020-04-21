@@ -3,8 +3,8 @@ package payload
 import (
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/core/code"
-	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
+	"github.com/dad-go/vm/types"
 	"io"
 )
 

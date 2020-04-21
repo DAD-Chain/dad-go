@@ -12,6 +12,7 @@ import (
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	vm "github.com/dad-go/vm/neovm"
+	vmtypes "github.com/dad-go/vm/types"
 )
 
 const (
@@ -78,7 +79,7 @@ func NewGoverningToken() *types.Transaction {
 	}
 
 	tx := core.NewDeployTransaction(&fnCode, "ONT", "0.1.0",
-		"dad-go", "", "dad-go Network ONT Token", types.NativeVM, true)
+		"dad-go", "", "dad-go Network ONT Token", vmtypes.NativeVM, true)
 	return tx
 }
 
@@ -88,7 +89,7 @@ func NewUtilityToken() *types.Transaction {
 	}
 
 	tx := core.NewDeployTransaction(&fnCode, "ONG", "0.1.0",
-		"dad-go", "", "dad-go Network ONG Token", types.NativeVM, true)
+		"dad-go", "", "dad-go Network ONG Token", vmtypes.NativeVM, true)
 	return tx
 }
 
