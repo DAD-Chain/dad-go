@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"errors"
 
-	"dad-go/common/serialization"
+	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	"golang.org/x/crypto/ripemd160"
