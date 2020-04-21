@@ -8,6 +8,7 @@ import (
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
+	vmtypes "github.com/dad-go/vm/types"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -48,7 +49,7 @@ func AddressFromMultiPubKeys(pubkeys []*crypto.PubKey, m int) (types.Address, er
 	return addr, nil
 }
 
-func AddressFromVmCode(vmCode types.VmCode) types.Address {
+func AddressFromVmCode(vmCode vmtypes.VmCode) types.Address {
 	var addr types.Address
 	temp := sha256.Sum256(vmCode.Code)
 	md := ripemd160.New()

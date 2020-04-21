@@ -3,7 +3,7 @@ package payload
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/core/types"
+	"github.com/dad-go/vm/types"
 	"io"
 )
 
@@ -13,9 +13,9 @@ import (
 //}
 
 type InvokeCode struct {
-	GasLimit  common.Fixed64
-	Code      types.VmCode
-	Params []byte
+	GasLimit common.Fixed64
+	Code     types.VmCode
+	Params   []byte
 }
 
 func (self *InvokeCode) Data() []byte {

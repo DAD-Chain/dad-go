@@ -1,12 +1,12 @@
 package states
 
 import (
-	"io"
 	"bytes"
 	. "github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/code"
-	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
+	"github.com/dad-go/vm/types"
+	"io"
 )
 
 type ContractState struct {
@@ -115,5 +115,3 @@ func (contractState *ContractState) ToArray() []byte {
 	contractState.Serialize(b)
 	return b.Bytes()
 }
-
-

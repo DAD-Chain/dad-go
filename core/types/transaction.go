@@ -9,6 +9,7 @@ import (
 	. "github.com/dad-go/common"
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/core/payload"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 )
@@ -256,7 +257,7 @@ func (tx *Transaction) DeserializeUnsigned(r io.Reader) error {
 
 	switch tx.TxType {
 	case Invoke:
-		return errors.New("unimplemented")
+		tx.Payload = new(payload.InvokeCode)
 	default:
 		return errors.New("unsupported tx type")
 	}
