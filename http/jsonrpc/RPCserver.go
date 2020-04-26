@@ -1,10 +1,10 @@
-package httpjsonrpc
+package jsonrpc
 
 import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/http/common/rpc"
-	. "github.com/dad-go/http/common"
+	. "github.com/dad-go/http/base/rpc"
+	. "github.com/dad-go/http/base/common"
 	. "github.com/dad-go/consensus"
 	. "github.com/dad-go/net/protocol"
 	"net/http"

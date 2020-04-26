@@ -3,9 +3,9 @@ package restful
 import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/http/httprestful/common"
-	Err "github.com/dad-go/http/httprestful/error"
-	"github.com/dad-go/http/httpwebsocket"
+	. "github.com/dad-go/http/base/rest"
+	Err "github.com/dad-go/http/base/error"
+	"github.com/dad-go/http/websocket"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -103,28 +103,28 @@ func (rt *restServer) setWebsocketState(cmd map[string]interface{}) map[string]i
 		return resp
 	}
 	if b, ok := cmd["PushBlock"].(bool); ok {
-		httpwebsocket.SetWsPushBlockFlag(b)
+		websocket.SetWsPushBlockFlag(b)
 	}
 	if b, ok := cmd["PushRawBlock"].(bool); ok {
-		httpwebsocket.SetPushRawBlockFlag(b)
+		websocket.SetPushRawBlockFlag(b)
 	}
 	if b, ok := cmd["PushBlockTxs"].(bool); ok {
-		httpwebsocket.SetPushBlockTxsFlag(b)
+		websocket.SetPushBlockTxsFlag(b)
 	}
 	if wsPort, ok := cmd["Port"].(float64); ok && wsPort != 0 {
 		Parameters.HttpWsPort = int(wsPort)
 	}
 	if startFlag {
-		httpwebsocket.ReStartServer()
+		websocket.ReStartServer()
 	} else {
-		httpwebsocket.Stop()
+		websocket.Stop()
 	}
 	var result = make(map[string]interface{})
 	result["Open"] = startFlag
 	result["Port"] = Parameters.HttpWsPort
-	result["PushBlock"] = httpwebsocket.GetWsPushBlockFlag()
-	result["PushRawBlock"] = httpwebsocket.GetPushRawBlockFlag()
-	result["PushBlockTxs"] = httpwebsocket.GetPushBlockTxsFlag()
+	result["PushBlock"] = websocket.GetWsPushBlockFlag()
+	result["PushRawBlock"] = websocket.GetPushRawBlockFlag()
+	result["PushBlockTxs"] = websocket.GetPushBlockTxsFlag()
 	resp["Result"] = result
 	return resp
 }
@@ -148,7 +148,7 @@ func (rt *restServer) registryMethod() {
 		resp := SendRawTransaction(cmd)
 		if userid, ok := resp["Userid"].(string); ok && len(userid) > 0 {
 			if result, ok := resp["Result"].(string); ok {
-				httpwebsocket.SetTxHashMap(result, userid)
+				websocket.SetTxHashMap(result, userid)
 			}
 			delete(resp, "Userid")
 		}

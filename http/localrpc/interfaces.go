@@ -2,8 +2,8 @@ package localrpc
 
 import (
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/http/common"
-	. "github.com/dad-go/http/common/rpc"
+	. "github.com/dad-go/http/base/common"
+	. "github.com/dad-go/http/base/rpc"
 	"os"
 	"path/filepath"
 )

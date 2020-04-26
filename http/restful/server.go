@@ -1,16 +1,16 @@
-package httprestful
+package restful
 
 import (
-	"github.com/dad-go/net/httprestful/common"
-	. "github.com/dad-go/net/httprestful/restful"
+	. "github.com/dad-go/http/base/rest"
+	. "github.com/dad-go/http/restful/restful"
 	. "github.com/dad-go/net/protocol"
 )
 
 func StartServer(n Noder) {
-	common.SetNode(n)
+	SetNode(n)
 	func() {
-		rest := InitRestServer()
-		go rest.Start()
+		rt := InitRestServer()
+		go rt.Start()
 	}()
 }
 

@@ -1,4 +1,4 @@
-package httpjsonrpc
+package jsonrpc
 
 import (
 	"bytes"
@@ -6,8 +6,8 @@ import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
-	. "github.com/dad-go/http/common"
-	. "github.com/dad-go/http/common/rpc"
+	. "github.com/dad-go/http/base/common"
+	. "github.com/dad-go/http/base/rpc"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/common/config"

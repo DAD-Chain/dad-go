@@ -3,7 +3,7 @@ package localrpc
 import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/http/common/rpc"
+	. "github.com/dad-go/http/base/rpc"
 	"net/http"
 	"strconv"
 )
