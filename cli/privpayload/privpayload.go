@@ -13,7 +13,7 @@ import (
 	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/core/transaction/payload"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/net/httpjsonrpc"
+	"github.com/dad-go/http/httpjsonrpc"
 	"math/rand"
 	"os"
 

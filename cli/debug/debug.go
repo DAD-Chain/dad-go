@@ -5,7 +5,7 @@ import (
 	"os"
 
 	. "github.com/dad-go/cli/common"
-	"github.com/dad-go/net/httpjsonrpc"
+	"github.com/dad-go/http/httpjsonrpc"
 
 	"github.com/urfave/cli"
 )

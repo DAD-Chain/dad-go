@@ -9,7 +9,7 @@ import (
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/transaction"
-	"github.com/dad-go/net/httpjsonrpc"
+	"github.com/dad-go/http/httpjsonrpc"
 	"github.com/urfave/cli"
 	"math/rand"
 	"os"
