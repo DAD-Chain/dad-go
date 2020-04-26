@@ -5,7 +5,7 @@ import (
 	"os"
 
 	. "github.com/dad-go/cli/common"
-	"github.com/dad-go/net/httpjsonrpc"
+	"github.com/dad-go/http/httpjsonrpc"
 
 	"github.com/urfave/cli"
 )
@@ -18,7 +18,7 @@ func testAction(c *cli.Context) (err error) {
 	txnType := c.String("tx")
 	txnNum := c.Int("num")
 	if txnType != "" {
-		resp, err := httpjsonrpc.Call(Address(), "sendsampletransaction", 0, []interface{}{txnType, txnNum})
+		resp, err := jsonrpc.Call(Address(), "sendsampletransaction", 0, []interface{}{txnType, txnNum})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return err

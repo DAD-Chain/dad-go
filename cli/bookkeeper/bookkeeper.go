@@ -10,7 +10,7 @@ import (
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/transaction"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/net/httpjsonrpc"
+	"github.com/dad-go/http/httpjsonrpc"
 	"math/rand"
 	"os"
 	"strconv"
@@ -113,7 +113,7 @@ func assetAction(c *cli.Context) error {
 		return err
 	}
 
-	resp, err := httpjsonrpc.Call(Address(), "sendrawtransaction", 0, []interface{}{txHex})
+	resp, err := jsonrpc.Call(Address(), "sendrawtransaction", 0, []interface{}{txHex})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return err

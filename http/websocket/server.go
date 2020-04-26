@@ -1,4 +1,4 @@
-package httpwebsocket
+package websocket
 
 import (
 	"bytes"
@@ -6,11 +6,10 @@ import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/events"
-	"github.com/dad-go/net/httprestful/common"
-	Err "github.com/dad-go/net/httprestful/error"
-	"github.com/dad-go/net/httpwebsocket/websocket"
-	. "github.com/dad-go/net/protocol"
+	. "github.com/dad-go/http/base/actor"
+	. "github.com/dad-go/http/base/rest"
+	Err "github.com/dad-go/http/base/error"
+	"github.com/dad-go/http/websocket/websocket"
 	sc "github.com/dad-go/smartcontract/common"
 	"github.com/dad-go/smartcontract/event"
 )
@@ -22,10 +21,9 @@ var (
 	pushBlockTxsFlag bool = false
 )
 
-func StartServer(n Noder) {
-	common.SetNode(n)
-	ledger.DefaultLedger.Blockchain.BCEvents.Subscribe(events.EventBlockPersistCompleted, SendBlock2WSclient)
-	ledger.DefaultLedger.Blockchain.BCEvents.Subscribe(events.EventSmartCode, PushSmartCodeEvent)
+func StartServer() {
+	SubscribeEvent("EventBlockPersistCompleted",SendBlock2WSclient)
+	SubscribeEvent("EventSmartCode",PushSmartCodeEvent)
 	go func() {
 		ws = websocket.InitWsServer()
 		ws.Start()
@@ -130,7 +128,7 @@ func PushSmartCodeEvent(v interface{}) {
 
 func PushEvent(txHash string, errcode int64, action string, result interface{}) {
 	if ws != nil {
-		resp := common.ResponsePack(Err.SUCCESS)
+		resp := ResponsePack(Err.SUCCESS)
 		resp["Result"] = result
 		resp["Error"] = errcode
 		resp["Action"] = action
@@ -144,14 +142,14 @@ func PushBlock(v interface{}) {
 	if ws == nil {
 		return
 	}
-	resp := common.ResponsePack(Err.SUCCESS)
+	resp := ResponsePack(Err.SUCCESS)
 	if block, ok := v.(*types.Block); ok {
 		if pushRawBlockFlag {
 			w := bytes.NewBuffer(nil)
 			block.Serialize(w)
 			resp["Result"] = ToHexString(w.Bytes())
 		} else {
-			resp["Result"] = common.GetBlockInfo(block)
+			resp["Result"] = GetBlockInfo(block)
 		}
 		resp["Action"] = "sendrawblock"
 		ws.BroadcastResult(resp)
@@ -161,10 +159,10 @@ func PushBlockTransactions(v interface{}) {
 	if ws == nil {
 		return
 	}
-	resp := common.ResponsePack(Err.SUCCESS)
+	resp := ResponsePack(Err.SUCCESS)
 	if block, ok := v.(*types.Block); ok {
 		if pushBlockTxsFlag {
-			resp["Result"] = common.GetBlockTransactions(block)
+			resp["Result"] = GetBlockTransactions(block)
 		}
 		resp["Action"] = "sendblocktransactions"
 		ws.BroadcastResult(resp)

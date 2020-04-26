@@ -9,10 +9,11 @@ import (
 	"github.com/dad-go/core/store/ChainStore"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/net"
-	"github.com/dad-go/net/httpjsonrpc"
-	"github.com/dad-go/net/httpnodeinfo"
-	"github.com/dad-go/net/httprestful"
-	"github.com/dad-go/net/httpwebsocket"
+	"github.com/dad-go/http/jsonrpc"
+	"github.com/dad-go/http/nodeinfo"
+	"github.com/dad-go/http/restful"
+	"github.com/dad-go/http/websocket"
+	"github.com/dad-go/http/localrpc"
 	"github.com/dad-go/net/protocol"
 	"os"
 	"os/signal"
@@ -90,8 +91,8 @@ func main() {
 	log.Info("4. Start the P2P networks")
 	// Don't need two return value.
 	noder = net.StartProtocol(acct.PublicKey)
-	go httprestful.StartServer(noder)
-	httpjsonrpc.RegistRpcNode(noder)
+	go restful.StartServer()
+	//jsonrpc.RegistRpcNode(noder)
 
 	noder.SyncNodeHeight()
 	noder.WaitForPeersStart()
@@ -99,17 +100,17 @@ func main() {
 	if protocol.SERVICENODENAME != config.Parameters.NodeType {
 		log.Info("5. Start Consensus Services")
 		consensusSrv := consensus.ConsensusMgr.NewConsensusService(client, noder)
-		httpjsonrpc.RegistConsensusService(consensusSrv)
+		//jsonrpc.RegistConsensusService(consensusSrv)
 		go consensusSrv.Start()
 		time.Sleep(5 * time.Second)
 	}
 
 	log.Info("--Start the RPC interface")
-	go httpjsonrpc.StartRPCServer()
-	go httpjsonrpc.StartLocalServer()
-	go httpwebsocket.StartServer(noder)
+	go jsonrpc.StartRPCServer()
+	go localrpc.StartLocalServer()
+	go websocket.StartServer()
 	if config.Parameters.HttpInfoStart {
-		go httpnodeinfo.StartServer(noder)
+		go nodeinfo.StartServer(noder)
 	}
 
 	log.Info("--Loading Event Store--")
