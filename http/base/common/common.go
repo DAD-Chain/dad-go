@@ -3,16 +3,12 @@ package common
 import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/consensus"
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
-	. "github.com/dad-go/net/protocol"
 	"strconv"
+	. "github.com/dad-go/http/base/actor"
 )
-
-var CNoder Noder
-var ConsensusSrv ConsensusService
 
 //multiplexer that keeps track of every function to be called on specific rpc call
 
@@ -122,19 +118,6 @@ type ConsensusInfo struct {
 	// TODO
 }
 
-func VerifyAndSendTx(txn *types.Transaction) ErrCode {
-	// if transaction is verified unsucessfully then will not put it into transaction pool
-	if errCode := CNoder.AppendTxnPool(txn); errCode != ErrNoError {
-		log.Warn("Can NOT add the transaction to TxnPool")
-		log.Info("[httpjsonrpc] VerifyTransaction failed when AppendTxnPool.")
-		return errCode
-	}
-	if err := CNoder.Xmit(txn); err != nil {
-		log.Error("Xmit Tx Error:Xmit transaction failed.", err)
-		return ErrXmitFail
-	}
-	return ErrNoError
-}
 func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 	panic("Transaction structure has changed need reimplement ")
 
@@ -157,4 +140,19 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 	trans.Hash = ToHexString(mhash.ToArray())
 
 	return trans
+}
+
+func VerifyAndSendTx(txn *types.Transaction) ErrCode {
+	// if transaction is verified unsucessfully then will not put it into transaction pool
+	if errCode := AppendTxnPool(txn); errCode != ErrNoError {
+		log.Warn("Can NOT add the transaction to TxnPool")
+		log.Info("[httpjsonrpc] VerifyTransaction failed when AppendTxnPool.")
+		return errCode
+	}
+
+	if err := Xmit(txn); err != nil {
+		log.Error("Xmit Tx Error:Xmit transaction failed.", err)
+		return ErrXmitFail
+	}
+	return ErrNoError
 }

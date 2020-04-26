@@ -4,6 +4,7 @@ import (
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/http/base/common"
 	. "github.com/dad-go/http/base/rpc"
+	. "github.com/dad-go/http/base/actor"
 	"os"
 	"path/filepath"
 )
@@ -21,35 +22,75 @@ func getCurrentDirectory() string {
 }
 
 func GetNeighbor(params []interface{}) map[string]interface{} {
-	addr, _ := CNoder.GetNeighborAddrs()
+	addr, _ := GetNeighborAddrs()
 	return dad-goRpc(addr)
 }
 
 func GetNodeState(params []interface{}) map[string]interface{} {
+	state,err := GetState()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	t,err := GetTime()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	port,err := GetPort()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	id,err := GetID()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	ver,err := GetVersion()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	sers,err := Services()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	relay,err := GetRelay()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	height,err := GetHeight()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	txnCnt,err := GetTxnCnt()
+	if err != nil {
+		return dad-goRpcFailed
+	}
+	rxTxnCnt,err := GetRxTxnCnt()
+	if err != nil {
+		return dad-goRpcFailed
+	}
 	n := NodeInfo{
-		State:    uint(CNoder.GetState()),
-		Time:     CNoder.GetTime(),
-		Port:     CNoder.GetPort(),
-		ID:       CNoder.GetID(),
-		Version:  CNoder.Version(),
-		Services: CNoder.Services(),
-		Relay:    CNoder.GetRelay(),
-		Height:   CNoder.GetHeight(),
-		TxnCnt:   CNoder.GetTxnCnt(),
-		RxTxnCnt: CNoder.GetRxTxnCnt(),
+		State:    uint(state),
+		Time:     t,
+		Port:     port,
+		ID:       id,
+		Version:  ver,
+		Services: sers,
+		Relay:    relay,
+		Height:   height,
+		TxnCnt:   txnCnt,
+		RxTxnCnt: rxTxnCnt,
 	}
 	return dad-goRpc(n)
 }
 
 func StartConsensus(params []interface{}) map[string]interface{} {
-	if err := ConsensusSrv.Start(); err != nil {
+	if err := ConsensusSrvStart(); err != nil {
 		return dad-goRpcFailed
 	}
 	return dad-goRpcSuccess
 }
 
 func StopConsensus(params []interface{}) map[string]interface{} {
-	if err := ConsensusSrv.Halt(); err != nil {
+	if err := ConsensusSrvHalt(); err != nil {
 		return dad-goRpcFailed
 	}
 	return dad-goRpcSuccess

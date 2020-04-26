@@ -6,11 +6,10 @@ import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/events"
+	. "github.com/dad-go/http/base/actor"
 	. "github.com/dad-go/http/base/rest"
 	Err "github.com/dad-go/http/base/error"
 	"github.com/dad-go/http/websocket/websocket"
-	. "github.com/dad-go/net/protocol"
 	sc "github.com/dad-go/smartcontract/common"
 	"github.com/dad-go/smartcontract/event"
 )
@@ -22,10 +21,9 @@ var (
 	pushBlockTxsFlag bool = false
 )
 
-func StartServer(n Noder) {
-	SetNode(n)
-	ledger.DefaultLedger.Blockchain.BCEvents.Subscribe(events.EventBlockPersistCompleted, SendBlock2WSclient)
-	ledger.DefaultLedger.Blockchain.BCEvents.Subscribe(events.EventSmartCode, PushSmartCodeEvent)
+func StartServer() {
+	SubscribeEvent("EventBlockPersistCompleted",SendBlock2WSclient)
+	SubscribeEvent("EventSmartCode",PushSmartCodeEvent)
 	go func() {
 		ws = websocket.InitWsServer()
 		ws.Start()

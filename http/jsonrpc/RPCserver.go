@@ -4,22 +4,15 @@ import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/http/base/rpc"
-	. "github.com/dad-go/http/base/common"
-	. "github.com/dad-go/consensus"
-	. "github.com/dad-go/net/protocol"
+	//. "github.com/dad-go/http/base/common"
+	//. "github.com/dad-go/consensus"
 	"net/http"
 	"strconv"
 )
 
-func RegistRpcNode(n Noder) {
-	if CNoder == nil {
-		CNoder = n
-	}
-}
 
-func RegistConsensusService(consensus ConsensusService) {
-	ConsensusSrv = consensus
-}
+
+
 func StartRPCServer() {
 	log.Debug()
 	http.HandleFunc("/", Handle)
@@ -36,7 +29,7 @@ func StartRPCServer() {
 	HandleFunc("getstorage", GetStorage)
 	HandleFunc("getbalance", GetBalance)
 	HandleFunc("submitblock", SubmitBlock)
-	HandleFunc("getversion", GetVersion)
+	HandleFunc("getversion", GetNodeVersion)
 	HandleFunc("getdataile", GetDataFile)
 	HandleFunc("catdatarecord", CatDataRecord)
 	HandleFunc("regdatafile", RegDataFile)

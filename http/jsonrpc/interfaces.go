@@ -8,8 +8,7 @@ import (
 	. "github.com/dad-go/errors"
 	. "github.com/dad-go/http/base/common"
 	. "github.com/dad-go/http/base/rpc"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/core/states"
+	. "github.com/dad-go/http/base/actor"
 	"github.com/dad-go/common/config"
 	"math/rand"
 	"fmt"
@@ -18,7 +17,10 @@ import (
 )
 
 func GetBestBlockHash(params []interface{}) map[string]interface{} {
-	hash := ledger.DefaultLedger.Blockchain.CurrentBlockHash()
+	hash,err := CurrentBlockHash()
+	if err != nil{
+		return dad-goRpcFailed
+	}
 	return dad-goRpc(ToHexString(hash.ToArray()))
 }
 
@@ -35,7 +37,7 @@ func GetBlock(params []interface{}) map[string]interface{} {
 	// block height
 	case float64:
 		index := uint32(params[0].(float64))
-		hash, err = ledger.DefaultLedger.Store.GetBlockHash(index)
+		hash, err = GetBlockHashFromStore(index)
 		if err != nil {
 			return dad-goRpcUnknownBlock
 		}
@@ -53,7 +55,7 @@ func GetBlock(params []interface{}) map[string]interface{} {
 		return dad-goRpcInvalidParameter
 	}
 
-	block, err := ledger.DefaultLedger.Store.GetBlock(hash)
+	block, err := GetBlockFromStore(hash)
 	if err != nil {
 		return dad-goRpcUnknownBlock
 	}
@@ -89,7 +91,11 @@ func GetBlock(params []interface{}) map[string]interface{} {
 }
 
 func GetBlockCount(params []interface{}) map[string]interface{} {
-	return dad-goRpc(ledger.DefaultLedger.Blockchain.BlockHeight + 1)
+	height,err := BlockHeight()
+	if err != nil{
+		return dad-goRpcFailed
+	}
+	return dad-goRpc(height + 1)
 }
 
 // A JSON example for getblockhash method as following:
@@ -101,7 +107,7 @@ func GetBlockHash(params []interface{}) map[string]interface{} {
 	switch params[0].(type) {
 	case float64:
 		height := uint32(params[0].(float64))
-		hash, err := ledger.DefaultLedger.Store.GetBlockHash(height)
+		hash, err := GetBlockHashFromStore(height)
 		if err != nil {
 			return dad-goRpcUnknownBlock
 		}
@@ -112,12 +118,16 @@ func GetBlockHash(params []interface{}) map[string]interface{} {
 }
 
 func GetConnectionCount(params []interface{}) map[string]interface{} {
-	return dad-goRpc(CNoder.GetConnectionCnt())
+	count,err := GetConnectionCnt()
+	if err != nil{
+		return dad-goRpcFailed
+	}
+	return dad-goRpc(count)
 }
 
 func GetRawMemPool(params []interface{}) map[string]interface{} {
 	txs := []*Transactions{}
-	txpool, _ := CNoder.GetTxnPool(false)
+	txpool, _ := GetTxnPool(false)
 	for _, t := range txpool {
 		txs = append(txs, TransArryByteToHexString(t))
 	}
@@ -145,7 +155,7 @@ func GetRawTransaction(params []interface{}) map[string]interface{} {
 		if err != nil {
 			return dad-goRpcInvalidTransaction
 		}
-		tx, err := ledger.DefaultLedger.Store.GetTransaction(hash)
+		tx, err := GetTransaction(hash) //ledger.DefaultLedger.Store.GetTransaction(hash)
 		if err != nil {
 			return dad-goRpcUnknownTransaction
 		}
@@ -189,7 +199,7 @@ func GetStorage(params []interface{}) map[string]interface{} {
 	default:
 		return dad-goRpcInvalidParameter
 	}
-	item, err := ledger.DefaultLedger.Store.GetStorageItem(&states.StorageKey{CodeHash: codeHash, Key: key})
+	item, err := GetStorageItem(codeHash,key)
 	if err != nil {
 		return dad-goRpcInternalError
 	}
@@ -242,7 +252,7 @@ func GetBalance(params []interface{}) map[string]interface{} {
 	if err != nil {
 		return dad-goRpcInvalidParameter
 	}
-	account, err := ledger.DefaultLedger.Store.GetAccount(programHash)
+	account, err := GetAccount(programHash)
 	if err != nil {
 		return dad-goRpcAccountNotFound
 	}
@@ -278,10 +288,10 @@ func SubmitBlock(params []interface{}) map[string]interface{} {
 		if err := block.Deserialize(bytes.NewReader(hex)); err != nil {
 			return dad-goRpcInvalidBlock
 		}
-		if err := ledger.DefaultLedger.Blockchain.AddBlock(&block); err != nil {
+		if err := AddBlock(&block); err != nil {
 			return dad-goRpcInvalidBlock
 		}
-		if err := CNoder.Xmit(&block); err != nil {
+		if err := Xmit(&block); err != nil {
 			return dad-goRpcInternalError
 		}
 	default:
@@ -290,7 +300,7 @@ func SubmitBlock(params []interface{}) map[string]interface{} {
 	return dad-goRpcSuccess
 }
 
-func GetVersion(params []interface{}) map[string]interface{} {
+func GetNodeVersion(params []interface{}) map[string]interface{} {
 	return dad-goRpc(config.Version)
 }
 
@@ -383,7 +393,7 @@ func CatDataRecord(params []interface{}) map[string]interface{} {
 		if err != nil {
 			return dad-goRpcInvalidTransaction
 		}
-		tx, err := ledger.DefaultLedger.Store.GetTransaction(hash)
+		tx, err := GetTransaction(hash)
 		if err != nil {
 			return dad-goRpcUnknownTransaction
 		}
@@ -412,7 +422,7 @@ func GetDataFile(params []interface{}) map[string]interface{} {
 		if err != nil {
 			return dad-goRpcInvalidTransaction
 		}
-		tx, err := ledger.DefaultLedger.Store.GetTransaction(hash)
+		tx, err := GetTransaction(hash)
 		if err != nil {
 			return dad-goRpcUnknownTransaction
 		}
