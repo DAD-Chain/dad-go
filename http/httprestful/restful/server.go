@@ -3,9 +3,9 @@ package restful
 import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/net/httprestful/common"
-	Err "github.com/dad-go/net/httprestful/error"
-	"github.com/dad-go/net/httpwebsocket"
+	. "github.com/dad-go/http/httprestful/common"
+	Err "github.com/dad-go/http/httprestful/error"
+	"github.com/dad-go/http/httpwebsocket"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -141,7 +141,7 @@ func (rt *restServer) registryMethod() {
 		Api_Gettransaction:      {name: "gettransaction", handler: GetTransactionByHash},
 		Api_GetContract:         {name: "getcontract", handler: GetContract},
 		Api_Restart:             {name: "restart", handler: rt.Restart},
-		Api_GetSmartCodeEvent:{name: "getsmartcodeevent", handler: GetSmartCodeEvent},
+		Api_GetSmartCodeEvent:{name: "getsmartcodeevent", handler: GetSmartCodeEventByHeight},
 	}
 
 	sendRawTransaction := func(cmd map[string]interface{}) map[string]interface{} {

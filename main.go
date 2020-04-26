@@ -13,6 +13,7 @@ import (
 	"github.com/dad-go/http/httpnodeinfo"
 	"github.com/dad-go/http/httprestful"
 	"github.com/dad-go/http/httpwebsocket"
+	"github.com/dad-go/http/localrpc"
 	"github.com/dad-go/net/protocol"
 	"os"
 	"os/signal"
@@ -106,7 +107,7 @@ func main() {
 
 	log.Info("--Start the RPC interface")
 	go httpjsonrpc.StartRPCServer()
-	go httpjsonrpc.StartLocalServer()
+	go localrpc.StartLocalServer()
 	go httpwebsocket.StartServer(noder)
 	if config.Parameters.HttpInfoStart {
 		go httpnodeinfo.StartServer(noder)

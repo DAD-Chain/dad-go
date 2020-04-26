@@ -7,13 +7,13 @@ import (
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
-	. "github.com/dad-go/net/httpjsonrpc"
-	Err "github.com/dad-go/net/httprestful/error"
+	Err "github.com/dad-go/http/httprestful/error"
 	. "github.com/dad-go/net/protocol"
 	"strconv"
 	"github.com/dad-go/smartcontract/pre_exec"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/common/log"
+	. "github.com/dad-go/http/common"
 )
 
 var node Noder
@@ -300,7 +300,7 @@ func SendRawTransaction(cmd map[string]interface{}) map[string]interface{} {
 }
 
 
-func GetSmartCodeEvent(cmd map[string]interface{}) map[string]interface{} {
+func GetSmartCodeEventByHeight(cmd map[string]interface{}) map[string]interface{} {
 	resp := ResponsePack(Err.SUCCESS)
 
 	param := cmd["Height"].(string)
