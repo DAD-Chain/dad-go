@@ -15,8 +15,9 @@ import (
 	//"github.com/dad-go/core/validation"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/events"
+	//"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
+	"github.com/dad-go/net/actor"
 )
 
 type ConsensusPayload struct {
@@ -104,7 +105,9 @@ func (cp *ConsensusPayload) GetMessage() []byte {
 
 func (msg consensus) Handle(node Noder) error {
 	log.Debug()
-	node.LocalNode().GetEvent("consensus").Notify(events.EventNewInventory, &msg.cons)
+	//node.LocalNode().GetEvent("consensus").Notify(events.EventNewInventory, &msg.cons)
+	//actor.PushConsensus(&msg.cons)
+	actor.ConsensusPid.Tell(&msg.cons)
 	return nil
 }
 
