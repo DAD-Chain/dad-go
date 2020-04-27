@@ -7,9 +7,7 @@ import (
 	"errors"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
-	//"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
 )
