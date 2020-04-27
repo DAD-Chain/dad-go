@@ -7,6 +7,7 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core"
 	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
@@ -15,6 +16,7 @@ import (
 // VerifyTransaction verifys received single transaction
 func VerifyTransaction(tx *types.Transaction) ErrCode {
 	if err := checkTransactionSignatures(tx); err != nil {
+		log.Info("transaction verify error:", err)
 		return ErrTransactionContracts
 	}
 
@@ -85,6 +87,8 @@ func checkTransactionSignatures(tx *types.Transaction) error {
 func checkTransactionPayload(tx *types.Transaction) error {
 
 	switch pld := tx.Payload.(type) {
+	case *payload.InvokeCode:
+		return nil
 	default:
 		return errors.New(fmt.Sprint("[txValidator], unimplemented transaction payload type.", pld))
 	}
