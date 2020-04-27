@@ -2,7 +2,7 @@ package statefull
 
 import (
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/validation"
+	"github.com/dad-go/errors"
 	"github.com/dad-go/eventbus/actor"
 	"github.com/dad-go/validator/db"
 	vatypes "github.com/dad-go/validator/types"
@@ -47,11 +47,19 @@ func (self *validator) Receive(context actor.Context) {
 	case *vatypes.CheckTx:
 		log.Info("Validator receive tx")
 		sender := context.Sender()
-		errCode := validation.VerifyTransaction(&msg.Tx)
+		bestBlock, _ := self.db.GetBestBlock()
 
-		response := &vatypes.StatefullCheckResponse{
-			ErrCode: errCode,
-			Hash:    msg.Tx.Hash(),
+		errCode := errors.ErrNoError
+		if exist := self.db.ContainTransaction(msg.Tx.Hash()); exist {
+			errCode = errors.ErrDuplicatedTx
+		}
+
+		response := &vatypes.CheckResponse{
+			WorkerId: msg.WorkerId,
+			Type:     self.VerifyType(),
+			Hash:     msg.Tx.Hash(),
+			Height:   bestBlock.Height,
+			ErrCode:  errCode,
 		}
 
 		sender.Tell(response)
