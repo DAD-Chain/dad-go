@@ -9,8 +9,9 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/events"
+	//"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
+	"github.com/dad-go/net/actor"
 )
 
 type blockReq struct {
@@ -38,7 +39,8 @@ func (msg block) Handle(node Noder) error {
 	//	return err
 	//}
 	//node.RemoveFlightHeight(msg.blk.Header.Height)
-	node.LocalNode().GetEvent("block").Notify(events.EventNewInventory, &msg.blk)
+	//node.LocalNode().GetEvent("block").Notify(events.EventNewInventory, &msg.blk)
+	actor.AddBlock(&msg.blk)
 	return nil
 }
 
