@@ -3,6 +3,7 @@ package node
 import (
 	"fmt"
 	"github.com/dad-go/common/config"
+	//	"github.com/dad-go/common/log"
 	. "github.com/dad-go/net/protocol"
 	"strings"
 	"sync"
