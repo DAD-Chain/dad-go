@@ -6,9 +6,9 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"net"
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/net/protocol"
+	"net"
 	"strconv"
 )
 
@@ -180,7 +180,7 @@ func (msg addr) Handle(node Noder) error {
 			continue
 		}
 
-		go node.LocalNode().Connect(address)
+		go node.LocalNode().Connect(address, false)
 	}
 	return nil
 }
