@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"github.com/dad-go/common"
-	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
-	. "github.com/dad-go/errors"
 	"github.com/dad-go/events"
 	"time"
 )
@@ -122,7 +120,7 @@ type Noder interface {
 	SetBookKeeperAddr(pk *crypto.PubKey)
 	GetNeighborHeights() ([]uint64, uint64)
 	SyncNodeHeight()
-	CleanTransactions(txns []*types.Transaction) error
+	//CleanTransactions(txns []*types.Transaction) error
 
 	GetNeighborNoder() []Noder
 	GetNbrNodeCnt() uint32

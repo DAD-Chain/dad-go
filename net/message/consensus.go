@@ -9,7 +9,7 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/contract/program"
+	"github.com/dad-go/core/contract/program"
 	//"github.com/dad-go/core/contract"
 	//sig "github.com/dad-go/core/signature"
 	//"github.com/dad-go/core/validation"

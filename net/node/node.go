@@ -17,7 +17,6 @@ import (
 	. "github.com/dad-go/common"
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/events"
