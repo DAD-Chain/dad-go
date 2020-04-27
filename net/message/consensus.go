@@ -5,19 +5,18 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
-	"fmt"
+	"io"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/core/contract"
-	"github.com/dad-go/core/contract/program"
-	sig "github.com/dad-go/core/signature"
-	"github.com/dad-go/core/validation"
+	"github.com/dad-go/contract/program"
+	//"github.com/dad-go/core/contract"
+	//sig "github.com/dad-go/core/signature"
+	//"github.com/dad-go/core/validation"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/events"
 	. "github.com/dad-go/net/protocol"
-	"io"
 )
 
 type ConsensusPayload struct {
@@ -45,14 +44,14 @@ func (cp *ConsensusPayload) Hash() common.Uint256 {
 }
 
 func (cp *ConsensusPayload) Verify() error {
-	err := validation.VerifySignableDataSignature(cp)
-	if err != nil {
-		return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
-	}
-	err = validation.VerifySignableDataProgramHashes(cp)
-	if err != nil {
-		return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
-	}
+	//err := validation.VerifySignableDataSignature(cp)
+	//if err != nil {
+	//	return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
+	//}
+	//err = validation.VerifySignableDataProgramHashes(cp)
+	//if err != nil {
+	//	return errors.New(fmt.Sprint("ConsensusPayload verify failed", err.Error()))
+	//}
 
 	return nil
 }
@@ -68,13 +67,14 @@ func (cp *ConsensusPayload) InvertoryType() common.InventoryType {
 }
 
 func (cp *ConsensusPayload) GetProgramHashes() ([]common.Uint160, error) {
-	contract, err := contract.CreateSignatureContract(cp.Owner)
-	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "[Consensus], CreateSignatureContract failed.")
-	}
+	//contract, err := contract.CreateSignatureContract(cp.Owner)
+	//if err != nil {
+	//	return nil, NewDetailErr(err, ErrNoCode, "[Consensus], CreateSignatureContract failed.")
+	//}
 
-	hash := contract.ProgramHash
-	programhashes := []common.Uint160{hash}
+	//hash := contract.ProgramHash
+	//programhashes := []common.Uint160{hash}
+	programhashes := []common.Uint160{}
 	return programhashes, nil
 }
 
@@ -98,7 +98,8 @@ func (cp *ConsensusPayload) GetPrograms() []*program.Program {
 
 func (cp *ConsensusPayload) GetMessage() []byte {
 	//TODO: GetMessage
-	return sig.GetHashData(cp)
+	//return sig.GetHashData(cp)
+	return []byte{}
 }
 
 func (msg consensus) Handle(node Noder) error {

@@ -6,7 +6,7 @@ import (
 	"encoding/binary"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/core/ledger"
+	//"github.com/dad-go/ledger"
 	. "github.com/dad-go/net/protocol"
 )
 
@@ -19,7 +19,8 @@ func NewPongMsg() ([]byte, error) {
 	var msg pong
 	msg.msgHdr.Magic = NETMAGIC
 	copy(msg.msgHdr.CMD[0:7], "pong")
-	msg.height = uint64(ledger.DefaultLedger.Store.GetHeaderHeight())
+	//msg.height = uint64(ledger.DefaultLedger.Store.GetHeaderHeight())
+	msg.height = uint64(0)
 	tmpBuffer := bytes.NewBuffer([]byte{})
 	serialization.WriteUint64(tmpBuffer, msg.height)
 	b := new(bytes.Buffer)
