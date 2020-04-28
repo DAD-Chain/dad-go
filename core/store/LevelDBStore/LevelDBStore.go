@@ -1,7 +1,7 @@
-package LevelDBStore
+package leveldbstore
 
 import (
-	. "github.com/dad-go/core/store"
+	. "github.com/dad-go/core/store/common"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"github.com/syndtr/goleveldb/leveldb/filter"

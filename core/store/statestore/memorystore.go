@@ -2,7 +2,7 @@ package statestore
 
 import (
 	"github.com/dad-go/core/states"
-	. "github.com/dad-go/core/store"
+	."github.com/dad-go/core/store/common"
 )
 
 type MemoryStore struct {
