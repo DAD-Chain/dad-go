@@ -2,21 +2,20 @@ package main
 
 import (
 	//"fmt"
+	"bytes"
+	"encoding/hex"
+	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/eventbus/actor"
-	"github.com/dad-go/eventbus/zmqremote"
-	//tp "github.com/dad-go/txnpool/proc"
-	"github.com/dad-go/eventbus/remote"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-    "time"
-    "github.com/dad-go/common"
-    "bytes"
-	"encoding/hex"
+	"github.com/dad-go/eventbus/actor"
+	"github.com/dad-go/eventbus/remote"
+	"github.com/dad-go/eventbus/zmqremote"
+	"time"
 )
 
 var (
-	txn   *types.Transaction
+	tx *types.Transaction
 )
 
 func init() {
@@ -26,7 +25,7 @@ func init() {
 		Nonce: uint64(time.Now().UnixNano()),
 	}
 
-	txn = &types.Transaction{
+	tx = &types.Transaction{
 		Version:    0,
 		Attributes: []*types.TxAttribute{},
 		TxType:     types.BookKeeping,
@@ -37,7 +36,7 @@ func init() {
 	hex, _ := hex.DecodeString(tempStr)
 	var hash common.Uint256
 	hash.Deserialize(bytes.NewReader(hex))
-	txn.SetHash(hash)
+	tx.SetHash(hash)
 }
 
 func main() {
@@ -46,8 +45,8 @@ func main() {
 	stopCh = make(chan bool)
 
 	remote.Start("192.168.153.130:50011")
-    server := actor.NewPID("192.168.153.130:50010", "Txn")
-    /*props := actor.FromFunc(func(context actor.Context) {
+	server := actor.NewPID("192.168.153.130:50010", "Txn")
+	/*props := actor.FromFunc(func(context actor.Context) {
 		switch msg := context.Message().(type) {
 		case *tp.CheckTxnRsp:
 			fmt.Println(msg)
@@ -55,6 +54,8 @@ func main() {
 	})*/
 
 	//client := actor.Spawn(props)
-	server.Tell(&zmqremote.MsgData{MsgType: 1, Data: txn})
-    <- stopCh
+	tmpBuffer := bytes.NewBuffer([]byte{})
+	tx.Serialize(tmpBuffer)
+	server.Tell(&zmqremote.MsgData{MsgType: 1, Data: tmpBuffer.Bytes()})
+	<-stopCh
 }
