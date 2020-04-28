@@ -102,20 +102,32 @@ type TxoutInfo struct {
 }
 
 type NodeInfo struct {
-	State    uint   // node status
-	Port     uint16 // The nodes's port
+	NodeState    uint   // node status
+	NodePort     uint16 // The nodes's port
 	ID       uint64 // The nodes's id
-	Time     int64
-	Version  uint32 // The network protocol the node used
-	Services uint64 // The services the node supplied
+	NodeTime     int64
+	NodeVersion  uint32 // The network protocol the node used
+	NodeType uint64 // The services the node supplied
 	Relay    bool   // The relay capability of the node (merge into capbility flag)
-	Height   uint64 // The node latest block height
-	TxnCnt   uint64 // The transactions be transmit by this node
-	RxTxnCnt uint64 // The transaction received by this node
+	Height   uint32 // The node latest block height
+	TxnCnt   []uint64 // The transactions be transmit by this node
+	//RxTxnCnt uint64 // The transaction received by this node
 }
 
 type ConsensusInfo struct {
 	// TODO
+}
+
+type TXNAttrInfo struct {
+	Height  uint32
+	Type    int
+	ErrCode int
+}
+
+type TXNEntryInfo struct {
+	Txn   Transactions  // transaction which has been verified
+	Fee   int64         // Total fee per transaction
+	Attrs []TXNAttrInfo // the result from each validator
 }
 
 func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
@@ -144,7 +156,7 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 
 func VerifyAndSendTx(txn *types.Transaction) ErrCode {
 	// if transaction is verified unsucessfully then will not put it into transaction pool
-	if errCode := AppendTxnPool(txn); errCode != ErrNoError {
+	if errCode := AppendTxToPool(txn); errCode != ErrNoError {
 		log.Warn("Can NOT add the transaction to TxnPool")
 		log.Info("[httpjsonrpc] VerifyTransaction failed when AppendTxnPool.")
 		return errCode

@@ -21,21 +21,21 @@ func getCurrentDirectory() string {
 	return dir
 }
 
-func GetNeighbor(params []interface{}) map[string]interface{} {
+func getNeighbor(params []interface{}) map[string]interface{} {
 	addr, _ := GetNeighborAddrs()
 	return dad-goRpc(addr)
 }
 
-func GetNodeState(params []interface{}) map[string]interface{} {
-	state,err := GetState()
+func getNodeState(params []interface{}) map[string]interface{} {
+	state,err := GetConnectionState()
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	t,err := GetTime()
+	t,err := GetNodeTime()
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	port,err := GetPort()
+	port,err := GetNodePort()
 	if err != nil {
 		return dad-goRpcFailed
 	}
@@ -43,19 +43,19 @@ func GetNodeState(params []interface{}) map[string]interface{} {
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	ver,err := GetVersion()
+	ver,err := GetNodeVersion()
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	sers,err := Services()
+	tpe,err := GetNodeType()
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	relay,err := GetRelay()
+	relay,err := GetRelayState()
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	height,err := GetHeight()
+	height,err := BlockHeight()
 	if err != nil {
 		return dad-goRpcFailed
 	}
@@ -63,40 +63,35 @@ func GetNodeState(params []interface{}) map[string]interface{} {
 	if err != nil {
 		return dad-goRpcFailed
 	}
-	rxTxnCnt,err := GetRxTxnCnt()
-	if err != nil {
-		return dad-goRpcFailed
-	}
 	n := NodeInfo{
-		State:    uint(state),
-		Time:     t,
-		Port:     port,
+		NodeState:    uint(state),
+		NodeTime:     t,
+		NodePort:     port,
 		ID:       id,
-		Version:  ver,
-		Services: sers,
+		NodeVersion:  ver,
+		NodeType: tpe,
 		Relay:    relay,
 		Height:   height,
 		TxnCnt:   txnCnt,
-		RxTxnCnt: rxTxnCnt,
 	}
 	return dad-goRpc(n)
 }
 
-func StartConsensus(params []interface{}) map[string]interface{} {
+func startConsensus(params []interface{}) map[string]interface{} {
 	if err := ConsensusSrvStart(); err != nil {
 		return dad-goRpcFailed
 	}
 	return dad-goRpcSuccess
 }
 
-func StopConsensus(params []interface{}) map[string]interface{} {
+func stopConsensus(params []interface{}) map[string]interface{} {
 	if err := ConsensusSrvHalt(); err != nil {
 		return dad-goRpcFailed
 	}
 	return dad-goRpcSuccess
 }
 
-func SendSampleTransaction(params []interface{}) map[string]interface{} {
+func sendSampleTransaction(params []interface{}) map[string]interface{} {
 	panic("need reimplementation")
 	return nil
 
@@ -141,7 +136,7 @@ func SendSampleTransaction(params []interface{}) map[string]interface{} {
 	*/
 }
 
-func SetDebugInfo(params []interface{}) map[string]interface{} {
+func setDebugInfo(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcInvalidParameter
 	}

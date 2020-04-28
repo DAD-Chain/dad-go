@@ -16,7 +16,7 @@ import (
 	"os"
 )
 
-func GetBestBlockHash(params []interface{}) map[string]interface{} {
+func getBestBlockHash(params []interface{}) map[string]interface{} {
 	hash,err := CurrentBlockHash()
 	if err != nil{
 		return dad-goRpcFailed
@@ -27,7 +27,7 @@ func GetBestBlockHash(params []interface{}) map[string]interface{} {
 // Input JSON string examples for getblock method as following:
 //   {"jsonrpc": "2.0", "method": "getblock", "params": [1], "id": 0}
 //   {"jsonrpc": "2.0", "method": "getblock", "params": ["aabbcc.."], "id": 0}
-func GetBlock(params []interface{}) map[string]interface{} {
+func getBlock(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -90,7 +90,7 @@ func GetBlock(params []interface{}) map[string]interface{} {
 	return dad-goRpc(b)
 }
 
-func GetBlockCount(params []interface{}) map[string]interface{} {
+func getBlockCount(params []interface{}) map[string]interface{} {
 	height,err := BlockHeight()
 	if err != nil{
 		return dad-goRpcFailed
@@ -100,7 +100,7 @@ func GetBlockCount(params []interface{}) map[string]interface{} {
 
 // A JSON example for getblockhash method as following:
 //   {"jsonrpc": "2.0", "method": "getblockhash", "params": [1], "id": 0}
-func GetBlockHash(params []interface{}) map[string]interface{} {
+func getBlockHash(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -117,7 +117,7 @@ func GetBlockHash(params []interface{}) map[string]interface{} {
 	}
 }
 
-func GetConnectionCount(params []interface{}) map[string]interface{} {
+func getConnectionCount(params []interface{}) map[string]interface{} {
 	count,err := GetConnectionCnt()
 	if err != nil{
 		return dad-goRpcFailed
@@ -125,9 +125,9 @@ func GetConnectionCount(params []interface{}) map[string]interface{} {
 	return dad-goRpc(count)
 }
 
-func GetRawMemPool(params []interface{}) map[string]interface{} {
+func getRawMemPool(params []interface{}) map[string]interface{} {
 	txs := []*Transactions{}
-	txpool, _ := GetTxnPool(false)
+	txpool, _ := GetTxsFromPool(false)
 	for _, t := range txpool {
 		txs = append(txs, TransArryByteToHexString(t))
 	}
@@ -136,10 +136,40 @@ func GetRawMemPool(params []interface{}) map[string]interface{} {
 	}
 	return dad-goRpc(txs)
 }
-
+func getMemPoolTx(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return dad-goRpcNil
+	}
+	switch params[0].(type) {
+	case string:
+		str := params[0].(string)
+		hex, err := hex.DecodeString(str)
+		if err != nil {
+			return dad-goRpcInvalidParameter
+		}
+		var hash Uint256
+		err = hash.Deserialize(bytes.NewReader(hex))
+		if err != nil {
+			return dad-goRpcInvalidTransaction
+		}
+		txEntry, err := GetTxFromPool(hash)
+		if err != nil {
+			return dad-goRpcUnknownTransaction
+		}
+		tran := TransArryByteToHexString(txEntry.Tx)
+		attrs := []TXNAttrInfo{}
+		for _, t := range txEntry.Attrs {
+			attrs = append(attrs, TXNAttrInfo{t.Height,int(t.Type),int(t.ErrCode)})
+		}
+		info := TXNEntryInfo{*tran,int64(txEntry.Fee),attrs}
+		return dad-goRpc(info)
+	default:
+		return dad-goRpcInvalidParameter
+	}
+}
 // A JSON example for getrawtransaction method as following:
 //   {"jsonrpc": "2.0", "method": "getrawtransaction", "params": ["transactioin hash in hex"], "id": 0}
-func GetRawTransaction(params []interface{}) map[string]interface{} {
+func getRawTransaction(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -167,7 +197,7 @@ func GetRawTransaction(params []interface{}) map[string]interface{} {
 }
 
 //   {"jsonrpc": "2.0", "method": "getstorage", "params": ["code hash", "key"], "id": 0}
-func GetStorage(params []interface{}) map[string]interface{} {
+func getStorage(params []interface{}) map[string]interface{} {
 	if len(params) < 2 {
 		return dad-goRpcNil
 	}
@@ -208,7 +238,7 @@ func GetStorage(params []interface{}) map[string]interface{} {
 
 // A JSON example for sendrawtransaction method as following:
 //   {"jsonrpc": "2.0", "method": "sendrawtransaction", "params": ["raw transactioin in hex"], "id": 0}
-func SendRawTransaction(params []interface{}) map[string]interface{} {
+func sendRawTransaction(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -234,7 +264,7 @@ func SendRawTransaction(params []interface{}) map[string]interface{} {
 	return dad-goRpc(ToHexString(hash.ToArray()))
 }
 
-func GetBalance(params []interface{}) map[string]interface{} {
+func getBalance(params []interface{}) map[string]interface{} {
 	if len(params) < 2 {
 		return dad-goRpcNil
 	}
@@ -276,7 +306,7 @@ func GetBalance(params []interface{}) map[string]interface{} {
 
 // A JSON example for submitblock method as following:
 //   {"jsonrpc": "2.0", "method": "submitblock", "params": ["raw block in hex"], "id": 0}
-func SubmitBlock(params []interface{}) map[string]interface{} {
+func submitBlock(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -300,11 +330,11 @@ func SubmitBlock(params []interface{}) map[string]interface{} {
 	return dad-goRpcSuccess
 }
 
-func GetNodeVersion(params []interface{}) map[string]interface{} {
+func getNodeVersion(params []interface{}) map[string]interface{} {
 	return dad-goRpc(config.Version)
 }
 
-func UploadDataFile(params []interface{}) map[string]interface{} {
+func uploadDataFile(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -334,7 +364,7 @@ func UploadDataFile(params []interface{}) map[string]interface{} {
 	return dad-goRpc(refpath)
 
 }
-func GetSmartCodeEvent(params []interface{}) map[string]interface{} {
+func getSmartCodeEvent(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -350,7 +380,7 @@ func GetSmartCodeEvent(params []interface{}) map[string]interface{} {
 	}
 	return dad-goRpcInvalidParameter
 }
-func RegDataFile(params []interface{}) map[string]interface{} {
+func regDataFile(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -377,7 +407,7 @@ func RegDataFile(params []interface{}) map[string]interface{} {
 	return dad-goRpc(ToHexString(hash.ToArray()))
 }
 
-func CatDataRecord(params []interface{}) map[string]interface{} {
+func catDataRecord(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
@@ -406,7 +436,7 @@ func CatDataRecord(params []interface{}) map[string]interface{} {
 	}
 }
 
-func GetDataFile(params []interface{}) map[string]interface{} {
+func getDataFile(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
