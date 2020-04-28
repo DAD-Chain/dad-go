@@ -9,8 +9,8 @@ import (
 	pool "github.com/valyala/bytebufferpool"
 
 	"github.com/dad-go/common"
-	"github.com/dad-go/core/store"
-	leveldb "github.com/dad-go/core/store/LevelDBStore"
+	storcomm"github.com/dad-go/core/store/common"
+	leveldb "github.com/dad-go/core/store/leveldbstore"
 	"github.com/dad-go/core/types"
 	tx "github.com/dad-go/core/types"
 
@@ -21,7 +21,7 @@ var keyPool pool.Pool
 var valuePool pool.Pool
 
 type Store struct {
-	db store.IStore
+	db storcomm.IStore
 
 	mutex           sync.RWMutex // guard the following var
 	bestBlockHeader *types.Header

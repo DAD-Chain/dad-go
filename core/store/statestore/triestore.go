@@ -3,7 +3,7 @@ package statestore
 import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/trie"
-	"github.com/dad-go/core/store"
+	"github.com/dad-go/core/store/common"
 )
 
 const (
@@ -23,11 +23,11 @@ type ITrie interface {
 }
 
 type cachingDB struct {
-	db        store.IStore
+	db        common.IStore
 	pastTries []*trie.SecureTrie
 }
 
-func NewTrieStore(db store.IStore) ITrieStore {
+func NewTrieStore(db common.IStore) ITrieStore {
 	return &cachingDB{db: db}
 }
 

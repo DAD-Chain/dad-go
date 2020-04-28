@@ -2,8 +2,8 @@ package event
 
 import (
 	"github.com/dad-go/events"
-	"github.com/dad-go/core/ledger"
 	. "github.com/dad-go/common"
+	"github.com/dad-go/core/ledger/ledgerevent"
 )
 
 func PushSmartCodeEvent(txHash Uint256, errcode int64, action string, result interface{}) {
@@ -13,5 +13,5 @@ func PushSmartCodeEvent(txHash Uint256, errcode int64, action string, result int
 		"Result": result,
 		"Error":  errcode,
 	}
-	ledger.DefaultLedger.Blockchain.BCEvents.Notify(events.EventSmartCode, resp)
+	ledgerevent.DefLedgerEvt.Notify(events.EventSmartCode, resp)
 }
