@@ -5,8 +5,8 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store/ledgerstore"
 	"github.com/dad-go/core/store"
+	"github.com/dad-go/core/store/ledgerstore"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 )
@@ -26,6 +26,10 @@ func NewLedger() (*Ledger, error) {
 	return &Ledger{
 		ldgStore: ldgStore,
 	}, nil
+}
+
+func (this *Ledger) GetStore() store.ILedgerStore {
+	return this.ldgStore
 }
 
 func (this *Ledger) Init(defaultBookKeeper []*crypto.PubKey) error {
