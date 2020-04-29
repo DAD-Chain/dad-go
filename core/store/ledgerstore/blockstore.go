@@ -1,7 +1,7 @@
 package ledgerstore
 
 import (
-	"dad-go/common/serialization"
+	"github.com/dad-go/common/serialization"
 	"bytes"
 	"encoding/binary"
 	"fmt"
