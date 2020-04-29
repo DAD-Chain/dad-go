@@ -7,12 +7,12 @@ import (
 	"github.com/dad-go/consensus"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/net"
 	"github.com/dad-go/http/jsonrpc"
+	"github.com/dad-go/http/localrpc"
 	"github.com/dad-go/http/nodeinfo"
 	"github.com/dad-go/http/restful"
 	"github.com/dad-go/http/websocket"
-	"github.com/dad-go/http/localrpc"
+	"github.com/dad-go/net"
 	"github.com/dad-go/net/protocol"
 	"os"
 	"os/signal"
@@ -89,8 +89,7 @@ func main() {
 	noder.WaitForSyncBlkFinish()
 	if protocol.SERVICENODENAME != config.Parameters.NodeType {
 		log.Info("4. Start Consensus Services")
-		consensusSrv := consensus.NewConsensusService(client, noder)
-		//jsonrpc.RegistConsensusService(consensusSrv)
+		consensusSrv, _ := consensus.NewConsensusService(acct, nil, nil, noder)
 		go consensusSrv.Start()
 		time.Sleep(5 * time.Second)
 	}
