@@ -6,6 +6,7 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/consensus"
 	"github.com/dad-go/core/ledger"
+	ldgactor"github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/http/jsonrpc"
 	"github.com/dad-go/http/localrpc"
@@ -78,6 +79,8 @@ func main() {
 		log.Fatalf("DefLedger.Init error %s", err)
 		os.Exit(1)
 	}
+	ldgerActor :=  ldgactor.NewLedgerActor()
+	ldgerActor.Start()
 
 	log.Info("3. Start the transaction pool server")
 	// Start the transaction pool server
