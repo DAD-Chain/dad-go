@@ -6,7 +6,7 @@ import (
 	"github.com/dad-go/net/protocol"
 )
 
-var NetServerPid *actor.PID
+var netServerPid *actor.PID
 
 var node protocol.Noder
 
@@ -66,6 +66,13 @@ type GetRelayStateRsp struct {
 	Relay bool
 }
 
+type GetNeighborAddrsReq struct {
+}
+type GetNeighborAddrsRsp struct {
+	Addrs []protocol.NodeAddr
+	Count uint64
+}
+
 func (state *NetServer) Receive(context actor.Context) {
 	switch context.Message().(type) {
 	case *GetNodeVersionReq:
@@ -95,6 +102,9 @@ func (state *NetServer) Receive(context actor.Context) {
 	case *GetRelayStateReq:
 		relay := node.GetRelay()
 		context.Sender().Request(&GetRelayStateRsp{Relay: relay}, context.Self())
+	case *GetNeighborAddrsReq:
+		addrs, count := node.GetNeighborAddrs()
+		context.Sender().Request(&GetNeighborAddrsRsp{Addrs: addrs, Count:count}, context.Self())
 	default:
 		err := node.Xmit(context.Message())
 		if nil != err {
@@ -103,11 +113,12 @@ func (state *NetServer) Receive(context actor.Context) {
 	}
 }
 
-func init() {
+func InitNetServer(netNode protocol.Noder) (*actor.PID, error){
 	props := actor.FromProducer(func() actor.Actor { return &NetServer{} })
-	NetServerPid = actor.Spawn(props)
-}
-
-func SetNode(netNode protocol.Noder) {
+	netServerPid, err := actor.SpawnNamed(props, "net_server")
+	if err != nil {
+		return nil, err
+	}
 	node = netNode
+	return netServerPid, err
 }

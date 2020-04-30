@@ -5,75 +5,22 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/eventbus/actor"
-	"sync"
+	. "github.com/dad-go/txnpool/common"
 	"time"
 )
 
-var TxnPid *actor.PID
+var txnPoolPid *actor.PID
 
-type TxnStatsType uint8
-
-const (
-	_ TxnStatsType = iota
-	RcvStats
-	SuccessStats
-	FailureStats
-	DuplicateStats
-	SigErrStats
-	StateErrStats
-	MAXSTATS
-)
-
-type txnStats struct {
-	sync.RWMutex
-	count []uint64
-}
-
-type GetTxnStatsReq struct{}
-type GetTxnStatsRsp struct {
-	count *[]uint64
-}
-
-type GetTxnPoolReq struct {
-	ByCount bool
-}
-
-type TXNAttr struct {
-	Height      uint32
-	ValidatorID uint8
-	Ok          bool
-}
-
-type TXNEntry struct {
-	Txn   *types.Transaction
-	Attrs []*TXNAttr
-}
-
-type GetTxnPoolRsp struct {
-	TxnPool []*TXNEntry
-}
-
-type CleanTxnPoolReq struct {
-	TxnPool []*types.Transaction
-}
-
-type GetTxnReq struct {
-	hash common.Uint256
-}
-type GetTxnRsp struct {
-	txn *types.Transaction
+func SetTxnPoolPid(txnPid *actor.PID){
+	txnPoolPid = txnPid
 }
 
 func AddTransaction(transaction *types.Transaction) {
-	TxnPid.Tell(transaction)
+	txnPoolPid.Tell(transaction)
 }
 
-func CleanTxnPool(TxnPool []*types.Transaction) {
-	TxnPid.Tell(&CleanTxnPoolReq{TxnPool})
-}
-
-func GetTxnPool(byCount bool) []*TXNEntry {
-	future := TxnPid.RequestFuture(&GetTxnPoolReq{ByCount: byCount}, 5*time.Second)
+func GetTxnPool(byCount bool) []*TXEntry {
+	future := txnPoolPid.RequestFuture(&GetTxnPoolReq{ByCount: byCount}, 5*time.Second)
 	result, err := future.Result()
 	if err != nil {
 		fmt.Println("ERROR: ", err)
@@ -82,19 +29,56 @@ func GetTxnPool(byCount bool) []*TXNEntry {
 }
 
 func GetTransaction(hash common.Uint256) *types.Transaction {
-	future := TxnPid.RequestFuture(&GetTxnReq{hash}, 5*time.Second)
+	future := txnPoolPid.RequestFuture(&GetTxnReq{Hash:hash}, 5*time.Second)
 	result, err := future.Result()
 	if err != nil {
 		fmt.Println("ERROR: ", err)
 	}
-	return result.(GetTxnRsp).txn
+	return result.(GetTxnRsp).Txn
 }
 
-func GetTxnStats(hash common.Uint256) *[]uint64 {
-	future := TxnPid.RequestFuture(&GetTxnStatsReq{}, 5*time.Second)
+func CheckTransaction(hash common.Uint256) bool {
+	future := txnPoolPid.RequestFuture(&CheckTxnReq{Hash:hash}, 5*time.Second)
 	result, err := future.Result()
 	if err != nil {
 		fmt.Println("ERROR: ", err)
 	}
-	return result.(GetTxnStatsRsp).count
+	return result.(CheckTxnRsp).Ok
 }
+
+func GetTransactionStatus(hash common.Uint256) []*TXAttr {
+	future := txnPoolPid.RequestFuture(&GetTxnStatusReq{Hash:hash}, 5*time.Second)
+	result, err := future.Result()
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+	}
+	return result.(GetTxnStatusRsp).TxStatus
+}
+
+func GetPendingTxn(byCount bool) []*types.Transaction {
+	future := txnPoolPid.RequestFuture(&GetPendingTxnReq{ByCount:byCount}, 5*time.Second)
+	result, err := future.Result()
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+	}
+	return result.(GetPendingTxnRsp).Txs
+}
+
+func VerifyBlock(height uint32, txs []*types.Transaction) []*VerifyTxResult {
+	future := txnPoolPid.RequestFuture(&VerifyBlockReq{Height:height, Txs:txs}, 5*time.Second)
+	result, err := future.Result()
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+	}
+	return result.(VerifyBlockRsp).TxnPool
+}
+
+func GetTransactionStats(hash common.Uint256) *[]uint64 {
+	future := txnPoolPid.RequestFuture(&GetTxnStats{}, 5*time.Second)
+	result, err := future.Result()
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+	}
+	return result.(GetTxnStatsRsp).Count
+}
+
