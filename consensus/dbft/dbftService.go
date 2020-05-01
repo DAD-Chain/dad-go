@@ -5,28 +5,27 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
+	actorTypes "github.com/dad-go/consensus/actor"
 	"github.com/dad-go/core"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/core/ledger/ledgerevent"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/events"
-	"github.com/dad-go/net"
-	msg "github.com/dad-go/net/message"
-	"github.com/dad-go/core/ledger/ledgerevent"
-	"github.com/dad-go/account"
-	clientActor "github.com/dad-go/consensus/actor"
 	ontErrors "github.com/dad-go/errors"
 	"github.com/dad-go/eventbus/actor"
+	"github.com/dad-go/events"
+	p2pmsg "github.com/dad-go/net/message"
 )
 
 type DbftService struct {
@@ -36,42 +35,99 @@ type DbftService struct {
 	timerHeight       uint32
 	timeView          byte
 	blockReceivedTime time.Time
-	logDictionary     string
 	started           bool
-	localNet          net.Neter
-	poolActor         *clientActor.TxPoolActor
+	poolActor         *actorTypes.TxPoolActor
+	p2p               *actorTypes.P2PActor
 
-	newInventorySubscriber          events.Subscriber
+	pid *actor.PID
+
 	blockPersistCompletedSubscriber events.Subscriber
 }
 
-func NewDbftService(bkAccount *account.Account, logDictionary string, txpool *actor.PID) *DbftService {
+func NewDbftService(bkAccount *account.Account, txpool, p2p *actor.PID) (*DbftService, error) {
 
-	ds := &DbftService{
-		Account:       bkAccount,
-		timer:         time.NewTimer(time.Second * 15),
-		started:       false,
-		poolActor:     &clientActor.TxPoolActor{Pool: txpool},
-		logDictionary: logDictionary,
+	service := &DbftService{
+		Account:   bkAccount,
+		timer:     time.NewTimer(time.Second * 15),
+		started:   false,
+		poolActor: &actorTypes.TxPoolActor{Pool: txpool},
+		p2p:       &actorTypes.P2PActor{P2P: p2p},
 	}
 
-	if !ds.timer.Stop() {
-		<-ds.timer.C
+	if !service.timer.Stop() {
+		<-service.timer.C
 	}
-	go ds.timerRoutine()
-	return ds
+
+	go func() {
+		for {
+			select {
+			case <-service.timer.C:
+				log.Debug("******Get a timeout notice")
+				service.pid.Tell(&actorTypes.TimeOut{})
+			}
+		}
+	}()
+
+	props := actor.FromProducer(func() actor.Actor {
+		return service
+	})
+
+	pid, err := actor.SpawnNamed(props, "consensus_dbft")
+	service.pid = pid
+	return service, err
+}
+
+func (this *DbftService) Receive(context actor.Context) {
+	if _, ok := context.Message().(*actorTypes.StartConsensus); this.started == false && ok == false {
+		return
+	}
+
+	switch msg := context.Message().(type) {
+	case *actorTypes.StartConsensus:
+		this.start()
+	case *actorTypes.StopConsensus:
+		this.halt()
+	case *actorTypes.TimeOut:
+		this.Timeout()
+	case *actorTypes.BlockCompleted:
+		this.handleBlockPersistCompleted(msg.Block)
+	case *p2pmsg.ConsensusPayload:
+		this.NewConsensusPayload(msg)
+
+	default:
+		log.Info("Unknown msg type", msg)
+	}
+}
+
+func (this *DbftService) GetPID() *actor.PID {
+	return this.pid
+}
+func (this *DbftService) Start() error {
+	this.pid.Tell(&actorTypes.StartConsensus{})
+	return nil
+}
+
+func (this *DbftService) Halt() error {
+	this.pid.Tell(&actorTypes.StopConsensus{})
+	return nil
+}
+
+func (self *DbftService) handleBlockPersistCompleted(block *types.Block) {
+	log.Infof("persist block: %x", block.Hash())
+	self.p2p.Xmit(block.Hash())
+
+	self.blockReceivedTime = time.Now()
+
+	self.InitializeConsensus(0)
 }
 
 func (ds *DbftService) BlockPersistCompleted(v interface{}) {
 	if block, ok := v.(*types.Block); ok {
 		log.Infof("persist block: %x", block.Hash())
 
-		ds.localNet.Xmit(block.Hash())
+		ds.p2p.Xmit(block.Hash())
 	}
 
-	ds.blockReceivedTime = time.Now()
-
-	go ds.InitializeConsensus(0)
 }
 
 func (ds *DbftService) CheckExpectedView(viewNumber byte) {
@@ -94,7 +150,7 @@ func (ds *DbftService) CheckExpectedView(viewNumber byte) {
 	M := ds.context.M()
 	if count >= M {
 		log.Debug("[CheckExpectedView] Begin InitializeConsensus.")
-		go ds.InitializeConsensus(viewNumber)
+		ds.InitializeConsensus(viewNumber)
 		//ds.InitializeConsensus(viewNumber)
 	}
 }
@@ -200,7 +256,7 @@ func (ds *DbftService) CreateBookkeepingTransaction(nonce uint64, fee Fixed64) *
 	}
 }
 
-func (ds *DbftService) ChangeViewReceived(payload *msg.ConsensusPayload, message *ChangeView) {
+func (ds *DbftService) ChangeViewReceived(payload *p2pmsg.ConsensusPayload, message *ChangeView) {
 	log.Debug()
 	log.Info(fmt.Sprintf("Change View Received: height=%d View=%d index=%d nv=%d", payload.Height, message.ViewNumber(), payload.BookKeeperIndex, message.NewViewNumber))
 
@@ -213,7 +269,7 @@ func (ds *DbftService) ChangeViewReceived(payload *msg.ConsensusPayload, message
 	ds.CheckExpectedView(message.NewViewNumber)
 }
 
-func (ds *DbftService) Halt() error {
+func (ds *DbftService) halt() error {
 	log.Debug()
 	log.Info("DBFT Stop")
 	if ds.timer != nil {
@@ -222,7 +278,6 @@ func (ds *DbftService) Halt() error {
 
 	if ds.started {
 		ledgerevent.DefLedgerEvt.UnSubscribe(events.EventBlockPersistCompleted, ds.blockPersistCompletedSubscriber)
-		ds.localNet.GetEvent("consensus").UnSubscribe(events.EventNewInventory, ds.newInventorySubscriber)
 	}
 	return nil
 }
@@ -235,7 +290,7 @@ func (ds *DbftService) InitializeConsensus(viewNum byte) error {
 	log.Debug("[InitializeConsensus] viewNum: ", viewNum)
 
 	if viewNum == 0 {
-		ds.context.Reset(ds.Account, ds.localNet)
+		ds.context.Reset(ds.Account)
 	} else {
 		if ds.context.State.HasFlag(BlockGenerated) {
 			return nil
@@ -281,7 +336,7 @@ func (ds *DbftService) LocalNodeNewInventory(v interface{}) {
 	log.Debug()
 	if inventory, ok := v.(Inventory); ok {
 		if inventory.Type() == CONSENSUS {
-			payload, ret := inventory.(*msg.ConsensusPayload)
+			payload, ret := inventory.(*p2pmsg.ConsensusPayload)
 			if ret == true {
 				ds.NewConsensusPayload(payload)
 			}
@@ -291,7 +346,7 @@ func (ds *DbftService) LocalNodeNewInventory(v interface{}) {
 
 //TODO: add invenory receiving
 
-func (ds *DbftService) NewConsensusPayload(payload *msg.ConsensusPayload) {
+func (ds *DbftService) NewConsensusPayload(payload *p2pmsg.ConsensusPayload) {
 	log.Debug()
 	ds.context.contextMu.Lock()
 	defer ds.context.contextMu.Unlock()
@@ -358,7 +413,7 @@ func (ds *DbftService) NewConsensusPayload(payload *msg.ConsensusPayload) {
 	}
 }
 
-func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, message *PrepareRequest) {
+func (ds *DbftService) PrepareRequestReceived(payload *p2pmsg.ConsensusPayload, message *PrepareRequest) {
 	log.Info(fmt.Sprintf("Prepare Request Received: height=%d View=%d index=%d tx=%d", payload.Height, message.ViewNumber(), payload.BookKeeperIndex, len(message.Transactions)))
 
 	if !ds.context.State.HasFlag(Backup) || ds.context.State.HasFlag(RequestReceived) {
@@ -441,12 +496,12 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 		return
 	}
 
-	signature, err := crypto.Sign(ds.Account.PrivKey(), buf.Bytes())
+	sign, err := crypto.Sign(ds.Account.PrivKey(), buf.Bytes())
 	if err != nil {
 		log.Error("[DbftService] SignBySigner failed")
 		return
 	}
-	ds.context.Signatures[ds.context.BookKeeperIndex] = signature
+	ds.context.Signatures[ds.context.BookKeeperIndex] = sign
 
 	payload = ds.context.MakePrepareResponse(ds.context.Signatures[ds.context.BookKeeperIndex])
 	ds.SignAndRelay(payload)
@@ -454,7 +509,7 @@ func (ds *DbftService) PrepareRequestReceived(payload *msg.ConsensusPayload, mes
 	log.Info("Prepare Request finished")
 }
 
-func (ds *DbftService) PrepareResponseReceived(payload *msg.ConsensusPayload, message *PrepareResponse) {
+func (ds *DbftService) PrepareResponseReceived(payload *p2pmsg.ConsensusPayload, message *PrepareResponse) {
 	log.Debug()
 
 	log.Info(fmt.Sprintf("Prepare Response Received: height=%d View=%d index=%d", payload.Height, message.ViewNumber(), payload.BookKeeperIndex))
@@ -488,7 +543,7 @@ func (ds *DbftService) PrepareResponseReceived(payload *msg.ConsensusPayload, me
 	log.Info("Prepare Response finished")
 }
 
-func (ds *DbftService) BlockSignaturesReceived(payload *msg.ConsensusPayload, message *BlockSignatures) {
+func (ds *DbftService) BlockSignaturesReceived(payload *p2pmsg.ConsensusPayload, message *BlockSignatures) {
 	log.Info(fmt.Sprintf("BlockSignatures Received: height=%d View=%d index=%d", payload.Height, message.ViewNumber(), payload.BookKeeperIndex))
 
 	if ds.context.State.HasFlag(BlockGenerated) {
@@ -560,7 +615,7 @@ func (ds *DbftService) RequestChangeView() {
 	ds.CheckExpectedView(ds.context.ExpectedView[ds.context.BookKeeperIndex])
 }
 
-func (ds *DbftService) SignAndRelay(payload *msg.ConsensusPayload) {
+func (ds *DbftService) SignAndRelay(payload *p2pmsg.ConsensusPayload) {
 	log.Debug()
 
 	prohash, err := payload.GetProgramHashes()
@@ -585,10 +640,10 @@ func (ds *DbftService) SignAndRelay(payload *msg.ConsensusPayload) {
 		log.Warn("[SignAndRelay] Get program failure")
 	}
 	payload.SetPrograms(prog)
-	ds.localNet.Xmit(payload)
+	ds.p2p.Xmit(payload)
 }
 
-func (ds *DbftService) Start() error {
+func (ds *DbftService) start() {
 	log.Debug()
 	ds.started = true
 
@@ -598,11 +653,14 @@ func (ds *DbftService) Start() error {
 		log.Warn("The Generate block time should be longer than 2 seconds, so set it to be default 6 seconds.")
 	}
 
-	ds.blockPersistCompletedSubscriber = ledgerevent.DefLedgerEvt.Subscribe(events.EventBlockPersistCompleted, ds.BlockPersistCompleted)
-	ds.newInventorySubscriber = ds.localNet.GetEvent("consensus").Subscribe(events.EventNewInventory, ds.LocalNodeNewInventory)
+	ds.blockPersistCompletedSubscriber = ledgerevent.DefLedgerEvt.Subscribe(events.EventBlockPersistCompleted,
+		func(v interface{}) {
+			if block, ok := v.(*types.Block); ok {
+				ds.pid.Tell(&actorTypes.BlockCompleted{Block: block})
+			}
+		})
 
-	go ds.InitializeConsensus(0)
-	return nil
+	ds.InitializeConsensus(0)
 }
 
 func (ds *DbftService) Timeout() {
@@ -621,7 +679,7 @@ func (ds *DbftService) Timeout() {
 		ds.context.State |= RequestSent
 		if !ds.context.State.HasFlag(SignatureSent) {
 			now := uint32(time.Now().Unix())
-			header, err :=ledger.DefLedger.GetHeaderByHash(&ds.context.PrevHash)
+			header, err := ledger.DefLedger.GetHeaderByHash(&ds.context.PrevHash)
 			if err != nil {
 				log.Error("[Timeout] GetHeader error:", err)
 			}
@@ -670,16 +728,5 @@ func (ds *DbftService) Timeout() {
 		ds.timer.Reset(genesis.GenBlockTime << (ds.timeView + 1))
 	} else if (ds.context.State.HasFlag(Primary) && ds.context.State.HasFlag(RequestSent)) || ds.context.State.HasFlag(Backup) {
 		ds.RequestChangeView()
-	}
-}
-
-func (ds *DbftService) timerRoutine() {
-	log.Debug()
-	for {
-		select {
-		case <-ds.timer.C:
-			log.Debug("******Get a timeout notice")
-			go ds.Timeout()
-		}
 	}
 }

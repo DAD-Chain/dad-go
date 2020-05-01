@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
-	tx "github.com/dad-go/core/types"
+	"github.com/dad-go/core/types"
 
 	"io"
 )
@@ -65,7 +65,8 @@ type TransactionProvider interface {
 	BestStateProvider
 	ContainTransaction(hash common.Uint256) bool
 	GetTransactionBytes(hash common.Uint256) ([]byte, error)
-	GetTransaction(hash common.Uint256) (*tx.Transaction, error)
+	GetTransaction(hash common.Uint256) (*types.Transaction, error)
+	PersistBlock(block *types.Block) error
 }
 
 type TransactionMetaProvider interface {

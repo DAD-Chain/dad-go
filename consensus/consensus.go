@@ -9,12 +9,12 @@ import (
 	"github.com/dad-go/consensus/dbft"
 	"github.com/dad-go/consensus/solo"
 	"github.com/dad-go/eventbus/actor"
-	"github.com/dad-go/net"
 )
 
 type ConsensusService interface {
 	Start() error
 	Halt() error
+	GetPID() *actor.PID
 }
 
 const (
@@ -22,8 +22,7 @@ const (
 	CONSENSUS_SOLO = "solo"
 )
 
-//func NewConsensusService(client cl.Client, localNet net.Neter) ConsensusService {
-func NewConsensusService(account *account.Account, txpool *actor.PID, ledger *actor.PID, localNet net.Neter) (ConsensusService, error) {
+func NewConsensusService(account *account.Account, txpool *actor.PID, ledger *actor.PID, p2p *actor.PID) (ConsensusService, error) {
 	consensusType := strings.ToLower(config.Parameters.ConsensusType)
 	if consensusType == "" {
 		consensusType = CONSENSUS_DBFT
@@ -33,9 +32,9 @@ func NewConsensusService(account *account.Account, txpool *actor.PID, ledger *ac
 	var err error
 	switch consensusType {
 	case CONSENSUS_DBFT:
-		consensus = dbft.NewDbftService(account, "dbft", nil)
+		consensus, err = dbft.NewDbftService(account, txpool, p2p)
 	case CONSENSUS_SOLO:
-		consensus, err = solo.NewSoloService(account, nil, nil)
+		consensus, err = solo.NewSoloService(account, txpool, ledger)
 	}
 	log.Infof("ConsensusType:%s", consensusType)
 	return consensus, err

@@ -6,7 +6,7 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/consensus"
 	"github.com/dad-go/core/ledger"
-	ldgactor"github.com/dad-go/core/ledger/actor"
+	ldgactor "github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/http/jsonrpc"
 	"github.com/dad-go/http/localrpc"
@@ -16,6 +16,9 @@ import (
 	"github.com/dad-go/net"
 	"github.com/dad-go/net/protocol"
 	"github.com/dad-go/txnpool"
+	tc "github.com/dad-go/txnpool/common"
+	"github.com/dad-go/validator/statefull"
+	"github.com/dad-go/validator/stateless"
 	"os"
 	"os/signal"
 	"runtime"
@@ -79,8 +82,8 @@ func main() {
 		log.Fatalf("DefLedger.Init error %s", err)
 		os.Exit(1)
 	}
-	ldgerActor :=  ldgactor.NewLedgerActor()
-	ldgerActor.Start()
+	ldgerActor := ldgactor.NewLedgerActor()
+	ledgerPID := ldgerActor.Start()
 
 	log.Info("3. Start the transaction pool server")
 	// Start the transaction pool server
@@ -90,22 +93,26 @@ func main() {
 		os.Exit(1)
 	}
 
+	stlValidator, _ := stateless.NewValidator("stateless_validator")
+	stlValidator.Register(txPoolServer.GetPID(tc.VerifyRspActor))
+
+	stfValidator, _ := statefull.NewValidator("statefull_validator")
+	stfValidator.Register(txPoolServer.GetPID(tc.VerifyRspActor))
+
 	log.Info("4. Start the P2P networks")
 
-	net.SetLedgePid(nil)
-	net.SetTxnPoolPid(nil)
-	net.SetConsensusPid(nil)
+	net.SetLedgerPid(ledgerPID)
+	net.SetTxnPoolPid(txPoolServer.GetPID(tc.TxPoolActor))
 	noder = net.StartProtocol(acct.PublicKey)
 	if err != nil {
 		log.Fatalf("Net StartProtocol error %s", err)
 		os.Exit(1)
 	}
-	_, err = net.InitNetServerActor(noder)
+	p2pActor, err := net.InitNetServerActor(noder)
 	if err != nil {
 		log.Fatalf("Net InitNetServerActor error %s", err)
 		os.Exit(1)
 	}
-
 
 	go restful.StartServer()
 	//jsonrpc.RegistRpcNode(noder)
@@ -115,8 +122,10 @@ func main() {
 	noder.WaitForSyncBlkFinish()
 	if protocol.SERVICENODENAME != config.Parameters.NodeType {
 		log.Info("5. Start Consensus Services")
-		consensusSrv, _ := consensus.NewConsensusService(acct, nil, nil, noder)
-		go consensusSrv.Start()
+		pool := txPoolServer.GetPID(tc.TxPoolActor)
+		consensusService, _ := consensus.NewConsensusService(acct, pool, nil, p2pActor)
+		net.SetConsensusPid(consensusService.GetPID())
+		go consensusService.Start()
 		time.Sleep(5 * time.Second)
 	}
 
