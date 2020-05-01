@@ -10,7 +10,6 @@ import (
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/net"
 	msg "github.com/dad-go/net/message"
 	"sync"
 )
@@ -184,7 +183,7 @@ func (cxt *ConsensusContext) GetStateDetail() string {
 
 }
 
-func (cxt *ConsensusContext) Reset(bkAccount *account.Account, localNode net.Neter) {
+func (cxt *ConsensusContext) Reset(bkAccount *account.Account) {
 	preHash := ledger.DefLedger.GetCurrentBlockHash()
 	height := ledger.DefLedger.GetCurrentBlockHeight()
 	header := cxt.MakeHeader()
