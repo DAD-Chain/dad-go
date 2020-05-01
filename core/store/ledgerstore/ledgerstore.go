@@ -3,17 +3,17 @@ package ledgerstore
 import (
 	"fmt"
 	"github.com/dad-go/common"
+	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store/statestore"
-	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	smcommon "github.com/dad-go/smartcontract/common"
-	vm "github.com/dad-go/vm/neovm"
-	vmtypes "github.com/dad-go/smartcontract/types"
 	"github.com/dad-go/smartcontract/service"
 	smtypes "github.com/dad-go/smartcontract/types"
+	vmtypes "github.com/dad-go/smartcontract/types"
 	"github.com/dad-go/vm/neovm"
+	vm "github.com/dad-go/vm/neovm"
 	log4 "github.com/alecthomas/log4go"
 	"sort"
 	"sync"
@@ -688,7 +688,7 @@ func (this *LedgerStore) IsContainTransaction(txHash *common.Uint256) (bool, err
 }
 
 func (this *LedgerStore) GetBlockRootWithNewTxRoot(txRoot *common.Uint256) *common.Uint256 {
-	newTxRoot :=this.merkleStore.GetBlockRootWithNewTxRoot(*txRoot)
+	newTxRoot := this.merkleStore.GetBlockRootWithNewTxRoot(*txRoot)
 	return &newTxRoot
 }
 
