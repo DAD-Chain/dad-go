@@ -6,7 +6,7 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/consensus"
 	"github.com/dad-go/core/ledger"
-	ldgactor"github.com/dad-go/core/ledger/actor"
+	ldgactor "github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/http/jsonrpc"
 	"github.com/dad-go/http/localrpc"
@@ -16,6 +16,9 @@ import (
 	"github.com/dad-go/net"
 	"github.com/dad-go/net/protocol"
 	"github.com/dad-go/txnpool"
+	tc "github.com/dad-go/txnpool/common"
+	"github.com/dad-go/validator/statefull"
+	"github.com/dad-go/validator/stateless"
 	"os"
 	"os/signal"
 	"runtime"
@@ -79,7 +82,7 @@ func main() {
 		log.Fatalf("DefLedger.Init error %s", err)
 		os.Exit(1)
 	}
-	ldgerActor :=  ldgactor.NewLedgerActor()
+	ldgerActor := ldgactor.NewLedgerActor()
 	ldgerActor.Start()
 
 	log.Info("3. Start the transaction pool server")
@@ -89,6 +92,12 @@ func main() {
 		log.Fatalf("failed to start txn pool server")
 		os.Exit(1)
 	}
+
+	stlValidator, _ := stateless.NewValidator("stateless_validator")
+	stlValidator.Register(txPoolServer.GetPID(tc.VerifyRspActor))
+
+	stfValidator, _ := statefull.NewValidator("statefull_validator")
+	stfValidator.Register(txPoolServer.GetPID(tc.VerifyRspActor))
 
 	log.Info("4. Start the P2P networks")
 
@@ -106,7 +115,6 @@ func main() {
 		os.Exit(1)
 	}
 
-
 	go restful.StartServer()
 	//jsonrpc.RegistRpcNode(noder)
 
@@ -115,7 +123,8 @@ func main() {
 	noder.WaitForSyncBlkFinish()
 	if protocol.SERVICENODENAME != config.Parameters.NodeType {
 		log.Info("5. Start Consensus Services")
-		consensusSrv, _ := consensus.NewConsensusService(acct, nil, nil, noder)
+		pool := txPoolServer.GetPID(tc.TxPoolActor)
+		consensusSrv, _ := consensus.NewConsensusService(acct, pool, nil, noder)
 		go consensusSrv.Start()
 		time.Sleep(5 * time.Second)
 	}
