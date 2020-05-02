@@ -1,17 +1,18 @@
 package event
 
 import (
-	"github.com/dad-go/events"
 	. "github.com/dad-go/common"
-	"github.com/dad-go/core/ledger/ledgerevent"
+	"github.com/dad-go/events"
+	"github.com/dad-go/events/message"
+	"github.com/dad-go/core/types"
 )
 
 func PushSmartCodeEvent(txHash Uint256, errcode int64, action string, result interface{}) {
-	resp := map[string]interface{}{
-		"TxHash": ToHexString(txHash.ToArray()),
-		"Action": action,
-		"Result": result,
-		"Error":  errcode,
+	smartCodeEvt := &types.SmartCodeEvent{
+		TxHash: ToHexString(txHash.ToArray()),
+		Action: action,
+		Result: result,
+		Error:  errcode,
 	}
-	ledgerevent.DefLedgerEvt.Notify(events.EventSmartCode, resp)
+	events.DefActorPublisher.Publish(message.TopicSmartCodeEvent, smartCodeEvt)
 }

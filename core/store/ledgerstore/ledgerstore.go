@@ -8,6 +8,8 @@ import (
 	"github.com/dad-go/core/store/statestore"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
+	"github.com/dad-go/events"
+	"github.com/dad-go/events/message"
 	smcommon "github.com/dad-go/smartcontract/common"
 	"github.com/dad-go/smartcontract/service"
 	smtypes "github.com/dad-go/smartcontract/types"
@@ -597,6 +599,11 @@ func (this *LedgerStore) saveBlock(block *types.Block) error {
 	}
 	this.setCurrentBlock(blockHeight, &blockHash)
 
+	events.DefActorPublisher.Publish(
+		message.TopicSaveBlockComplete,
+		&message.SaveBlockCompleteMsg{
+			Block: block,
+		})
 	return nil
 }
 
