@@ -12,6 +12,7 @@ import (
 	"github.com/dad-go/http/websocket/websocket"
 	sc "github.com/dad-go/smartcontract/common"
 	"github.com/dad-go/smartcontract/event"
+	"github.com/dad-go/events/message"
 )
 
 var ws *websocket.WsServer
@@ -22,8 +23,8 @@ var (
 )
 
 func StartServer() {
-	SubscribeEvent("EventBlockPersistCompleted",SendBlock2WSclient)
-	SubscribeEvent("EventSmartCode",PushSmartCodeEvent)
+	SubscribeEvent(message.TopicSaveBlockComplete,SendBlock2WSclient)
+	SubscribeEvent(message.TopicSmartCodeEvent,PushSmartCodeEvent)
 	go func() {
 		ws = websocket.InitWsServer()
 		ws.Start()

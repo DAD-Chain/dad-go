@@ -1,29 +1,21 @@
 package actor
 
 import (
-	"time"
 	"github.com/dad-go/eventbus/actor"
+	actorTypes "github.com/dad-go/consensus/actor"
 )
 
 var consensusSrvPid *actor.PID
 
-func SetConsensusActor(actr *actor.PID) {
+func SetConsensusPid(actr *actor.PID) {
 	consensusSrvPid = actr
 }
 
 func ConsensusSrvStart() (error) {
-	future := consensusSrvPid.RequestFuture(nil, 10*time.Second)
-	_, err := future.Result()
-	if err != nil {
-		return nil
-	}
+	consensusSrvPid.Tell(&actorTypes.StartConsensus{})
 	return nil
 }
 func ConsensusSrvHalt() (error) {
-	future := consensusSrvPid.RequestFuture(nil, 10*time.Second)
-	_, err := future.Result()
-	if err != nil {
-		return nil
-	}
+	consensusSrvPid.Tell(&actorTypes.StopConsensus{})
 	return nil
 }
