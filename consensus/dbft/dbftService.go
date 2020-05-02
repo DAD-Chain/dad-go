@@ -10,7 +10,6 @@ import (
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	actorTypes "github.com/dad-go/consensus/actor"
-	"github.com/dad-go/core"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/genesis"
@@ -19,13 +18,14 @@ import (
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/utils"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
 	ontErrors "github.com/dad-go/errors"
 	"github.com/dad-go/eventbus/actor"
 	"github.com/dad-go/events"
-	p2pmsg "github.com/dad-go/net/message"
 	"github.com/dad-go/events/message"
+	p2pmsg "github.com/dad-go/net/message"
 )
 
 type DbftService struct {
@@ -476,7 +476,7 @@ func (ds *DbftService) PrepareRequestReceived(payload *p2pmsg.ConsensusPayload, 
 		log.Error("[PrepareRequestReceived] GetValidators failed")
 		return
 	}
-	ds.context.NextBookKeeper, err = core.AddressFromBookKeepers(ds.context.NextBookKeepers)
+	ds.context.NextBookKeeper, err = utils.AddressFromBookKeepers(ds.context.NextBookKeepers)
 	if err != nil {
 		ds.context = backupContext
 		log.Error("[PrepareRequestReceived] GetBookKeeperAddress failed")
@@ -707,7 +707,7 @@ func (ds *DbftService) Timeout() {
 				log.Error("[Timeout] GetValidators failed", err.Error())
 				return
 			}
-			ds.context.NextBookKeeper, err = core.AddressFromBookKeepers(ds.context.NextBookKeepers)
+			ds.context.NextBookKeeper, err = utils.AddressFromBookKeepers(ds.context.NextBookKeepers)
 			if err != nil {
 				log.Error("[Timeout] GetBookKeeperAddress failed")
 				return

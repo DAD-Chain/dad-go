@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/core"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 )
@@ -51,7 +51,7 @@ func checkTransactionSignatures(tx *types.Transaction) error {
 				return err
 			}
 
-			address[core.AddressFromPubKey(sig.PubKeys[0])] = true
+			address[utils.AddressFromPubKey(sig.PubKeys[0])] = true
 		} else {
 			passed := true
 			for i, j := 0, 0; passed && i < m && j < n; {
@@ -69,7 +69,7 @@ func checkTransactionSignatures(tx *types.Transaction) error {
 				return errors.New("multi-signature not enough")
 			}
 
-			addr, _ := core.AddressFromMultiPubKeys(sig.PubKeys, m)
+			addr, _ := utils.AddressFromMultiPubKeys(sig.PubKeys, m)
 			address[addr] = true
 		}
 	}
