@@ -6,10 +6,10 @@ import (
 
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/config"
-	"github.com/dad-go/core"
 	"github.com/dad-go/core/code"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	vm "github.com/dad-go/vm/neovm"
 	vmtypes "github.com/dad-go/vm/types"
@@ -40,7 +40,7 @@ var GenesisBookKeepers []*crypto.PubKey
 func GenesisBlockInit(defaultBookKeeper []*crypto.PubKey) (*types.Block, error) {
 	//getBookKeeper
 	GenesisBookKeepers = defaultBookKeeper
-	nextBookKeeper, err := core.AddressFromBookKeepers(defaultBookKeeper)
+	nextBookKeeper, err := utils.AddressFromBookKeepers(defaultBookKeeper)
 	if err != nil {
 		return nil, errors.New("[Block],GenesisBlockInit err with GetBookKeeperAddress")
 	}
@@ -78,7 +78,7 @@ func NewGoverningToken() *types.Transaction {
 		Code: []byte("ONT Token"),
 	}
 
-	tx := core.NewDeployTransaction(&fnCode, "ONT", "0.1.0",
+	tx := utils.NewDeployTransaction(&fnCode, "ONT", "0.1.0",
 		"dad-go", "", "dad-go Network ONT Token", vmtypes.NativeVM, true)
 	return tx
 }
@@ -88,7 +88,7 @@ func NewUtilityToken() *types.Transaction {
 		Code: []byte("ONG Token"),
 	}
 
-	tx := core.NewDeployTransaction(&fnCode, "ONG", "0.1.0",
+	tx := utils.NewDeployTransaction(&fnCode, "ONG", "0.1.0",
 		"dad-go", "", "dad-go Network ONG Token", vmtypes.NativeVM, true)
 	return tx
 }

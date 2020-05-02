@@ -11,12 +11,12 @@ import (
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	actorTypes "github.com/dad-go/consensus/actor"
-	"github.com/dad-go/core"
 	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/eventbus/actor"
 )
@@ -120,7 +120,7 @@ func (this *SoloService) genBlock() {
 func (this *SoloService) makeBlock() *types.Block {
 	log.Debug()
 	owner := this.Account.PublicKey
-	nextBookKeeper, err := core.AddressFromBookKeepers([]*crypto.PubKey{owner})
+	nextBookKeeper, err := utils.AddressFromBookKeepers([]*crypto.PubKey{owner})
 	if err != nil {
 		log.Error("SoloService GetBookKeeperAddress error:%s", err)
 		return nil

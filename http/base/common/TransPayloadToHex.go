@@ -1,12 +1,12 @@
-package httpjsonrpc
+package common
 
 import (
 	. "github.com/dad-go/common"
-	"github.com/dad-go/core"
 	"github.com/dad-go/core/asset"
 	. "github.com/dad-go/core/contract"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/utils"
 )
 
 type PayloadInfo interface{}
@@ -119,7 +119,7 @@ func TransPayloadToHex(p types.Payload) PayloadInfo {
 		return obj
 	case *payload.InvokeCode:
 		obj := new(InvokeCodeInfo)
-		address := core.AddressFromVmCode(object.Code)
+		address := utils.AddressFromVmCode(object.Code)
 		obj.CodeHash = ToHexString(address[:])
 		obj.Code = ToHexString(object.Code.Code)
 		return obj
