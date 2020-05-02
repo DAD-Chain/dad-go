@@ -25,7 +25,7 @@ import (
 	"github.com/dad-go/vm/neovm"
 	"github.com/dad-go/vm/neovm/interfaces"
 	"math/big"
-	"github.com/dad-go/core/store"
+	storecomm"github.com/dad-go/core/store/common"
 	"github.com/dad-go/errors"
 	"github.com/dad-go/common/log"
 	scommon "github.com/dad-go/smartcontract/common"
@@ -47,7 +47,7 @@ type Context struct {
 	VmType         types.VmType
 	Caller         common.Uint160
 	StateMachine   *service.StateMachine
-	DBCache        store.IStateStore
+	DBCache        storecomm.IStateStore
 	Code           []byte
 	Input          []byte
 	CodeHash       common.Uint160
