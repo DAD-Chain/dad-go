@@ -229,11 +229,11 @@ func getStorage(params []interface{}) map[string]interface{} {
 	default:
 		return dad-goRpcInvalidParameter
 	}
-	item, err := GetStorageItem(codeHash,key)
+	value, err := GetStorageItem(codeHash,key)
 	if err != nil {
 		return dad-goRpcInternalError
 	}
-	return dad-goRpc(ToHexString(item.Value))
+	return dad-goRpc(ToHexString(value))
 }
 
 // A JSON example for sendrawtransaction method as following:
