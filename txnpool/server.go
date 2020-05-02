@@ -3,6 +3,8 @@ package txnpool
 import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/eventbus/actor"
+	"github.com/dad-go/events"
+	"github.com/dad-go/events/message"
 	tc "github.com/dad-go/txnpool/common"
 	tp "github.com/dad-go/txnpool/proc"
 )
@@ -54,5 +56,9 @@ func StartTxnPoolServer() *tp.TXPoolServer {
 		return nil
 	}
 	s.RegisterActor(tc.TxActor, txPid)
+
+	// Subscribe the block complete event
+	var sub = events.NewActorSubscriber(txPoolPid)
+	sub.Subscribe(message.TopicSaveBlockComplete)
 	return s
 }
