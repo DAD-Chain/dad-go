@@ -13,6 +13,7 @@ import (
 	"github.com/dad-go/http/nodeinfo"
 	"github.com/dad-go/http/restful"
 	"github.com/dad-go/http/websocket"
+	hserver "github.com/dad-go/http/base/actor"
 	"github.com/dad-go/net"
 	"github.com/dad-go/net/protocol"
 	"github.com/dad-go/txnpool"
@@ -118,8 +119,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	hserver.SetConsensusPid(nil)
+	hserver.SetNetServerPid(nil)
+	hserver.SetLedgerPid(nil)
+	hserver.SetTxnPoolPid(nil)
+	hserver.SetTxPid(nil)
 	go restful.StartServer()
-	//jsonrpc.RegistRpcNode(noder)
 
 	noder.SyncNodeHeight()
 	noder.WaitForPeersStart()
