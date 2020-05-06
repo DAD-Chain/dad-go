@@ -3,18 +3,22 @@ package validation
 import (
 	"errors"
 	"fmt"
-	"github.com/dad-go/common"
+
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/utils"
+	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 )
 
 func VerifyBlock(block *types.Block, ld *ledger.Ledger, completely bool) error {
-	if block.Header.Height == 0 {
+	header := block.Header
+	if header.Height == 0 {
 		return nil
 	}
 
-	err := VerifyHeaderProgram(ld, block.Header)
+	m := len(header.BookKeepers) - (len(header.BookKeepers)-1)/3
+	err := crypto.VerifyMultiSignature(block.Header.GetMessage(), header.BookKeepers, m, header.SigData)
 	if err != nil {
 		return err
 	}
@@ -32,6 +36,7 @@ func VerifyBlock(block *types.Block, ld *ledger.Ledger, completely bool) error {
 	if block.Transactions == nil {
 		return errors.New(fmt.Sprintf("No Transactions Exist in Block."))
 	}
+
 	if block.Transactions[0].TxType != types.BookKeeping {
 		return errors.New(fmt.Sprintf("Header Verify failed first Transacion in block is not BookKeeping type."))
 	}
@@ -85,9 +90,13 @@ func VerifyHeader(header, prevHeader *types.Header) error {
 		return NewDetailErr(errors.New("[BlockValidator] error"), ErrNoCode, "[BlockValidator], block timestamp is incorrect.")
 	}
 
-	programhash := common.ToCodeHash(header.Program.Code)
-	if prevHeader.NextBookKeeper != types.Address(programhash) {
-		return errors.New("wrong bookkeeper address")
+	address, err := utils.AddressFromBookKeepers(header.BookKeepers)
+	if err != nil {
+		return err
+	}
+
+	if prevHeader.NextBookKeeper != address {
+		return fmt.Errorf("bookkeeper address error")
 	}
 
 	return nil

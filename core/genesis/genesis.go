@@ -7,11 +7,9 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/core/code"
-	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
-	vm "github.com/dad-go/vm/neovm"
 	vmtypes "github.com/dad-go/vm/types"
 )
 
@@ -53,10 +51,9 @@ func GenesisBlockInit(defaultBookKeeper []*crypto.PubKey) (*types.Block, error) 
 		Height:           uint32(0),
 		ConsensusData:    GenesisNonce,
 		NextBookKeeper:   nextBookKeeper,
-		Program: &program.Program{
-			Code:      []byte{},
-			Parameter: []byte{byte(vm.PUSHT)},
-		},
+
+		BookKeepers: nil,
+		SigData:     nil,
 	}
 
 	//block
