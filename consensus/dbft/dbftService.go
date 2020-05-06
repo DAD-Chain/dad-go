@@ -11,7 +11,6 @@ import (
 	"github.com/dad-go/common/log"
 	actorTypes "github.com/dad-go/consensus/actor"
 	"github.com/dad-go/core/contract"
-	"github.com/dad-go/core/contract/program"
 	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
@@ -167,41 +166,22 @@ func (ds *DbftService) CheckSignatures() error {
 
 	//check if get enough signatures
 	if ds.context.GetSignaturesCount() >= ds.context.M() {
-
-		//get current index's hash
-		ep, err := ds.context.BookKeepers[ds.context.BookKeeperIndex].EncodePoint(true)
-		if err != nil {
-			return ontErrors.NewDetailErr(err, ontErrors.ErrNoCode, "[DbftService] ,EncodePoint failed")
-		}
-		codehash := ToCodeHash(ep)
-
-		//create multi-sig contract with all bookKeepers
-		ct, err := contract.CreateMultiSigContract(codehash, ds.context.M(), ds.context.BookKeepers)
-		if err != nil {
-			log.Error("CheckSignatures CreateMultiSigContract error: ", err)
-			return err
-		}
-
 		//build block
 		block := ds.context.MakeHeader()
-		//sign the block with all bookKeepers and add signed contract to context
-		sb := program.NewProgramBuilder()
-
 		sigs := make([]SignaturesData, ds.context.M())
 		for i, j := 0, 0; i < len(ds.context.BookKeepers) && j < ds.context.M(); i++ {
 			if ds.context.Signatures[i] != nil {
+				sig := ds.context.Signatures[i]
 				sigs[j].Index = uint16(i)
-				sigs[j].Signature = ds.context.Signatures[i]
+				sigs[j].Signature = sig
 
-				sb.PushData(ds.context.Signatures[i])
+				block.Header.SigData = append(block.Header.SigData, sig)
 				j++
 			}
 		}
-		//set signed program to the block
-		block.Header.Program = &program.Program{
-			Code:      ct.Code,
-			Parameter: sb.ToArray(),
-		}
+
+		block.Header.BookKeepers = ds.context.BookKeepers
+
 		//fill transactions
 		block.Transactions = ds.context.Transactions
 
