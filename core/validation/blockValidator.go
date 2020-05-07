@@ -6,7 +6,6 @@ import (
 
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 )
@@ -90,7 +89,7 @@ func VerifyHeader(header, prevHeader *types.Header) error {
 		return NewDetailErr(errors.New("[BlockValidator] error"), ErrNoCode, "[BlockValidator], block timestamp is incorrect.")
 	}
 
-	address, err := utils.AddressFromBookKeepers(header.BookKeepers)
+	address, err := types.AddressFromBookKeepers(header.BookKeepers)
 	if err != nil {
 		return err
 	}

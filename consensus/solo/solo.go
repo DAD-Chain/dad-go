@@ -11,9 +11,9 @@ import (
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/eventbus/actor"
+	"reflect"
 )
 
 /*
@@ -50,6 +50,16 @@ func NewSoloService(bkAccount *account.Account, txpool *actor.PID, ledger *actor
 
 func (this *SoloService) Receive(context actor.Context) {
 	switch msg := context.Message().(type) {
+	case *actor.Restarting:
+		log.Warn("solo actor restarting")
+	case *actor.Stopping:
+		log.Warn("solo actor stopping")
+	case *actor.Stopped:
+		log.Warn("solo actor stopped")
+	case *actor.Started:
+		log.Warn("solo actor started")
+	case *actor.Restart:
+		log.Warn("solo actor restart")
 	case *actorTypes.StartConsensus:
 		if this.existCh != nil {
 			log.Warn("consensus have started")
@@ -77,7 +87,7 @@ func (this *SoloService) Receive(context actor.Context) {
 	case *actorTypes.TimeOut:
 		this.genBlock()
 	default:
-		log.Info("Unknown msg type", msg)
+		log.Info("solo actor: Unknown msg ", msg, "type", reflect.TypeOf(msg))
 	}
 }
 
@@ -115,7 +125,7 @@ func (this *SoloService) genBlock() {
 func (this *SoloService) makeBlock() *types.Block {
 	log.Debug()
 	owner := this.Account.PublicKey
-	nextBookKeeper, err := utils.AddressFromBookKeepers([]*crypto.PubKey{owner})
+	nextBookKeeper, err := types.AddressFromBookKeepers([]*crypto.PubKey{owner})
 	if err != nil {
 		log.Error("SoloService GetBookKeeperAddress error:%s", err)
 		return nil

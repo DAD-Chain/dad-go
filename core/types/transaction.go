@@ -72,6 +72,23 @@ func (self *Sig) Deserialize(r io.Reader) error {
 	return nil
 }
 
+func (self *Transaction)GetSignatureAddresses() []Address{
+	address := make([]Address, 0, len(self.Sigs))
+	for _, sig := range self.Sigs {
+		m := int(sig.M)
+		n := len(sig.PubKeys)
+
+		if n == 1 {
+			address = append(address, AddressFromPubKey(sig.PubKeys[0]))
+		} else {
+			addr, _ := AddressFromMultiPubKeys(sig.PubKeys, m)
+			address = append(address, addr)
+		}
+	}
+
+	return address
+}
+
 func (self *Sig) Serialize(w io.Writer) error {
 	err := serialization.WriteVarUint(w, uint64(len(self.PubKeys)))
 	if err != nil {

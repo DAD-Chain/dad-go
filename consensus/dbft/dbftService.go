@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"time"
+	"reflect"
 
 	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
@@ -16,7 +17,6 @@ import (
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
 	ontErrors "github.com/dad-go/errors"
@@ -83,6 +83,16 @@ func (this *DbftService) Receive(context actor.Context) {
 	}
 
 	switch msg := context.Message().(type) {
+	case *actor.Restarting:
+		log.Warn("dbft actor restarting")
+	case *actor.Stopping:
+		log.Warn("dbft actor stopping")
+	case *actor.Stopped:
+		log.Warn("dbft actor stopped")
+	case *actor.Started:
+		log.Warn("dbft actor started")
+	case *actor.Restart:
+		log.Warn("dbft actor restart")
 	case *actorTypes.StartConsensus:
 		this.start()
 	case *actorTypes.StopConsensus:
@@ -95,7 +105,7 @@ func (this *DbftService) Receive(context actor.Context) {
 		this.NewConsensusPayload(msg)
 
 	default:
-		log.Info("Unknown msg type", msg)
+		log.Info("dbft actor: Unknown msg ", msg, "type", reflect.TypeOf(msg))
 	}
 }
 
@@ -455,7 +465,7 @@ func (ds *DbftService) PrepareRequestReceived(payload *p2pmsg.ConsensusPayload, 
 		log.Error("[PrepareRequestReceived] GetValidators failed")
 		return
 	}
-	ds.context.NextBookKeeper, err = utils.AddressFromBookKeepers(ds.context.NextBookKeepers)
+	ds.context.NextBookKeeper, err = types.AddressFromBookKeepers(ds.context.NextBookKeepers)
 	if err != nil {
 		ds.context = backupContext
 		log.Error("[PrepareRequestReceived] GetBookKeeperAddress failed")
@@ -666,7 +676,7 @@ func (ds *DbftService) Timeout() {
 				log.Error("[Timeout] GetValidators failed", err.Error())
 				return
 			}
-			ds.context.NextBookKeeper, err = utils.AddressFromBookKeepers(ds.context.NextBookKeepers)
+			ds.context.NextBookKeeper, err = types.AddressFromBookKeepers(ds.context.NextBookKeepers)
 			if err != nil {
 				log.Error("[Timeout] GetBookKeeperAddress failed")
 				return
