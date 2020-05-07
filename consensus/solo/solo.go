@@ -11,7 +11,6 @@ import (
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/eventbus/actor"
 	"reflect"
@@ -126,7 +125,7 @@ func (this *SoloService) genBlock() {
 func (this *SoloService) makeBlock() *types.Block {
 	log.Debug()
 	owner := this.Account.PublicKey
-	nextBookKeeper, err := utils.AddressFromBookKeepers([]*crypto.PubKey{owner})
+	nextBookKeeper, err := types.AddressFromBookKeepers([]*crypto.PubKey{owner})
 	if err != nil {
 		log.Error("SoloService GetBookKeeperAddress error:%s", err)
 		return nil

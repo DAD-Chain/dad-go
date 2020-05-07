@@ -13,7 +13,6 @@ import (
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
-	"github.com/dad-go/core/utils"
 )
 
 type Transaction struct {
@@ -80,9 +79,9 @@ func (self *Transaction)GetSignatureAddresses() []Address{
 		n := len(sig.PubKeys)
 
 		if n == 1 {
-			address = append(address, utils.AddressFromPubKey(sig.PubKeys[0]))
+			address = append(address, AddressFromPubKey(sig.PubKeys[0]))
 		} else {
-			addr, _ := utils.AddressFromMultiPubKeys(sig.PubKeys, m)
+			addr, _ := AddressFromMultiPubKeys(sig.PubKeys, m)
 			address = append(address, addr)
 		}
 	}

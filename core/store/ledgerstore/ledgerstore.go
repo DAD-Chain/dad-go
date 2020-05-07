@@ -7,7 +7,6 @@ import (
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store/statestore"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/events"
 	"github.com/dad-go/events/message"
@@ -383,7 +382,7 @@ func (this *LedgerStore) verifyHeader(header *types.Header) error {
 		return fmt.Errorf("block timestamp is incorrect")
 	}
 
-	address, err := utils.AddressFromBookKeepers(header.BookKeepers)
+	address, err := types.AddressFromBookKeepers(header.BookKeepers)
 	if err != nil {
 		return err
 	}

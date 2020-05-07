@@ -17,7 +17,6 @@ import (
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
 	ontErrors "github.com/dad-go/errors"
@@ -466,7 +465,7 @@ func (ds *DbftService) PrepareRequestReceived(payload *p2pmsg.ConsensusPayload, 
 		log.Error("[PrepareRequestReceived] GetValidators failed")
 		return
 	}
-	ds.context.NextBookKeeper, err = utils.AddressFromBookKeepers(ds.context.NextBookKeepers)
+	ds.context.NextBookKeeper, err = types.AddressFromBookKeepers(ds.context.NextBookKeepers)
 	if err != nil {
 		ds.context = backupContext
 		log.Error("[PrepareRequestReceived] GetBookKeeperAddress failed")
@@ -677,7 +676,7 @@ func (ds *DbftService) Timeout() {
 				log.Error("[Timeout] GetValidators failed", err.Error())
 				return
 			}
-			ds.context.NextBookKeeper, err = utils.AddressFromBookKeepers(ds.context.NextBookKeepers)
+			ds.context.NextBookKeeper, err = types.AddressFromBookKeepers(ds.context.NextBookKeepers)
 			if err != nil {
 				log.Error("[Timeout] GetBookKeeperAddress failed")
 				return
