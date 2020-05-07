@@ -5,6 +5,7 @@ import (
 	"github.com/dad-go/core/validation"
 	"github.com/dad-go/eventbus/actor"
 	vatypes "github.com/dad-go/validator/types"
+	"reflect"
 )
 
 type Validator interface {
@@ -56,7 +57,7 @@ func (self *validator) Receive(context actor.Context) {
 	case *vatypes.UnRegisterAck:
 		context.Self().Stop()
 	default:
-		log.Info("Unknown msg type", msg)
+		log.Info("stateless-validator:Unknown msg ", msg, "type", reflect.TypeOf(msg))
 	}
 
 }
