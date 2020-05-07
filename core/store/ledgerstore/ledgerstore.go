@@ -14,10 +14,10 @@ import (
 	"github.com/dad-go/smartcontract/service"
 	smtypes "github.com/dad-go/smartcontract/types"
 	"github.com/dad-go/vm/neovm"
-	log4 "github.com/alecthomas/log4go"
 	"sort"
 	"sync"
 	"time"
+	"github.com/dad-go/common/log"
 )
 
 const (
@@ -253,7 +253,7 @@ func (this *LedgerStore) clearCache() {
 		if err != nil {
 			blockHash := block.Hash()
 			this.delFromBlockHash(blockHash)
-			log4.Error("saveBlock in cache height:%d error %s", block.Header.Height, err)
+			log.Errorf("saveBlock in cache height:%d error %s", block.Header.Height, err)
 			break
 		}
 	}
