@@ -11,11 +11,9 @@ import (
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	actorTypes "github.com/dad-go/consensus/actor"
-	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/transaction/utxo"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
@@ -223,23 +221,23 @@ func (ds *DbftService) CreateBookkeepingTransaction(nonce uint64, fee Fixed64) *
 	bookKeepingPayload := &payload.BookKeeping{
 		Nonce: uint64(time.Now().UnixNano()),
 	}
-	signatureRedeemScript, err := contract.CreateSignatureRedeemScript(ds.context.Owner)
-	if err != nil {
-		return nil
-	}
-	signatureRedeemScriptHashToCodeHash := ToCodeHash(signatureRedeemScript)
-	if err != nil {
-		return nil
-	}
-	outputs := []*utxo.TxOutput{}
-	if fee > 0 {
-		feeOutput := &utxo.TxOutput{
-			AssetID:     genesis.ONGTokenID,
-			Value:       fee,
-			ProgramHash: signatureRedeemScriptHashToCodeHash,
-		}
-		outputs = append(outputs, feeOutput)
-	}
+	//signatureRedeemScript, err := contract.CreateSignatureRedeemScript(ds.context.Owner)
+	//if err != nil {
+	//	return nil
+	//}
+	//signatureRedeemScriptHashToCodeHash := ToCodeHash(signatureRedeemScript)
+	//if err != nil {
+	//	return nil
+	//}
+	//outputs := []*utxo.TxOutput{}
+	//if fee > 0 {
+	//	feeOutput := &utxo.TxOutput{
+	//		AssetID:     genesis.ONGTokenID,
+	//		Value:       fee,
+	//		ProgramHash: signatureRedeemScriptHashToCodeHash,
+	//	}
+	//	outputs = append(outputs, feeOutput)
+	//}
 	return &types.Transaction{
 		TxType: types.BookKeeping,
 		//PayloadVersion: payload.BookKeepingPayloadVersion,

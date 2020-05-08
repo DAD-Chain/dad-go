@@ -1,63 +1,46 @@
-// Copyright 2017 The dad-go Authors
-// This file is part of the dad-go library.
+// Copyright 2017 The Onchain Authors
+// This file is part of the Onchain library.
 //
-// The dad-go library is free software: you can redistribute it and/or modify
+// The Onchain library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The dad-go library is distributed in the hope that it will be useful,
+// The Onchain library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the dad-go library. If not, see <http://www.gnu.org/licenses/>.
+// along with the Onchain library. If not, see <http://www.gnu.org/licenses/>.
 
 package smartcontract
 
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/contract"
-	sig "github.com/dad-go/core/signature"
 	"github.com/dad-go/smartcontract/service"
-	"github.com/dad-go/smartcontract/types"
+	vmtypes "github.com/dad-go/vm/types"
+	"reflect"
 	"github.com/dad-go/vm/neovm"
-	"github.com/dad-go/vm/neovm/interfaces"
-	"math/big"
-	storecomm"github.com/dad-go/core/store/common"
 	"github.com/dad-go/errors"
 	"github.com/dad-go/common/log"
-	scommon "github.com/dad-go/smartcontract/common"
-	"reflect"
+	"github.com/dad-go/core/store"
+	scommon "github.com/dad-go/core/store/common"
+	"github.com/dad-go/core/types"
 )
 
-type SmartContract struct {
-	Engine         Engine
-	Code           []byte
-	Input          []byte
-	ParameterTypes []contract.ContractParameterType
-	Caller         common.Uint160
-	CodeHash       common.Uint160
-	VMType         types.VmType
-	ReturnType     contract.ContractParameterType
+type Context struct {
+	LedgerStore store.ILedgerStore
+	Code vmtypes.VmCode
+	DBCache scommon.IStateStore
+	TX *types.Transaction
+	Time uint32
 }
 
-type Context struct {
-	VmType         types.VmType
-	Caller         common.Uint160
-	StateMachine   *service.StateMachine
-	DBCache        storecomm.IStateStore
-	Code           []byte
+type SmartContract struct {
 	Input          []byte
-	CodeHash       common.Uint160
-	Time           *big.Int
-	BlockNumber    *big.Int
-	CacheCodeTable interfaces.ICodeTable
-	SignableData   sig.SignableData
-	Gas            common.Fixed64
-	ReturnType     contract.ContractParameterType
-	ParameterTypes []contract.ContractParameterType
+	VMType         vmtypes.VmType
 }
 
 type Engine interface {
@@ -67,10 +50,11 @@ type Engine interface {
 
 func NewSmartContract(context *Context) (*SmartContract, error) {
 	var e Engine
-	switch context.VmType {
-	case types.NEOVM:
+	switch context.Code.VmType {
+	case vmtypes.NEOVM:
+		stateMachine := service.NewStateMachine(context.LedgerStore, context.DBCache, vmtypes.Application, context.Time)
 		e = neovm.NewExecutionEngine(
-			context.SignableData,
+			context.TX,
 			new(neovm.ECDsaCrypto),
 			context.CacheCodeTable,
 			context.StateMachine,

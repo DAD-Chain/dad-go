@@ -5,6 +5,7 @@ import (
 	."github.com/dad-go/common"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
+	"github.com/dad-go/core/payload"
 )
 // ILedgerStore provides func with store package.
 type ILedgerStore interface {
@@ -26,11 +27,10 @@ type ILedgerStore interface {
 	IsContainTransaction(txHash Uint256) (bool, error)
 	GetCurrentStateRoot() (Uint256, error)
 	GetBlockRootWithNewTxRoot(txRoot Uint256) Uint256
-	GetAssetState(assetId Uint256) (*states.AssetState, error)
-	GetContractState(contractHash Uint160) (*states.ContractState, error)
-	GetAccountState(programHash Uint160) (*states.AccountState, error)
+	GetContractState(contractHash Uint160) (*payload.DeployCode, error)
 	GetBookKeeperState() (*states.BookKeeperState, error)
 	GetStorageItem(key *states.StorageKey) (*states.StorageItem, error)
 	PreExecuteContract(tx *types.Transaction) ([]interface{}, error)
 }
+
 

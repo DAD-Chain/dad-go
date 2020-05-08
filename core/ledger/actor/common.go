@@ -4,6 +4,7 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/states"
+	"github.com/dad-go/core/payload"
 )
 
 type AddHeaderReq struct {
@@ -174,7 +175,7 @@ type GetContractStateReq struct {
 }
 
 type GetContractStateRsp struct {
-	ContractState *states.ContractState
+	ContractState *payload.DeployCode
 	Error         error
 }
 
