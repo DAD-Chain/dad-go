@@ -9,6 +9,7 @@ import (
 	"github.com/dad-go/core/store/ledgerstore"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
+	"github.com/dad-go/core/payload"
 )
 
 var DefLedger *Ledger
@@ -195,7 +196,7 @@ func (this *Ledger) GetStorageItem(codeHash *common.Uint160, key []byte) ([]byte
 	return storageItem.Value, nil
 }
 
-func (this *Ledger) GetContractState(contractHash common.Uint160) (*states.ContractState, error) {
+func (this *Ledger) GetContractState(contractHash common.Uint160) (*payload.DeployCode, error) {
 	return this.ldgStore.GetContractState(contractHash)
 }
 

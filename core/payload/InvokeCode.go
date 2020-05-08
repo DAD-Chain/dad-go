@@ -2,20 +2,14 @@ package payload
 
 import (
 	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/vm/types"
+	vmtypes "github.com/dad-go/vm/types"
 	"io"
+	. "github.com/dad-go/errors"
 )
-
-//type InvokeCode struct {
-//	CodeHash common.Uint160
-//	Code     []byte
-//}
 
 type InvokeCode struct {
 	GasLimit common.Fixed64
-	Code     types.VmCode
-	Params   []byte
+	Code     vmtypes.VmCode
 }
 
 func (self *InvokeCode) Data() []byte {
@@ -23,25 +17,28 @@ func (self *InvokeCode) Data() []byte {
 }
 
 func (self *InvokeCode) Serialize(w io.Writer) error {
-	self.GasLimit.Serialize(w)
-	err := self.Code.Serialize(w)
+	var err error
+	err = self.GasLimit.Serialize(w)
 	if err != nil {
-		return err
+		return NewDetailErr(err, ErrNoCode, "InvokeCode GasLimit Serialize failed.")
 	}
-	err = serialization.WriteVarBytes(w, self.Params)
-
+	err = self.Code.Serialize(w)
+	if err != nil {
+		return NewDetailErr(err, ErrNoCode, "InvokeCode Code Serialize failed.")
+	}
 	return err
 }
 
 func (self *InvokeCode) Deserialize(r io.Reader) error {
-	self.GasLimit.Deserialize(r)
-	self.Code.Deserialize(r)
+	var err error
 
-	buf, err := serialization.ReadVarBytes(r)
+	err = self.GasLimit.Deserialize(r)
 	if err != nil {
-		return err
+		return NewDetailErr(err, ErrNoCode, "InvokeCode GasLimit Deserialize failed.")
 	}
-	self.Params = buf
-
+	err = self.Code.Deserialize(r)
+	if err != nil {
+		return NewDetailErr(err, ErrNoCode, "InvokeCode Code Deserialize failed.")
+	}
 	return nil
 }

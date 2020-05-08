@@ -19,9 +19,7 @@ import (
 	"github.com/dad-go/common/password"
 	"github.com/dad-go/core/contract"
 	ct "github.com/dad-go/core/contract"
-	"github.com/dad-go/core/ledger"
 	sig "github.com/dad-go/core/signature"
-	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	. "github.com/dad-go/errors"
 	"github.com/dad-go/net/protocol"
@@ -300,38 +298,6 @@ func (cl *ClientImpl) CreateAccountByPrivateKey(privateKey []byte) (*Account, er
 		return nil, err
 	}
 	return ac, nil
-}
-
-func (cl *ClientImpl) ProcessBlocks() {
-	for {
-		if !cl.isrunning {
-			break
-		}
-
-		for {
-			if cl.currentHeight > ledger.DefLedger.GetCurrentBlockHeight(){
-				break
-			}
-
-			cl.mu.Lock()
-
-			block, _ := ledger.DefLedger.GetBlockByHeight(cl.currentHeight)
-			if block != nil {
-				cl.ProcessNewBlock(block)
-			}
-
-			cl.mu.Unlock()
-		}
-
-		for i := 0; i < 20; i++ {
-			time.Sleep(time.Millisecond * 100)
-		}
-	}
-}
-
-func (cl *ClientImpl) ProcessNewBlock(block *types.Block) {
-	//TODO: ProcessNewBlock
-
 }
 
 func (cl *ClientImpl) Sign(context *ct.ContractContext) bool {
