@@ -12,9 +12,8 @@ import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/password"
 	"github.com/dad-go/core/contract"
-	"github.com/dad-go/http/httpjsonrpc"
-
 	"github.com/urfave/cli"
+	"github.com/dad-go/http/base/rpc"
 )
 
 func walletAction(c *cli.Context) error {
@@ -88,7 +87,7 @@ func walletAction(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		resp, err := jsonrpc.Call(Address(), "getunspendoutput", 0,
+		resp, err := rpc.Call(Address(), "getunspendoutput", 0,
 			[]interface{}{hex.EncodeToString(buffer.Bytes()), asset})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)

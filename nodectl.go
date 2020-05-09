@@ -3,18 +3,13 @@ package main
 import (
 	"os"
 	"sort"
-
 	_ "github.com/dad-go/cli"
-	"github.com/dad-go/cli/bookkeeper"
 	. "github.com/dad-go/cli/common"
-	"github.com/dad-go/cli/data"
-	"github.com/dad-go/cli/debug"
-	"github.com/dad-go/cli/info"
-	"github.com/dad-go/cli/privpayload"
 	"github.com/dad-go/cli/test"
 	"github.com/dad-go/cli/wallet"
 
 	"github.com/urfave/cli"
+	"github.com/dad-go/cli/transfer"
 )
 
 var Version string
@@ -35,14 +30,9 @@ func main() {
 	}
 	//commands
 	app.Commands = []cli.Command{
-		*debug.NewCommand(),
-		*info.NewCommand(),
 		*test.NewCommand(),
 		*wallet.NewCommand(),
-		*asset.NewCommand(),
-		*privpayload.NewCommand(),
-		*data.NewCommand(),
-		*bookkeeper.NewCommand(),
+		*transfer.NewCommand(),
 	}
 	sort.Sort(cli.CommandsByName(app.Commands))
 	sort.Sort(cli.FlagsByName(app.Flags))
