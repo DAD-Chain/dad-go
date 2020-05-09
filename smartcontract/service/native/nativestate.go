@@ -40,16 +40,16 @@ func(native *NativeService) Register(methodad-gome string, handler Handler) {
 	native.ServiceMap[methodad-gome] = handler
 }
 
-func(native *NativeService) IsValid() (bool, error){
+func(native *NativeService) Invoke() (bool, error){
 	bf := bytes.NewBuffer(native.Input)
 	serviceName, err := serialization.ReadVarBytes(bf); if err != nil {
 		return false, err
 	}
-	if _, ok := native.ServiceMap[string(serviceName)]; !ok {
+	service, ok := native.ServiceMap[string(serviceName)]; if !ok {
 		return false, errors.NewErr("Native does not support this service!")
 	}
 	native.Input = bf.Bytes()
-	return true, nil
+	return service(native)
 }
 
 func Transfer(native *NativeService) (bool, error) {
