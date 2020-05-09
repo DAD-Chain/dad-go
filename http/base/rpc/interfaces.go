@@ -332,7 +332,7 @@ func SubmitBlock(params []interface{}) map[string]interface{} {
 }
 
 func GetNodeVersion(params []interface{}) map[string]interface{} {
-	return dad-goRpc(config.Version)
+	return dad-goRpc(config.Parameters.Version)
 }
 
 func UploadDataFile(params []interface{}) map[string]interface{} {
