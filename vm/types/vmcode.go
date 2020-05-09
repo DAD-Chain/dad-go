@@ -5,7 +5,7 @@ import (
 	"github.com/dad-go/common/serialization"
 	"crypto/sha256"
 	. "github.com/dad-go/common"
-	"github.com/golang/crypto/ripemd160"
+	"golang.org/x/crypto/ripemd160"
 )
 
 type VmType byte
