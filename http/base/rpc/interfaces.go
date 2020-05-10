@@ -265,46 +265,6 @@ func SendRawTransaction(params []interface{}) map[string]interface{} {
 	return dad-goRpc(ToHexString(hash.ToArray()))
 }
 
-//func GetBalance(params []interface{}) map[string]interface{} {
-//	if len(params) < 2 {
-//		return dad-goRpcNil
-//	}
-//
-//	addr, ok := params[0].(string)
-//	if !ok {
-//		return dad-goRpcInvalidParameter
-//	}
-//	assetId, ok := params[1].(string)
-//	if !ok {
-//		return dad-goRpcInvalidParameter
-//	}
-//
-//	programHash, err := ToScriptHash(addr)
-//	if err != nil {
-//		return dad-goRpcInvalidParameter
-//	}
-//	account, err := GetAccount(programHash)
-//	if err != nil {
-//		return dad-goRpcAccountNotFound
-//	}
-//	c, err := HexToBytes(assetId)
-//	if err != nil {
-//		return dad-goRpcInvalidParameter
-//	}
-//	ass, err := Uint256ParseFromBytes(c)
-//	if err != nil {
-//		return dad-goRpcInvalidParameter
-//	}
-//
-//	for _, v := range account.Balances {
-//		if v.AssetId.CompareTo(ass) == 0 {
-//			return dad-goRpc(v.Amount.GetData())
-//		}
-//	}
-//
-//	return dad-goRpcNil
-//}
-
 // A JSON example for submitblock method as following:
 //   {"jsonrpc": "2.0", "method": "submitblock", "params": ["raw block in hex"], "id": 0}
 func SubmitBlock(params []interface{}) map[string]interface{} {
@@ -333,6 +293,35 @@ func SubmitBlock(params []interface{}) map[string]interface{} {
 
 func GetNodeVersion(params []interface{}) map[string]interface{} {
 	return dad-goRpc(config.Parameters.Version)
+}
+
+func GetSystemFee(params []interface{}) map[string]interface{} {
+	return dad-goRpc(config.Parameters.SystemFee)
+}
+
+func GetContractState(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return dad-goRpcNil
+	}
+	switch params[0].(type) {
+	case string:
+		str := params[0].(string)
+		hex, err := hex.DecodeString(str)
+		if err != nil {
+			return dad-goRpcInvalidParameter
+		}
+		var hash Uint160
+		if err := hash.Deserialize(bytes.NewReader(hex)); err != nil {
+			return dad-goRpcInvalidParameter
+		}
+		contract, err := GetContractStateFromStore(hash)
+		if err != nil || contract == nil{
+			return dad-goRpcInternalError
+		}
+		return dad-goRpc(TransPayloadToHex(contract))
+	default:
+		return dad-goRpcInvalidParameter
+	}
 }
 
 func UploadDataFile(params []interface{}) map[string]interface{} {
