@@ -3,9 +3,8 @@ package account
 import (
 	"errors"
 	. "github.com/dad-go/common"
-	"github.com/dad-go/core/contract"
 	"github.com/dad-go/crypto"
-	. "github.com/dad-go/errors"
+	"github.com/dad-go/core/types"
 )
 
 type Account struct {
@@ -14,18 +13,14 @@ type Account struct {
 	Address    Uint160
 }
 
-func NewAccount() (*Account, error) {
+func NewAccount() *Account {
 	priKey, pubKey, _ := crypto.GenKeyPair()
-	signatureRedeemScript, err := contract.CreateSignatureRedeemScript(&pubKey)
-	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "CreateSignatureRedeemScript failed")
-	}
-	programHash := ToCodeHash(signatureRedeemScript)
+	address := types.AddressFromPubKey(&pubKey)
 	return &Account{
 		PrivateKey: priKey,
 		PublicKey:  &pubKey,
-		Address:    programHash,
-	}, nil
+		Address:    address,
+	}
 }
 
 func NewAccountWithPrivatekey(privateKey []byte) (*Account, error) {
@@ -36,15 +31,12 @@ func NewAccountWithPrivatekey(privateKey []byte) (*Account, error) {
 	}
 
 	pubKey := crypto.NewPubKey(privateKey)
-	signatureRedeemScript, err := contract.CreateSignatureRedeemScript(pubKey)
-	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "CreateSignatureRedeemScript failed")
-	}
-	programHash := ToCodeHash(signatureRedeemScript)
+	address := types.AddressFromPubKey(pubKey)
+
 	return &Account{
 		PrivateKey: privateKey,
 		PublicKey:  pubKey,
-		Address:    programHash,
+		Address:    address,
 	}, nil
 }
 
