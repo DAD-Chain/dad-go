@@ -136,7 +136,7 @@ func GetRawMemPool(params []interface{}) map[string]interface{} {
 	}
 	return dad-goRpc(txs)
 }
-func GetMemPoolTx(params []interface{}) map[string]interface{} {
+func GetMemPoolTxState(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
 	}
