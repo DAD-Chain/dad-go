@@ -26,6 +26,7 @@ import (
 	"syscall"
 	"time"
 	"github.com/dad-go/events"
+	"sort"
 )
 
 const (
@@ -69,6 +70,7 @@ func main() {
 	}
 	log.Debug("The Node's PublicKey ", acct.PublicKey)
 	defBookKeepers, err := client.GetBookKeepers()
+	sort.Sort(crypto.PubKeySlice(defBookKeepers))
 	if err != nil {
 		log.Fatalf("GetBookKeepers error:%s", err)
 		os.Exit(1)
