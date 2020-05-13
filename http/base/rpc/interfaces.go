@@ -341,6 +341,31 @@ func GetSmartCodeEvent(params []interface{}) map[string]interface{} {
 	}
 	return dad-goRpcInvalidParameter
 }
+
+func GetTxBlockHeight(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return dad-goRpcNil
+	}
+
+	switch (params[0]).(type) {
+	// tx hash
+	case string:
+		str := params[0].(string)
+		hex, err := hex.DecodeString(str)
+		if err != nil {
+			return dad-goRpcInvalidParameter
+		}
+		var hash Uint256
+		if err := hash.Deserialize(bytes.NewReader(hex)); err != nil {
+			return dad-goRpcInvalidParameter
+		}
+		//TODO resp
+		return dad-goRpc(map[string]interface{}{"Height": 0})
+	default:
+		return dad-goRpcInvalidParameter
+	}
+	return dad-goRpcInvalidParameter
+}
 func RegDataFile(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return dad-goRpcNil
