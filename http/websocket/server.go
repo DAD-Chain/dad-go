@@ -11,6 +11,7 @@ import (
 	Err "github.com/dad-go/http/base/error"
 	"github.com/dad-go/http/websocket/websocket"
 	sc "github.com/dad-go/smartcontract/common"
+	. "github.com/dad-go/http/base/common"
 	"github.com/dad-go/smartcontract/event"
 	"github.com/dad-go/events/message"
 )
