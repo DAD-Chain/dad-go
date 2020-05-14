@@ -11,6 +11,7 @@ import (
 	"github.com/dad-go/smartcontract/event"
 	vmtypes "github.com/dad-go/vm/types"
 	"github.com/dad-go/smartcontract/service/native"
+	"github.com/dad-go/common/log"
 )
 
 const (
@@ -52,6 +53,7 @@ func (this *StateStore) HandleInvokeTransaction(stateBatch *statestore.StateBatc
 	case vmtypes.NativeVM:
 		na := native.NewNativeService(stateBatch, invoke.Code.Code, tx)
 		if ok, err := na.Invoke(); !ok {
+			log.Error("Native contract execute error:", err)
 			event.PushSmartCodeEvent(txHash, 0, INVOKE_TRANSACTION, err)
 		}
 		na.CloneCache.Commit()
