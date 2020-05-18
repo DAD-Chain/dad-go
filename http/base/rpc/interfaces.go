@@ -40,6 +40,9 @@ func GetBlock(params []interface{}) map[string]interface{} {
 		if err != nil {
 			return dad-goRpcUnknownBlock
 		}
+		if hash.CompareTo(Uint256{}) == 0{
+			return dad-goRpcInvalidParameter
+		}
 		// block hash
 	case string:
 		str := params[0].(string)
