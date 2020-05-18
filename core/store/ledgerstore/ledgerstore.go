@@ -48,6 +48,7 @@ type LedgerStore struct {
 	headerCache      map[common.Uint256]*ledgerCacheItem
 	blockCache       map[common.Uint256]*ledgerCacheItem
 	headerIndex      map[uint32]common.Uint256
+	savingBlockHash  common.Uint256
 	lock             sync.RWMutex
 	exitCh           chan interface{}
 }
@@ -522,7 +523,31 @@ func (this *LedgerStore) verifyBlock(block *types.Block) error {
 	return nil
 }
 
+func (this *LedgerStore) savingBlock(block *types.Block) bool {
+	var empty common.Uint256
+	blockHash := block.Hash()
+	this.lock.Lock()
+	defer this.lock.Unlock()
+
+	if this.savingBlockHash == empty {
+		this.savingBlockHash = blockHash
+		return false
+	}
+
+	return this.savingBlockHash == blockHash
+}
+
+func (this *LedgerStore) resetSavingBlock() {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+	this.savingBlockHash = common.Uint256{}
+}
+
 func (this *LedgerStore) AddBlock(block *types.Block) error {
+	if this.savingBlock(block) {
+		return nil
+	}
+
 	currBlockHeight := this.GetCurrentBlockHeight()
 	blockHeight := block.Header.Height
 	if blockHeight <= currBlockHeight {
@@ -659,6 +684,8 @@ func (this *LedgerStore) saveBlockToEventStore(block *types.Block) error {
 }
 
 func (this *LedgerStore) saveBlock(block *types.Block) error {
+	defer this.resetSavingBlock()
+
 	blockHash := block.Hash()
 	blockHeight := block.Header.Height
 
