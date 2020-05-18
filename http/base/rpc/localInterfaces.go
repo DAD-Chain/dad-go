@@ -1,9 +1,8 @@
-package localrpc
+package rpc
 
 import (
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/http/base/common"
-	. "github.com/dad-go/http/base/rpc"
 	. "github.com/dad-go/http/base/actor"
 	"os"
 	"path/filepath"
@@ -21,47 +20,47 @@ func getCurrentDirectory() string {
 	return dir
 }
 
-func getNeighbor(params []interface{}) map[string]interface{} {
+func GetNeighbor(params []interface{}) map[string]interface{} {
 	addr, _ := GetNeighborAddrs()
-	return dad-goRpc(addr)
+	return Rpc(addr)
 }
 
-func getNodeState(params []interface{}) map[string]interface{} {
+func GetNodeState(params []interface{}) map[string]interface{} {
 	state,err := GetConnectionState()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	t,err := GetNodeTime()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	port,err := GetNodePort()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	id,err := GetID()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
-	ver,err := GetNodeVersion()
+	ver,err := GetVersion()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	tpe,err := GetNodeType()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	relay,err := GetRelayState()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	height,err := BlockHeight()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	txnCnt,err := GetTxnCnt()
 	if err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
 	n := NodeInfo{
 		NodeState:    uint(state),
@@ -74,24 +73,24 @@ func getNodeState(params []interface{}) map[string]interface{} {
 		Height:   height,
 		TxnCnt:   txnCnt,
 	}
-	return dad-goRpc(n)
+	return Rpc(n)
 }
 
-func startConsensus(params []interface{}) map[string]interface{} {
+func StartConsensus(params []interface{}) map[string]interface{} {
 	if err := ConsensusSrvStart(); err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
-	return dad-goRpcSuccess
+	return RpcSuccess
 }
 
-func stopConsensus(params []interface{}) map[string]interface{} {
+func StopConsensus(params []interface{}) map[string]interface{} {
 	if err := ConsensusSrvHalt(); err != nil {
-		return dad-goRpcFailed
+		return RpcFailed
 	}
-	return dad-goRpcSuccess
+	return RpcSuccess
 }
 
-func sendSampleTransaction(params []interface{}) map[string]interface{} {
+func SendSampleTransaction(params []interface{}) map[string]interface{} {
 	panic("need reimplementation")
 	return nil
 
@@ -136,18 +135,18 @@ func sendSampleTransaction(params []interface{}) map[string]interface{} {
 	*/
 }
 
-func setDebugInfo(params []interface{}) map[string]interface{} {
+func SetDebugInfo(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
-		return dad-goRpcInvalidParameter
+		return RpcInvalidParameter
 	}
 	switch params[0].(type) {
 	case float64:
 		level := params[0].(float64)
 		if err := log.Log.SetDebugLevel(int(level)); err != nil {
-			return dad-goRpcInvalidParameter
+			return RpcInvalidParameter
 		}
 	default:
-		return dad-goRpcInvalidParameter
+		return RpcInvalidParameter
 	}
-	return dad-goRpcSuccess
+	return RpcSuccess
 }
