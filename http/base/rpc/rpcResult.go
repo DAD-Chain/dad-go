@@ -5,24 +5,25 @@ import (
 )
 
 var (
-	dad-goRpcInvalidHash        = responsePacking(Err.INVALID_PARAMS, "invalid hash")
-	dad-goRpcInvalidBlock       = responsePacking(Err.INVALID_BLOCK, "invalid block")
-	dad-goRpcInvalidTransaction = responsePacking(Err.INVALID_TRANSACTION, "invalid transaction")
-	dad-goRpcInvalidParameter   = responsePacking(Err.INVALID_PARAMS, "invalid parameter")
+	RpcInvalidHash        = responsePacking(Err.INVALID_PARAMS, "invalid hash")
+	RpcInvalidBlock       = responsePacking(Err.INVALID_BLOCK, "invalid block")
+	RpcInvalidTransaction = responsePacking(Err.INVALID_TRANSACTION, "invalid transaction")
+	RpcInvalidParameter   = responsePacking(Err.INVALID_PARAMS, "invalid parameter")
 
-	dad-goRpcUnknownBlock       = responsePacking(Err.UNKNOWN_BLOCK, "unknown block")
-	dad-goRpcUnknownTransaction = responsePacking(Err.UNKNOWN_TRANSACTION, "unknown transaction")
+	RpcUnknownBlock       = responsePacking(Err.UNKNOWN_BLOCK, "unknown block")
+	RpcUnknownTransaction = responsePacking(Err.UNKNOWN_TRANSACTION, "unknown transaction")
 
-	dad-goRpcNil             = responsePacking(Err.INVALID_PARAMS, nil)
-	dad-goRpcUnsupported     = responsePacking(Err.INTERNAL_ERROR, "Unsupported")
-	dad-goRpcInternalError   = responsePacking(Err.INTERNAL_ERROR, "internal error")
-	dad-goRpcIOError         = responsePacking(Err.INTERNAL_ERROR, "internal IO error")
-	dad-goRpcAPIError        = responsePacking(Err.INTERNAL_ERROR, "internal API error")
-	dad-goRpcSuccess         = responsePacking(Err.SUCCESS, true)
-	dad-goRpcFailed          = responsePacking(Err.INTERNAL_ERROR, false)
-	dad-goRpcAccountNotFound = responsePacking(Err.INTERNAL_ERROR, "Account not found")
+	RpcNil             = responsePacking(Err.INVALID_PARAMS, nil)
+	RpcUnsupported     = responsePacking(Err.INTERNAL_ERROR, "Unsupported")
+	RpcInternalError   = responsePacking(Err.INTERNAL_ERROR, "internal error")
+	RpcIOError         = responsePacking(Err.INTERNAL_ERROR, "internal IO error")
+	RpcAPIError        = responsePacking(Err.INTERNAL_ERROR, "internal API error")
 
-	dad-goRpc = responseSuccess
+	RpcFailed          = responsePacking(Err.INTERNAL_ERROR, false)
+	RpcAccountNotFound = responsePacking(Err.INTERNAL_ERROR, "Account not found")
+
+	RpcSuccess         = responsePacking(Err.SUCCESS, true)
+	Rpc = responseSuccess
 )
 
 func responseSuccess(result interface{}) map[string]interface{} {
