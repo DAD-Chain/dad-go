@@ -61,6 +61,9 @@ func GetBlock(params []interface{}) map[string]interface{} {
 	if err != nil {
 		return dad-goRpcUnknownBlock
 	}
+	if block.Header == nil{
+		return dad-goRpcUnknownBlock
+	}
 	return dad-goRpc(GetBlockInfo(block))
 }
 
