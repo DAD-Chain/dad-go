@@ -12,18 +12,19 @@ var (
 
 	RpcUnknownBlock       = responsePacking(Err.UNKNOWN_BLOCK, "unknown block")
 	RpcUnknownTransaction = responsePacking(Err.UNKNOWN_TRANSACTION, "unknown transaction")
+	RpcUnKnownContact = responsePacking(Err.UNKNWN_CONTRACT, "unknow contract")
 
-	RpcNil             = responsePacking(Err.INVALID_PARAMS, nil)
-	RpcUnsupported     = responsePacking(Err.INTERNAL_ERROR, "Unsupported")
-	RpcInternalError   = responsePacking(Err.INTERNAL_ERROR, "internal error")
-	RpcIOError         = responsePacking(Err.INTERNAL_ERROR, "internal IO error")
-	RpcAPIError        = responsePacking(Err.INTERNAL_ERROR, "internal API error")
+	RpcNil           = responsePacking(Err.INVALID_PARAMS, nil)
+	RpcUnsupported   = responsePacking(Err.INTERNAL_ERROR, "Unsupported")
+	RpcInternalError = responsePacking(Err.INTERNAL_ERROR, "internal error")
+	RpcIOError       = responsePacking(Err.INTERNAL_ERROR, "internal IO error")
+	RpcAPIError      = responsePacking(Err.INTERNAL_ERROR, "internal API error")
 
 	RpcFailed          = responsePacking(Err.INTERNAL_ERROR, false)
 	RpcAccountNotFound = responsePacking(Err.INTERNAL_ERROR, "Account not found")
 
-	RpcSuccess         = responsePacking(Err.SUCCESS, true)
-	Rpc = responseSuccess
+	RpcSuccess = responsePacking(Err.SUCCESS, true)
+	Rpc        = responseSuccess
 )
 
 func responseSuccess(result interface{}) map[string]interface{} {
