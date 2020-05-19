@@ -487,7 +487,7 @@ func (vm *VM) CallContract(module *wasm.Module,methodad-gome string,args ...uint
 	res,err := newvm.ExecCode(true,int64(index),args ...)
 
 	//todo copy memory if need!!!
-	fmt.Printf("CallContract res is %v\n ",res)
+	//fmt.Printf("CallContract res is %v\n ",res)
 	//2 copy memory if need!!!
 
 	vm.Engine.vm = vm
