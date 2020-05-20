@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 	"reflect"
-
+	ldgractor"github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
@@ -17,7 +17,6 @@ import (
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/vote"
 	"github.com/dad-go/crypto"
-	ontErrors "github.com/dad-go/errors"
 	"github.com/dad-go/eventbus/actor"
 	"github.com/dad-go/events"
 	"github.com/dad-go/events/message"
@@ -202,9 +201,14 @@ func (ds *DbftService) CheckSignatures() error {
 		}
 		if !isExist {
 			// save block
-			if err := ledger.DefLedger.AddBlock(block); err != nil {
-				log.Error(fmt.Sprintf("[CheckSignatures] Xmit block Error: %s, blockHash: %d", err.Error(), block.Hash()))
-				return ontErrors.NewDetailErr(err, ontErrors.ErrNoCode, "[DbftService], CheckSignatures AddContract failed.")
+			future := ldgractor.DefLedgerPid.RequestFuture(&ldgractor.AddBlockReq{Block:block}, 30*time.Second)
+			result, err := future.Result()
+			if err != nil {
+				return fmt.Errorf("CheckSignatures DefLedgerPid.RequestFuture Height:%d error:%s",block.Header.Height, err)
+			}
+			addBlockRsp :=  result.(*ldgractor.AddBlockRsp)
+			if addBlockRsp.Error != nil {
+				return fmt.Errorf("CheckSignatures AddBlockRsp Height:%d error:%s", block.Header.Height, err)
 			}
 
 			ds.context.State |= BlockGenerated
