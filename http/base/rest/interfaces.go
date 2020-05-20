@@ -135,7 +135,7 @@ func GetBlockHeightByTxHash(cmd map[string]interface{}) map[string]interface{} {
 	if err := hash.Deserialize(bytes.NewReader(hex)); err != nil {
 		return rspInvalidTx
 	}
-	height,err := GetTxBlockHeightFromStore(hash)
+	height,err := GetBlockHeightByTxHashFromStore(hash)
 	if err != nil {
 		return rspInternalError
 	}
@@ -245,6 +245,7 @@ func SendRawTransaction(cmd map[string]interface{}) map[string]interface{} {
 			if _, ok := txn.Payload.(*payload.InvokeCode); ok {
 				resp["Result"], err = PreExecuteContract(&txn)
 				if err != nil {
+					log.Error(err)
 					return rspSmartCodeError
 				}
 				return resp
