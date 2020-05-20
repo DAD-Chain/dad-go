@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/errors"
+	"github.com/itchyny/base58-go"
 	"io"
 	"math/big"
-
-	"github.com/itchyny/base58-go"
 )
 
 const AddrLen int = 20
@@ -24,6 +24,10 @@ func (u *Address) ToArray() []byte {
 	}
 
 	return x
+}
+
+func (u *Address) ToString() string {
+	return hex.EncodeToString(u.ToArray())
 }
 
 func (u *Address) Serialize(w io.Writer) (int, error) {

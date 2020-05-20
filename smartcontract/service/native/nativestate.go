@@ -4,10 +4,10 @@ import (
 	"github.com/dad-go/smartcontract/storage"
 	scommon "github.com/dad-go/core/store/common"
 	"bytes"
-	"github.com/dad-go/errors"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/smartcontract/event"
+	"fmt"
 )
 
 type (
@@ -43,7 +43,7 @@ func(native *NativeService) Invoke() (bool, error){
 		return false, err
 	}
 	service, ok := native.ServiceMap[string(serviceName)]; if !ok {
-		return false, errors.NewErr("Native does not support this service!")
+		return false, fmt.Errorf("Native does not support this service:%s !",serviceName)
 	}
 	native.Input = bf.Bytes()
 	return service(native)
