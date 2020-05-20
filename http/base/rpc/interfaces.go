@@ -8,10 +8,12 @@ import (
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/types"
 	. "github.com/dad-go/errors"
 	. "github.com/dad-go/http/base/actor"
 	. "github.com/dad-go/http/base/common"
+	"math/big"
 	"math/rand"
 	"os"
 )
@@ -388,6 +390,53 @@ func GetBlockHeightByTxHash(params []interface{}) map[string]interface{} {
 	}
 	return RpcInvalidParameter
 }
+
+type BalanceOfRsp struct {
+	Ont string `json:"ont"`
+	Ong string `json:"ong"`
+}
+
+func BalanceOf(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return RpcInvalidParameter
+	}
+	address, ok := params[0].(string)
+	if !ok {
+		return RpcInvalidParameter
+	}
+	data, err := hex.DecodeString(address)
+	if err != nil {
+		return RpcInvalidParameter
+	}
+
+	ont := new(big.Int)
+	ong := new(big.Int)
+
+	ontBalance, err := GetStorageItem(genesis.OntContractAddress, data)
+	if err != nil {
+		log.Errorf("GetOntBalanceOf GetStorageItem ont address:%s error:%s", address, err)
+		return RpcInternalError
+	}
+	if ontBalance != nil {
+		ont.SetBytes(ontBalance)
+	}
+
+	//ongBalance, err := GetStorageItem(genesis.OngContractAddress, data)
+	//if err != nil {
+	//	log.Errorf("GetOntBalanceOf GetStorageItem ong address:%s error:%s",  address, err)
+	//	return RpcInternalError
+	//}
+	//if ongBalance != nil {
+	//	ong.SetBytes(ongBalance)
+	//}
+
+	rsp := &BalanceOfRsp{
+		Ont: ont.String(),
+		Ong: ong.String(),
+	}
+	return Rpc(rsp)
+}
+
 func RegDataFile(params []interface{}) map[string]interface{} {
 	if len(params) < 1 {
 		return RpcNil
