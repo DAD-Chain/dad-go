@@ -7,10 +7,18 @@ import (
 	"os"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/common"
+	. "github.com/dad-go/http/base/common"
 	"github.com/dad-go/crypto"
 	"math/big"
 	"github.com/dad-go/smartcontract/service/native/states"
 	"github.com/dad-go/common/serialization"
+	"time"
+	"github.com/dad-go/vm/neovm"
+	"github.com/dad-go/core/utils"
+	"github.com/dad-go/account"
+	vmtypes "github.com/dad-go/vm/types"
+	ctypes "github.com/dad-go/core/types"
+	. "github.com/dad-go/common"
 )
 
 func TestTxDeserialize(t *testing.T) {
@@ -75,4 +83,78 @@ func TestTransfer(t *testing.T) {
 
 	fmt.Println(common.ToHexString(bf.Bytes()))
 
+}
+
+func TestInvokefunction(t *testing.T) {
+	var funcName string
+	builder := neovm.NewParamsBuilder(new(bytes.Buffer))
+	err := BuildSmartContractParamInter(builder, []interface{}{funcName, "",""})
+	if err != nil {
+	}
+	codeParams := builder.ToArray();
+	tx := utils.NewInvokeTransaction(vmtypes.VmCode{
+		VmType: vmtypes.NativeVM,
+		Code: codeParams,
+	})
+	tx.Nonce = uint32(time.Now().Unix())
+
+	acct := account.Open(account.WalletFileName, []byte("passwordtest"))
+	acc, err := acct.GetDefaultAccount(); if err != nil {
+		fmt.Println("GetDefaultAccount error:", err)
+		os.Exit(1)
+	}
+	hash := tx.Hash()
+	sign, _ := crypto.Sign(acc.PrivateKey, hash[:])
+	tx.Sigs = append(tx.Sigs, &ctypes.Sig{
+		PubKeys: []*crypto.PubKey{acc.PublicKey},
+		M:       1,
+		SigData: [][]byte{sign},
+	})
+
+	txbf := new(bytes.Buffer)
+	if err := tx.Serialize(txbf); err != nil {
+		fmt.Println("Serialize transaction error.")
+		os.Exit(1)
+	}
+	common.ToHexString(txbf.Bytes())
+}
+func BuildSmartContractParamInter(builder *neovm.ParamsBuilder, smartContractParams []interface{}) error {
+	//虚拟机参数入栈时会反序
+	for i := len(smartContractParams) - 1; i >= 0; i-- {
+		switch v := smartContractParams[i].(type) {
+		case bool:
+			builder.EmitPushBool(v)
+		case int:
+			builder.EmitPushInteger(big.NewInt(int64(v)))
+		case uint:
+			builder.EmitPushInteger(big.NewInt(int64(v)))
+		case int32:
+			builder.EmitPushInteger(big.NewInt(int64(v)))
+		case uint32:
+			builder.EmitPushInteger(big.NewInt(int64(v)))
+		case int64:
+			builder.EmitPushInteger(big.NewInt(int64(v)))
+		case Fixed64:
+			builder.EmitPushInteger(big.NewInt(int64(v.GetData())))
+		case uint64:
+			val := big.NewInt(0)
+			builder.EmitPushInteger(val.SetUint64(uint64(v)))
+		case string:
+			builder.EmitPushByteArray([]byte(v))
+		case *big.Int:
+			builder.EmitPushInteger(v)
+		case []byte:
+			builder.EmitPushByteArray(v)
+		case []interface{}:
+			err := BuildSmartContractParamInter(builder, v)
+			if err != nil {
+				return err
+			}
+			builder.EmitPushInteger(big.NewInt(int64(len(v))))
+			builder.Emit(neovm.PACK)
+		default:
+			return fmt.Errorf("unsupported param:%s", v)
+		}
+	}
+	return nil
 }
