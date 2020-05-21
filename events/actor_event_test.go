@@ -19,7 +19,7 @@
 package events
 
 import (
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"fmt"
 	"testing"
 	"time"

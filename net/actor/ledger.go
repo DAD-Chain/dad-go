@@ -24,7 +24,7 @@ import (
 	ledger "github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"time"
 )
 
