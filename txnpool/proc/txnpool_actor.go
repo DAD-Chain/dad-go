@@ -25,10 +25,10 @@ import (
 	"github.com/dad-go/common/log"
 	tx "github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
-	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/dad-go/events/message"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/types"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 func NewTxActor(s *TXPoolServer) *TxActor {
