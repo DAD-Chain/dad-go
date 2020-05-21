@@ -26,7 +26,7 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/consensus/dbft"
 	"github.com/dad-go/consensus/solo"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type ConsensusService interface {

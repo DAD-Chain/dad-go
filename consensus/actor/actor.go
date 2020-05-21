@@ -24,7 +24,7 @@ import (
 
 	"github.com/dad-go/core/types"
 	ontErrors "github.com/dad-go/errors"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	txpool "github.com/dad-go/txnpool/common"
 )
 

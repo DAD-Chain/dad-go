@@ -24,7 +24,7 @@ import (
 	"github.com/dad-go/net/node"
 	"github.com/dad-go/net/protocol"
 	ns "github.com/dad-go/net/actor"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type Neter interface {

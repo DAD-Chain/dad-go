@@ -21,7 +21,7 @@ package stateless
 import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/validation"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	vatypes "github.com/dad-go/validator/types"
 	"reflect"
 )

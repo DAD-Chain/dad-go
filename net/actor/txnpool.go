@@ -22,7 +22,7 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	. "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/errors"
 	"time"

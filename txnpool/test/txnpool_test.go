@@ -27,7 +27,7 @@ import (
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	tc "github.com/dad-go/txnpool/common"
 	tp "github.com/dad-go/txnpool/proc"
 	//"github.com/dad-go/validator/db"

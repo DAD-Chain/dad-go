@@ -25,7 +25,7 @@ import (
 	"github.com/dad-go/core"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/dad-go/validator/stateless"
 	vatypes "github.com/dad-go/validator/types"
 	vmtypes "github.com/dad-go/vm/types"

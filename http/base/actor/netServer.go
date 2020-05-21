@@ -20,7 +20,7 @@ package actor
 
 import (
 	"time"
-	"github.com/dad-go/eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/actor"
 	. "github.com/dad-go/net/protocol"
 	ac "github.com/dad-go/net/actor"
 	"errors"
