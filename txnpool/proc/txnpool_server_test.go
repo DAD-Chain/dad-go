@@ -28,10 +28,10 @@ import (
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/errors"
-	"github.com/ontio/dad-go-eventbus/actor"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/stateless"
 	vt "github.com/dad-go/validator/types"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"testing"
 	"time"
 )

@@ -23,9 +23,9 @@ import (
 	"github.com/dad-go/common/log"
 	tx "github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
-	"github.com/ontio/dad-go-eventbus/actor"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/types"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"sort"
 	"sync"
 )
@@ -436,6 +436,11 @@ func (s *TXPoolServer) sendBlkResult2Consensus() {
 
 	if s.pendingBlock.sender != nil {
 		s.pendingBlock.sender.Tell(rsp)
+	}
+
+	// Clear the processedTxs for the next block verify req
+	for k := range s.pendingBlock.processedTxs {
+		delete(s.pendingBlock.processedTxs, k)
 	}
 }
 
