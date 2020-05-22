@@ -23,6 +23,7 @@ import (
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/smartcontract/event"
 )
 
 type AddHeaderReq struct {
@@ -211,4 +212,22 @@ type PreExecuteContractReq struct {
 type PreExecuteContractRsp struct {
 	Result []interface{}
 	Error  error
+}
+
+type GetEventNotifyByTxReq struct {
+	Tx common.Uint256
+}
+
+type GetEventNotifyByTxRsp struct {
+	Notifies []*event.NotifyEventInfo
+	Error error
+}
+
+type GetEventNotifyByBlockReq struct {
+	Height uint32
+}
+
+type GetEventNotifyByBlockRsp struct {
+	TxHashes []common.Uint256
+	Error error
 }

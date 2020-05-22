@@ -21,8 +21,9 @@ package store
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/payload"
-	states "github.com/dad-go/core/states"
+	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/smartcontract/event"
 	"github.com/dad-go/crypto"
 )
 
@@ -49,4 +50,6 @@ type ILedgerStore interface {
 	GetBookkeeperState() (*states.BookkeeperState, error)
 	GetStorageItem(key *states.StorageKey) (*states.StorageItem, error)
 	PreExecuteContract(tx *types.Transaction) ([]interface{}, error)
+	GetEventNotifyByTx(tx common.Uint256)([]*event.NotifyEventInfo, error)
+	GetEventNotifyByBlock(height uint32)([]common.Uint256, error)
 }
