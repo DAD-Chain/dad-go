@@ -26,25 +26,26 @@ import (
 	"github.com/dad-go/core/ledger"
 	ldgactor "github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/crypto"
+	"github.com/dad-go/events"
+	hserver "github.com/dad-go/http/base/actor"
 	"github.com/dad-go/http/jsonrpc"
 	"github.com/dad-go/http/localrpc"
 	"github.com/dad-go/http/nodeinfo"
 	"github.com/dad-go/http/restful"
 	"github.com/dad-go/http/websocket"
-	hserver "github.com/dad-go/http/base/actor"
 	"github.com/dad-go/net"
 	"github.com/dad-go/net/protocol"
 	"github.com/dad-go/txnpool"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/statefull"
 	"github.com/dad-go/validator/stateless"
+	el "github.com/ontio/dad-go-eventbus/common/log"
 	"os"
 	"os/signal"
 	"runtime"
+	"sort"
 	"syscall"
 	"time"
-	"github.com/dad-go/events"
-	"sort"
 )
 
 const (
@@ -53,6 +54,9 @@ const (
 
 func init() {
 	log.Init(log.Path, log.Stdout)
+	// Todo: If the actor bus uses a different log lib, remove it
+	el.Init(log.Path, log.Stdout)
+
 	var coreNum int
 	if config.Parameters.MultiCoreNum > DefaultMultiCoreNum {
 		coreNum = int(config.Parameters.MultiCoreNum)
