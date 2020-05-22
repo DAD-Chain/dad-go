@@ -20,8 +20,8 @@ package actor
 
 import (
 	"github.com/dad-go/common/log"
-	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"reflect"
 )
 
@@ -114,7 +114,7 @@ func (state *NetServer) Receive(context actor.Context) {
 		nodePort := node.GetPort()
 		context.Sender().Request(&GetNodePortRsp{Port: nodePort}, context.Self())
 	case *GetConsensusPortReq:
-		conPort := node.GetConsensusPort()
+		conPort := node.GetPort()
 		context.Sender().Request(&GetConsensusPortRsp{Port: conPort}, context.Self())
 	case *GetNodeIdReq:
 		id := node.GetID()

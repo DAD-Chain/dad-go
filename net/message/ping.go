@@ -25,8 +25,8 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
 	//"github.com/dad-go/ledger"
-	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
+	. "github.com/dad-go/net/protocol"
 )
 
 type ping struct {
@@ -38,7 +38,6 @@ func NewPingMsg() ([]byte, error) {
 	var msg ping
 	msg.msgHdr.Magic = NETMAGIC
 	copy(msg.msgHdr.CMD[0:7], "ping")
-	//msg.height = uint64(ledger.DefaultLedger.Blockchain.BlockHeight)
 	height, _ := actor.GetCurrentBlockHeight()
 	msg.height = uint64(height)
 	tmpBuffer := bytes.NewBuffer([]byte{})

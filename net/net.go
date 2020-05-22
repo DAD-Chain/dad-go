@@ -21,9 +21,9 @@ package net
 import (
 	"github.com/dad-go/crypto"
 	"github.com/dad-go/events"
+	ns "github.com/dad-go/net/actor"
 	"github.com/dad-go/net/node"
 	"github.com/dad-go/net/protocol"
-	ns "github.com/dad-go/net/actor"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 
@@ -50,12 +50,12 @@ func SetLedgerPid(conPid *actor.PID) {
 	ns.SetLedgerPid(conPid)
 }
 
-func InitNetServerActor(noder protocol.Noder) (*actor.PID, error){
+func InitNetServerActor(noder protocol.Noder) (*actor.PID, error) {
 	netServerPid, err := ns.InitNetServer(noder)
 	return netServerPid, err
 }
 
-func StartProtocol(pubKey *crypto.PubKey) protocol.Noder{
+func StartProtocol(pubKey *crypto.PubKey) protocol.Noder {
 	net := node.InitNode(pubKey)
 	net.ConnectSeeds()
 	return net

@@ -24,13 +24,13 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"io"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
+	"io"
 	//	"github.com/dad-go/ledger"
-	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
+	. "github.com/dad-go/net/protocol"
 )
 
 var LastInvHash Uint256
@@ -61,7 +61,6 @@ func NewBlocksReq(n Noder) ([]byte, error) {
 	// Fixme correct with the exactly request length
 	h.p.HeaderHashCount = 1
 	//Fixme! Should get the remote Node height.
-	//buf := ledger.DefaultLedger.Blockchain.CurrentBlockHash()
 	buf, _ := actor.GetCurrentBlockHash()
 
 	copy(h.p.hashStart[:], reverse(buf[:]))
@@ -155,14 +154,6 @@ func (msg Inv) Handle(node Noder) error {
 		for i = 0; i < count; i++ {
 			id.Deserialize(bytes.NewReader(msg.P.Blk[HASHLEN*i:]))
 			// TODO check the ID queue
-			//if !ledger.DefaultLedger.Store.BlockInCache(id) &&
-			//	!ledger.DefaultLedger.BlockInLedger(id) &&
-			//	LastInvHash != id {
-			//	LastInvHash = id
-			//	// send the block request
-			//	log.Infof("inv request block hash: %x", id)
-			//	ReqBlkData(node, id)
-			//}
 			isContainBlock, _ := actor.IsContainBlock(id)
 			if !isContainBlock && LastInvHash != id {
 				LastInvHash = id
@@ -226,8 +217,7 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 	var empty Uint256
 	var startheight uint32
 	var stopheight uint32
-	//curHeight := ledger.DefaultLedger.GetLocalBlockChainHeight()
-	curHeight, _:= actor.GetCurrentBlockHeight()
+	curHeight, _ := actor.GetCurrentBlockHeight()
 	if starthash == empty {
 		if stophash == empty {
 			if curHeight > MAXBLKHDRCNT {
@@ -236,9 +226,8 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 				count = curHeight
 			}
 		} else {
-			//bkstop, err := ledger.DefaultLedger.Store.GetHeader(stophash)
 			bkstop, err := actor.GetHeaderByHash(stophash)
-			if err != nil {
+			if err != nil || bkstop == nil {
 				return nil, err
 			}
 			stopheight = bkstop.Height
@@ -248,16 +237,14 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 			}
 		}
 	} else {
-		//bkstart, err := ledger.DefaultLedger.Store.GetHeader(starthash)
 		bkstart, err := actor.GetHeaderByHash(starthash)
-		if err != nil {
+		if err != nil || bkstart == nil {
 			return nil, err
 		}
 		startheight = bkstart.Height
 		if stophash != empty {
-			//bkstop, err := ledger.DefaultLedger.Store.GetHeader(stophash)
 			bkstop, err := actor.GetHeaderByHash(stophash)
-			if err != nil {
+			if err != nil || bkstop == nil {
 				return nil, err
 			}
 			stopheight = bkstop.Height
@@ -278,7 +265,6 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 	tmpBuffer := bytes.NewBuffer([]byte{})
 	for i = 1; i <= count; i++ {
 		//FIXME need add error handle for GetBlockWithHash
-		//hash, _ := ledger.DefaultLedger.Store.GetBlockHash(stopheight + i)
 		hash, _ := actor.GetBlockHashByHeight(stopheight + i)
 		log.Debug("GetInvFromBlockHash i is ", i, " , hash is ", hash)
 		hash.Serialize(tmpBuffer)
