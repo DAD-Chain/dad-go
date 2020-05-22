@@ -26,8 +26,8 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
-	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
+	. "github.com/dad-go/net/protocol"
 )
 
 type dataReq struct {
@@ -110,7 +110,7 @@ func (msg *dataReq) Deserialization(p []byte) error {
 
 func NewTxnFromHash(hash common.Uint256) (*types.Transaction, error) {
 	txn, err := actor.GetTxnFromLedger(hash)
-	if err != nil || txn == nil{
+	if err != nil || txn == nil {
 		log.Error("Get transaction with hash error: ", err.Error())
 		return nil, err
 	}

@@ -24,13 +24,13 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"io"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
+	"io"
 	//	"github.com/dad-go/ledger"
-	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
+	. "github.com/dad-go/net/protocol"
 )
 
 var LastInvHash Uint256
@@ -217,7 +217,7 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 	var empty Uint256
 	var startheight uint32
 	var stopheight uint32
-	curHeight, _:= actor.GetCurrentBlockHeight()
+	curHeight, _ := actor.GetCurrentBlockHeight()
 	if starthash == empty {
 		if stophash == empty {
 			if curHeight > MAXBLKHDRCNT {
@@ -227,7 +227,7 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 			}
 		} else {
 			bkstop, err := actor.GetHeaderByHash(stophash)
-			if err != nil || bkstop == nil{
+			if err != nil || bkstop == nil {
 				return nil, err
 			}
 			stopheight = bkstop.Height
@@ -244,7 +244,7 @@ func GetInvFromBlockHash(starthash Uint256, stophash Uint256) (*InvPayload, erro
 		startheight = bkstart.Height
 		if stophash != empty {
 			bkstop, err := actor.GetHeaderByHash(stophash)
-			if err != nil || bkstop == nil{
+			if err != nil || bkstop == nil {
 				return nil, err
 			}
 			stopheight = bkstop.Height

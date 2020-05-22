@@ -24,11 +24,11 @@ import (
 	"math/rand"
 	"net"
 	//"github.com/dad-go/core/ledger"
+	"github.com/dad-go/net/actor"
 	. "github.com/dad-go/net/message"
 	. "github.com/dad-go/net/protocol"
 	"strconv"
 	"time"
-	"github.com/dad-go/net/actor"
 )
 
 func keepAlive(from *Noder, dst *Noder) {

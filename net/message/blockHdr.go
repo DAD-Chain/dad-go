@@ -27,8 +27,8 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/types"
-	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
+	. "github.com/dad-go/net/protocol"
 )
 
 type headersReq struct {
@@ -207,7 +207,7 @@ func (msg blkHeader) Handle(node Noder) error {
 	//}
 	var blkHdr []*types.Header
 	var i uint32
-	for i = 0; i < msg.cnt ; i++  {
+	for i = 0; i < msg.cnt; i++ {
 		blkHdr = append(blkHdr, &msg.blkHdr[i])
 	}
 	actor.AddHeaders(blkHdr)
@@ -249,7 +249,7 @@ func GetHeadersFromHash(startHash common.Uint256, stopHash common.Uint256) ([]ty
 		startHeight = bkstart.Height
 		if stopHash != empty {
 			bkstop, err := actor.GetHeaderByHash(stopHash)
-			if err != nil || bkstop == nil  {
+			if err != nil || bkstop == nil {
 				return nil, 0, err
 			}
 			stopHeight = bkstop.Height
@@ -282,7 +282,7 @@ func GetHeadersFromHash(startHash common.Uint256, stopHash common.Uint256) ([]ty
 			return nil, 0, err
 		}
 		hd, err := actor.GetHeaderByHash(hash)
-		if err != nil || hd == nil{
+		if err != nil || hd == nil {
 			log.Errorf("GetHeaderByHash failed with err=%s, hash=%x,height=%d\n", err.Error(), hash, stopHeight+i)
 			return nil, 0, err
 		}

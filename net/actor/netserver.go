@@ -20,8 +20,8 @@ package actor
 
 import (
 	"github.com/dad-go/common/log"
-	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"reflect"
 )
 

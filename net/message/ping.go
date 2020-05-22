@@ -25,8 +25,8 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
 	//"github.com/dad-go/ledger"
-	. "github.com/dad-go/net/protocol"
 	"github.com/dad-go/net/actor"
+	. "github.com/dad-go/net/protocol"
 )
 
 type ping struct {
