@@ -19,7 +19,6 @@
 package ledgerstore
 
 import (
-	"fmt"
 	"github.com/dad-go/core/states"
 	scommon "github.com/dad-go/core/store/common"
 	"github.com/dad-go/core/store/statestore"
@@ -146,10 +145,7 @@ func TestBookkeeperState(t *testing.T) {
 }
 
 func getStateBatch() (*statestore.StateBatch, error) {
-	err := testStateStore.NewBatch()
-	if err != nil {
-		return nil, fmt.Errorf("testStateStore.NewBatch error %s", err)
-	}
+	testStateStore.NewBatch()
 	batch := testStateStore.NewStateBatch()
 	return batch, nil
 }
