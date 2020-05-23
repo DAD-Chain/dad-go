@@ -162,6 +162,7 @@ func (s *TXPoolServer) removePendingTx(hash common.Uint256,
 
 	pt, ok := s.allPendingTxs[hash]
 	if !ok {
+		s.mu.Unlock()
 		return
 	}
 	if pt.sender != nil {
@@ -383,14 +384,14 @@ func (s *TXPoolServer) increaseStats(v tc.TxnStatsType) {
 	s.stats.count[v-1]++
 }
 
-func (s *TXPoolServer) getStats() *[]uint64 {
+func (s *TXPoolServer) getStats() []uint64 {
 	s.stats.RLock()
 	defer s.stats.RUnlock()
 	ret := make([]uint64, 0, len(s.stats.count))
 	for _, v := range s.stats.count {
 		ret = append(ret, v)
 	}
-	return &ret
+	return ret
 }
 
 func (s *TXPoolServer) checkTx(hash common.Uint256) bool {
