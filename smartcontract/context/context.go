@@ -3,6 +3,7 @@ package context
 import (
 	"github.com/dad-go/common"
 	vmtypes "github.com/dad-go/vm/types"
+	"github.com/dad-go/smartcontract/event"
 )
 
 type ContextRef interface {
@@ -12,6 +13,7 @@ type ContextRef interface {
 	EntryContext() *Context
 	PopContext()
 	CheckWitness(address common.Address) bool
+	PushNotifications(notifications []*event.NotifyEventInfo)
 	Execute() error
 }
 
