@@ -14,10 +14,10 @@ var (
 	addressHeight = []byte("addressHeight")
 )
 
-func checkWitness(native *NativeService, u160 common.Address) bool {
+func checkWitness(native *NativeService, address common.Address) bool {
 	addresses := native.Tx.GetSignatureAddresses()
 	for _, v := range addresses {
-		if v == u160 {
+		if v == address {
 			return true
 		}
 	}
@@ -64,8 +64,8 @@ func isTransferValid(native *NativeService, state *states.State) error {
 		return errors.NewErr("Transfer amount invalid!")
 	}
 
-	if !checkWitness(native, state.From) {
-		return errors.NewErr("Authentication failed!")
+	if err := isSenderValid(native, state.From); err != nil {
+		return err
 	}
 	return nil
 }
@@ -131,7 +131,7 @@ func isSenderValid(native *NativeService, sender common.Address) error {
 		if callContext != nil {
 			return errors.NewErr("[Sender] CallingContext nil, Authentication failed!")
 		}
-		if sender == callContext.ContractAddress {
+		if sender != callContext.ContractAddress {
 			return errors.NewErr("[Sender] CallingContext invalid, Authentication failed!")
 		}
 	} else {

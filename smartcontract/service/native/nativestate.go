@@ -41,7 +41,7 @@ type (
 var (
 	Contracts = map[common.Address]RegisterService{
 		genesis.OntContractAddress: RegisterOntContract,
-		genesis.OntContractAddress: RegisterOngContract,
+		genesis.OngContractAddress: RegisterOngContract,
 	}
 )
 
@@ -87,7 +87,7 @@ func(native *NativeService) Invoke() error {
 		return fmt.Errorf("Native contract %x doesn't support this function %s.", contract.Address, contract.Method)
 	}
 	native.ContextRef.LoadContext(&context.Context{ContractAddress: contract.Address})
-	native.Input = bf.Bytes()
+	native.Input = contract.Args
 	return service(native)
 }
 
