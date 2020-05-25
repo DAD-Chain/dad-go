@@ -16,7 +16,7 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package service
+package neovm
 
 import (
 	"github.com/dad-go/common"
@@ -33,6 +33,6 @@ func NewStorageContext(codeHash common.Address) *StorageContext {
 }
 
 func (sc *StorageContext) ToArray() []byte {
-	return sc.codeHash.ToArray()
+	return sc.codeHash[:]
 }
 
