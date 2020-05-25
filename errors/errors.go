@@ -40,7 +40,7 @@ func NewDetailErr(err error, errcode ErrCode, errmsg string) DetailError {
 		return nil
 	}
 
-	dad-goerr, ok := err.(dad-goError)
+	dad-goerr, ok := err.(ontError)
 	if !ok {
 		dad-goerr.root = err
 		dad-goerr.errmsg = err.Error()
