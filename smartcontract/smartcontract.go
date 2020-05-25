@@ -51,7 +51,7 @@ type Engine interface {
 }
 
 //put current context to smart contract
-func(sc *SmartContract) LoadContext(context *context.Context) {
+func(sc *SmartContract) PushContext(context *context.Context) {
 	sc.Context = append(sc.Context, context)
 }
 
@@ -79,6 +79,11 @@ func(sc *SmartContract) EntryContext() *context.Context {
 	return sc.Context[0]
 }
 
+//pop smart contract current context
+func(sc *SmartContract) PopContext() {
+	sc.Context = sc.Context[:len(sc.Context) - 1]
+}
+
 func (sc *SmartContract) Execute() error {
 	ctx := sc.CurrentContext()
 	switch ctx.Code.VmType {
@@ -87,7 +92,6 @@ func (sc *SmartContract) Execute() error {
 		if err := service.Invoke(); err != nil {
 			return err
 		}
-		service.CloneCache.Commit()
 		sc.Notifications = append(sc.Notifications, service.Notifications...)
 	case vmtypes.NEOVM:
 		stateMachine := sneovm.NewStateMachine(sc.Config.Store, sc.Config.DBCache, stypes.Application, sc.Config.Time)
