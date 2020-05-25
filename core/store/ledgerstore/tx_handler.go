@@ -31,6 +31,11 @@ import (
 	"github.com/dad-go/smartcontract"
 	"github.com/dad-go/core/store"
 	"github.com/dad-go/smartcontract/context"
+	"github.com/dad-go/smartcontract/event"
+)
+
+const (
+	INVOKE_TRANSACTION = "InvokeTransaction"
 )
 
 func (this *StateStore) HandleDeployTransaction(stateBatch *statestore.StateBatch, tx *types.Transaction) error {
@@ -104,8 +109,8 @@ func (this *StateStore) HandleInvokeTransaction(store store.ILedgerStore, stateB
 		if err := eventStore.SaveEventNotifyByTx(txHash, sc.Notifications); err != nil {
 			return fmt.Errorf("SaveEventNotifyByTx error %s", err)
 		}
+		event.PushSmartCodeEvent(txHash, 0, INVOKE_TRANSACTION, sc.Notifications)
 	}
-
 	return nil
 }
 
