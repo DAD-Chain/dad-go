@@ -20,7 +20,7 @@ package actor
 
 import (
 	"github.com/ontio/dad-go-eventbus/actor"
-	actorTypes "github.com/dad-go/consensus/actor"
+	cactor "github.com/dad-go/consensus/actor"
 )
 
 var consensusSrvPid *actor.PID
@@ -30,10 +30,10 @@ func SetConsensusPid(actr *actor.PID) {
 }
 
 func ConsensusSrvStart() (error) {
-	consensusSrvPid.Tell(&actorTypes.StartConsensus{})
+	consensusSrvPid.Tell(&cactor.StartConsensus{})
 	return nil
 }
 func ConsensusSrvHalt() (error) {
-	consensusSrvPid.Tell(&actorTypes.StopConsensus{})
+	consensusSrvPid.Tell(&cactor.StopConsensus{})
 	return nil
 }

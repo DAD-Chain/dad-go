@@ -21,7 +21,7 @@ package actor
 import (
 	"time"
 	"github.com/ontio/dad-go-eventbus/actor"
-	. "github.com/dad-go/net/protocol"
+	"github.com/dad-go/net/protocol"
 	ac "github.com/dad-go/net/actor"
 	"errors"
 	"github.com/dad-go/common/log"
@@ -52,7 +52,7 @@ func GetConnectionCnt() (uint, error) {
 	return r.Cnt, nil
 }
 
-func GetNeighborAddrs() ([]NodeAddr, uint64) {
+func GetNeighborAddrs() ([]protocol.NodeAddr, uint64) {
 	future := netServerPid.RequestFuture(&ac.GetNeighborAddrsReq{}, ReqTimeout*time.Second)
 	result, err := future.Result()
 	if err != nil {
