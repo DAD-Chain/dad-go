@@ -1,21 +1,3 @@
-/*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
- *
- * The dad-go is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The dad-go is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package message
 
 import (
@@ -24,12 +6,14 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/crypto"
+	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/net/actor"
 	. "github.com/dad-go/net/protocol"
-	"time"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const (
@@ -50,9 +34,10 @@ type version struct {
 		UserAgent   uint8
 		StartHeight uint64
 		// FIXME check with the specify relay type length
-		Relay uint8
+		Relay       uint8
+		IsConsensus bool
 	}
-	pk *crypto.PubKey
+	pk keypair.PublicKey
 }
 
 func (msg *version) init(n Noder) {
@@ -94,7 +79,7 @@ func NewVersion(n Noder) ([]byte, error) {
 	copy(msg.Hdr.CMD[0:7], "version")
 	p := bytes.NewBuffer([]byte{})
 	err := binary.Write(p, binary.LittleEndian, &(msg.P))
-	msg.pk.Serialize(p)
+	serialization.WriteVarBytes(p, keypair.SerializePublicKey(msg.pk))
 	if err != nil {
 		log.Error("Binary Write failed at new Msg")
 		return nil, err
@@ -133,7 +118,11 @@ func (msg version) Serialization() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	msg.pk.Serialize(buf)
+	keyBuf := keypair.SerializePublicKey(msg.pk)
+	err = serialization.WriteVarBytes(buf, keyBuf)
+	if err != nil {
+		return nil, err
+	}
 
 	return buf.Bytes(), err
 }
@@ -153,8 +142,11 @@ func (msg *version) Deserialization(p []byte) error {
 		return errors.New("Parse version P message error")
 	}
 
-	pk := new(crypto.PubKey)
-	err = pk.DeSerialize(buf)
+	keyBuf, err := serialization.ReadVarBytes(buf)
+	if err != nil {
+		return errors.New("Parse pubkey Deserialize failed.")
+	}
+	pk, err := keypair.DeserializePublicKey(keyBuf)
 	if err != nil {
 		return errors.New("Parse pubkey Deserialize failed.")
 	}

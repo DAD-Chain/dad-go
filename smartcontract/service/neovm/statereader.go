@@ -19,20 +19,21 @@
 package neovm
 
 import (
+	"math/big"
+	"strings"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
 	"github.com/dad-go/errors"
 	. "github.com/dad-go/smartcontract/common"
 	"github.com/dad-go/smartcontract/event"
 	trigger "github.com/dad-go/smartcontract/types"
 	vm "github.com/dad-go/vm/neovm"
 	vmtypes "github.com/dad-go/vm/neovm/types"
-	"math/big"
-	"strings"
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/dad-go/core/payload"
 )
 
@@ -86,7 +87,6 @@ func NewStateReader(ldgerStore store.ILedgerStore, trigger trigger.TriggerType) 
 
 	stateReader.Register("Neo.Attribute.GetUsage", stateReader.AttributeGetUsage)
 	stateReader.Register("Neo.Attribute.GetData", stateReader.AttributeGetData)
-
 
 	stateReader.Register("Neo.Storage.GetScript", stateReader.ContractGetCode)
 	stateReader.Register("Neo.Storage.GetContext", stateReader.StorageGetContext)
@@ -175,7 +175,7 @@ func (s *StateReader) CheckWitnessHash(engine *vm.ExecutionEngine, address commo
 	return contains(addresses, address), nil
 }
 
-func (s *StateReader) CheckWitnessPublicKey(engine *vm.ExecutionEngine, publicKey *crypto.PubKey) (bool, error) {
+func (s *StateReader) CheckWitnessPublicKey(engine *vm.ExecutionEngine, publicKey keypair.PublicKey) (bool, error) {
 	return s.CheckWitnessHash(engine, types.AddressFromPubKey(publicKey))
 }
 
@@ -195,7 +195,7 @@ func (s *StateReader) RuntimeCheckWitness(e *vm.ExecutionEngine) (bool, error) {
 		}
 		result, err = s.CheckWitnessHash(e, program)
 	} else if len(data) == 33 {
-		publicKey, err := crypto.DecodePoint(data)
+		publicKey, err := keypair.DeserializePublicKey(data)
 		if err != nil {
 			return false, err
 		}

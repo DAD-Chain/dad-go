@@ -28,9 +28,10 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/crypto"
+	"github.com/dad-go/core/signature"
 	"github.com/dad-go/net/actor"
 	. "github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 type ConsensusPayload struct {
@@ -41,7 +42,7 @@ type ConsensusPayload struct {
 	Timestamp       uint32
 	Data            []byte
 
-	Owner     *crypto.PubKey
+	Owner     keypair.PublicKey
 	Signature []byte
 
 	hash common.Uint256
@@ -57,11 +58,13 @@ func (cp *ConsensusPayload) Hash() common.Uint256 {
 }
 
 func (cp *ConsensusPayload) Verify() error {
-
 	buf := new(bytes.Buffer)
 	cp.SerializeUnsigned(buf)
-
-	err := crypto.Verify(*cp.Owner, buf.Bytes(), cp.Signature)
+	err := signature.Verify(cp.Owner, buf.Bytes(), cp.Signature)
+	if err != nil {
+		log.Error(err.Error())
+		err = errors.New("consensus failed: signature verification failed")
+	}
 
 	return err
 }
@@ -122,7 +125,8 @@ func (cp *ConsensusPayload) Serialize(w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = cp.Owner.Serialize(w)
+	buf := keypair.SerializePublicKey(cp.Owner)
+	err = serialization.WriteVarBytes(w, buf)
 	if err != nil {
 		return err
 	}
@@ -192,15 +196,22 @@ func (cp *ConsensusPayload) DeserializeUnsigned(r io.Reader) error {
 func (cp *ConsensusPayload) Deserialize(r io.Reader) error {
 	err := cp.DeserializeUnsigned(r)
 
-	pk := new(crypto.PubKey)
-	err = pk.DeSerialize(r)
+	buf, err := serialization.ReadVarBytes(r)
 	if err != nil {
-		log.Warn("consensus item Owner deserialize failed.")
+		log.Warn("consensus item Owner deserialize failed, " + err.Error())
 		return errors.New("consensus item Owner deserialize failed.")
 	}
-	cp.Owner = pk
+	cp.Owner, err = keypair.DeserializePublicKey(buf)
+	if err != nil {
+		log.Warn("consensus item Owner deserialize failed, " + err.Error())
+		return errors.New("consensus item Owner deserialize failed.")
+	}
 
 	cp.Signature, err = serialization.ReadVarBytes(r)
+	if err != nil {
+		log.Warn("consensus item Signature deserialize failed, " + err.Error())
+		return errors.New("consensus item Signature deserialize failed.")
+	}
 
 	return err
 }
@@ -209,6 +220,10 @@ func (msg *consensus) Deserialization(p []byte) error {
 	log.Debug()
 	buf := bytes.NewBuffer(p)
 	err := binary.Read(buf, binary.LittleEndian, &(msg.msgHdr))
+	if err != nil {
+		return err
+	}
+
 	err = msg.cons.Deserialize(buf)
 	return err
 }

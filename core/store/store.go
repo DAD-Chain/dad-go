@@ -24,12 +24,12 @@ import (
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/smartcontract/event"
-	"github.com/dad-go/crypto"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 // ILedgerStore provides func with store package.
 type ILedgerStore interface {
-	InitLedgerStoreWithGenesisBlock(genesisblock *types.Block, defaultBookkeeper []*crypto.PubKey) error
+	InitLedgerStoreWithGenesisBlock(genesisblock *types.Block, defaultBookkeeper []keypair.PublicKey) error
 	Close() error
 	AddHeaders(headers []*types.Header) error
 	AddBlock(block *types.Block) error

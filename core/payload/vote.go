@@ -19,11 +19,12 @@
 package payload
 
 import (
-	. "github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/crypto"
 	"io"
+
+	"github.com/dad-go/common"
+	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const (
@@ -31,9 +32,9 @@ const (
 )
 
 type Vote struct {
-	PubKeys []*crypto.PubKey // vote node list
+	PubKeys []keypair.PublicKey // vote node list
 
-	Account Address
+	Account common.Address
 }
 
 func (self *Vote) Check() bool {
@@ -48,7 +49,9 @@ func (self *Vote) Serialize(w io.Writer) error {
 		return NewDetailErr(err, ErrNoCode, "Vote PubKeys length Serialize failed.")
 	}
 	for _, key := range self.PubKeys {
-		if err := key.Serialize(w); err != nil {
+		buf := keypair.SerializePublicKey(key)
+		err := serialization.WriteVarBytes(w, buf)
+		if err != nil {
 			return NewDetailErr(err, ErrNoCode, "InvokeCode PubKeys Serialize failed.")
 		}
 	}
@@ -64,14 +67,16 @@ func (self *Vote) Deserialize(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	self.PubKeys = make([]*crypto.PubKey, length)
+	self.PubKeys = make([]keypair.PublicKey, length)
 	for i := 0; i < int(length); i++ {
-		pubkey := new(crypto.PubKey)
-		err := pubkey.DeSerialize(r)
+		buf, err := serialization.ReadVarBytes(r)
 		if err != nil {
 			return err
 		}
-		self.PubKeys[i] = pubkey
+		self.PubKeys[i], err = keypair.DeserializePublicKey(buf)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = self.Account.Deserialize(r)

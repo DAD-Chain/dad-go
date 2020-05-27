@@ -19,9 +19,11 @@
 package solo
 
 import (
-	"time"
-ldgactor "github.com/dad-go/core/ledger/actor"
 	"fmt"
+	ldgactor "github.com/dad-go/core/ledger/actor"
+	"reflect"
+	"time"
+
 	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
@@ -29,13 +31,13 @@ ldgactor "github.com/dad-go/core/ledger/actor"
 	actorTypes "github.com/dad-go/consensus/actor"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/payload"
+	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
-	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/dad-go/validator/increment"
-	"reflect"
 	"github.com/dad-go/events"
 	"github.com/dad-go/events/message"
+	"github.com/dad-go/validator/increment"
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 /*
@@ -46,11 +48,11 @@ var GenBlockTime = (config.DEFAULTGENBLOCKTIME * time.Second)
 const ContextVersion uint32 = 0
 
 type SoloService struct {
-	Account     *account.Account
-	poolActor   *actorTypes.TxPoolActor
-	ledgerActor *actorTypes.LedgerActor
+	Account       *account.Account
+	poolActor     *actorTypes.TxPoolActor
+	ledgerActor   *actorTypes.LedgerActor
 	incrValidator *increment.IncrementValidator
-	existCh     chan interface{}
+	existCh       chan interface{}
 
 	pid *actor.PID
 	sub *events.ActorSubscriber
@@ -58,9 +60,9 @@ type SoloService struct {
 
 func NewSoloService(bkAccount *account.Account, txpool *actor.PID, ledger *actor.PID) (*SoloService, error) {
 	service := &SoloService{
-		Account:     bkAccount,
-		poolActor:   &actorTypes.TxPoolActor{Pool: txpool},
-		ledgerActor: &actorTypes.LedgerActor{Ledger: ledger},
+		Account:       bkAccount,
+		poolActor:     &actorTypes.TxPoolActor{Pool: txpool},
+		ledgerActor:   &actorTypes.LedgerActor{Ledger: ledger},
 		incrValidator: increment.NewIncrementValidator(10),
 	}
 
@@ -144,18 +146,18 @@ func (this *SoloService) Halt() error {
 	return nil
 }
 
-func (this *SoloService) genBlock()error {
+func (this *SoloService) genBlock() error {
 	block, err := this.makeBlock()
 	if err != nil {
 		return fmt.Errorf("makeBlock error %s", err)
 	}
 
-	future := ldgactor.DefLedgerPid.RequestFuture(&ldgactor.AddBlockReq{Block:block}, 30*time.Second)
+	future := ldgactor.DefLedgerPid.RequestFuture(&ldgactor.AddBlockReq{Block: block}, 30*time.Second)
 	result, err := future.Result()
 	if err != nil {
-		return fmt.Errorf("genBlock DefLedgerPid.RequestFuture Height:%d error:%s",block.Header.Height, err)
+		return fmt.Errorf("genBlock DefLedgerPid.RequestFuture Height:%d error:%s", block.Header.Height, err)
 	}
-	addBlockRsp :=  result.(*ldgactor.AddBlockRsp)
+	addBlockRsp := result.(*ldgactor.AddBlockRsp)
 	if addBlockRsp.Error != nil {
 		return fmt.Errorf("AddBlockRsp Height:%d error:%s", block.Header.Height, addBlockRsp.Error)
 	}
@@ -165,7 +167,7 @@ func (this *SoloService) genBlock()error {
 func (this *SoloService) makeBlock() (*types.Block, error) {
 	log.Debug()
 	owner := this.Account.PublicKey
-	nextBookkeeper, err := types.AddressFromBookkeepers([]*crypto.PubKey{owner})
+	nextBookkeeper, err := types.AddressFromBookkeepers([]keypair.PublicKey{owner})
 	if err != nil {
 		return nil, fmt.Errorf("GetBookkeeperAddress error:%s", err)
 	}
@@ -176,11 +178,11 @@ func (this *SoloService) makeBlock() (*types.Block, error) {
 
 	start, end := this.incrValidator.BlockRange()
 
-	if height + 1 == end {
+	if height+1 == end {
 		validHeight = start
 	} else {
 		this.incrValidator.Clean()
-		log.Infof("incr validator block height %v != ledger block height %v", end -1, height)
+		log.Infof("incr validator block height %v != ledger block height %v", end-1, height)
 	}
 
 	log.Infof("current block Height %v, incrValidateHeight %v", height, validHeight)
@@ -192,13 +194,13 @@ func (this *SoloService) makeBlock() (*types.Block, error) {
 	// TODO: increment checking txs
 
 	nonce := GetNonce()
-	txBookkeeping:= this.createBookkeepingTransaction(nonce, feeSum)
+	txBookkeeping := this.createBookkeepingTransaction(nonce, feeSum)
 
 	transactions := make([]*types.Transaction, 0, len(txs)+1)
 	transactions = append(transactions, txBookkeeping)
 	for _, txEntry := range txs {
 		// TODO optimize to use height in txentry
-		if  err := this.incrValidator.Verify(txEntry.Tx, validHeight) ; err == nil {
+		if err := this.incrValidator.Verify(txEntry.Tx, validHeight); err == nil {
 			transactions = append(transactions, txEntry.Tx)
 		}
 	}
@@ -207,7 +209,7 @@ func (this *SoloService) makeBlock() (*types.Block, error) {
 	for _, t := range transactions {
 		txHash = append(txHash, t.Hash())
 	}
-	txRoot, err := crypto.ComputeRoot(txHash)
+	txRoot, err := ComputeRoot(txHash)
 	if err != nil {
 		return nil, fmt.Errorf("ComputeRoot error:%s", err)
 	}
@@ -219,7 +221,7 @@ func (this *SoloService) makeBlock() (*types.Block, error) {
 		TransactionsRoot: txRoot,
 		BlockRoot:        blockRoot,
 		Timestamp:        uint32(time.Now().Unix()),
-		Height:           height+1,
+		Height:           height + 1,
 		ConsensusData:    nonce,
 		NextBookkeeper:   nextBookkeeper,
 	}
@@ -230,12 +232,13 @@ func (this *SoloService) makeBlock() (*types.Block, error) {
 
 	blockHash := block.Hash()
 
-	signature, err := crypto.Sign(this.Account.PrivKey(), blockHash[:])
+	sig, err := signature.Sign(this.Account.PrivKey(), blockHash[:])
 	if err != nil {
 		return nil, fmt.Errorf("[Signature],Sign error:%s.", err)
 	}
-	block.Header.Bookkeepers = []*crypto.PubKey{owner}
-	block.Header.SigData = [][]byte{signature}
+
+	block.Header.Bookkeepers = []keypair.PublicKey{owner}
+	block.Header.SigData = [][]byte{sig}
 	return block, nil
 }
 
@@ -252,11 +255,14 @@ func (this *SoloService) createBookkeepingTransaction(nonce uint64, fee Fixed64)
 	}
 	txHash := tx.Hash()
 	acc := this.Account
-	signature, _ := crypto.Sign(acc.PrivateKey, txHash[:])
+	s, err := signature.Sign(acc.PrivateKey, txHash[:])
+	if err != nil {
+		return nil
+	}
 	sig := &types.Sig{
-		PubKeys: []*crypto.PubKey{acc.PublicKey},
+		PubKeys: []keypair.PublicKey{acc.PublicKey},
 		M:       1,
-		SigData: [][]byte{signature},
+		SigData: [][]byte{s},
 	}
 	tx.Sigs = []*types.Sig{sig}
 	return tx

@@ -37,11 +37,11 @@ import (
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
 	"github.com/dad-go/events"
 	"github.com/dad-go/net/actor"
 	. "github.com/dad-go/net/message"
 	. "github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 type Semaphore chan struct{}
@@ -68,7 +68,7 @@ type node struct {
 	height    uint64   // The node latest block height
 	txnCnt    uint64   // The transactions be transmit by this node
 	rxTxnCnt  uint64   // The transaction received by this node
-	publicKey *crypto.PubKey
+	publicKey keypair.PublicKey
 	// TODO does this channel should be a buffer channel
 	chF        chan func() error // Channel used to operate the node without lock
 	link                         // The link status and infomation
@@ -179,7 +179,7 @@ func NewNode() *node {
 	return &n
 }
 
-func InitNode(pubKey *crypto.PubKey) Noder {
+func InitNode(pubKey keypair.PublicKey) Noder {
 	n := NewNode()
 	n.version = PROTOCOL_VERSION
 	if Parameters.NodeType == SERVICE_NODE_NAME {
@@ -199,11 +199,8 @@ func InitNode(pubKey *crypto.PubKey) Noder {
 	// TODO is it neccessary to init the rand seed here?
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	key, err := pubKey.EncodePoint(true)
-	if err != nil {
-		log.Error(err)
-	}
-	err = binary.Read(bytes.NewBuffer(key[:8]), binary.LittleEndian, &(n.id))
+	key := keypair.SerializePublicKey(pubKey)
+	err := binary.Read(bytes.NewBuffer(key[:8]), binary.LittleEndian, &(n.id))
 	if err != nil {
 		log.Error(err)
 	}
@@ -308,7 +305,7 @@ func (node *node) SetState(state uint32) {
 	atomic.StoreUint32(&(node.state), state)
 }
 
-func (node *node) GetPubKey() *crypto.PubKey {
+func (node *node) GetPubKey() keypair.PublicKey {
 	return node.publicKey
 }
 
@@ -406,12 +403,12 @@ func (node *node) GetTime() int64 {
 	return t.UnixNano()
 }
 
-func (node *node) GetBookkeeperAddr() *crypto.PubKey {
+func (node *node) GetBookkeeperAddr() keypair.PublicKey {
 	return node.publicKey
 }
 
-func (node *node) GetBookkeepersAddrs() ([]*crypto.PubKey, uint64) {
-	pks := make([]*crypto.PubKey, 1)
+func (node *node) GetBookkeepersAddrs() ([]keypair.PublicKey, uint64) {
+	pks := make([]keypair.PublicKey, 1)
 	pks[0] = node.publicKey
 	var i uint64
 	i = 1
@@ -426,7 +423,7 @@ func (node *node) GetBookkeepersAddrs() ([]*crypto.PubKey, uint64) {
 	return pks, i
 }
 
-func (node *node) SetBookkeeperAddr(pk *crypto.PubKey) {
+func (node *node) SetBookkeeperAddr(pk keypair.PublicKey) {
 	node.publicKey = pk
 }
 

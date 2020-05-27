@@ -23,17 +23,18 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	. "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/events"
-	msg "github.com/dad-go/net/message"
-	. "github.com/dad-go/net/protocol"
 	"io"
 	"io/ioutil"
 	"net"
 	"strconv"
 	"strings"
 	"time"
+
+	. "github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/events"
+	msg "github.com/dad-go/net/message"
+	. "github.com/dad-go/net/protocol"
 )
 
 type RxBuff struct {
