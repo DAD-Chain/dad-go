@@ -19,13 +19,20 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"runtime"
+	"sort"
+	"syscall"
+	"time"
+
 	"github.com/dad-go/account"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/consensus"
 	"github.com/dad-go/core/ledger"
 	ldgactor "github.com/dad-go/core/ledger/actor"
-	"github.com/dad-go/crypto"
+	"github.com/dad-go/core/signature"
 	"github.com/dad-go/events"
 	hserver "github.com/dad-go/http/base/actor"
 	"github.com/dad-go/http/jsonrpc"
@@ -39,12 +46,7 @@ import (
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/statefull"
 	"github.com/dad-go/validator/stateless"
-	"os"
-	"os/signal"
-	"runtime"
-	"sort"
-	"syscall"
-	"time"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const (
@@ -75,7 +77,12 @@ func main() {
 		log.Fatal("At least ", account.DefaultBookkeeperCount, " Bookkeepers should be set at config.json")
 		os.Exit(1)
 	}
-	crypto.SetAlg(config.Parameters.EncryptAlg)
+
+	// Set default signature scheme
+	err = signature.SetDefaultScheme(config.Parameters.SignatureScheme)
+	if err != nil {
+		log.Warn("Config error: ", err)
+	}
 
 	log.Info("0. Open the account")
 	client := account.GetClient()
@@ -90,7 +97,7 @@ func main() {
 	}
 	log.Debug("The Node's PublicKey ", acct.PublicKey)
 	defBookkeepers, err := client.GetBookkeepers()
-	sort.Sort(crypto.PubKeySlice(defBookkeepers))
+	sort.Sort(keypair.NewPublicList(defBookkeepers))
 	if err != nil {
 		log.Fatalf("GetBookkeepers error:%s", err)
 		os.Exit(1)

@@ -20,14 +20,15 @@ package ledger
 
 import (
 	"fmt"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/genesis"
+	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
 	"github.com/dad-go/core/store/ledgerstore"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
-	"github.com/dad-go/core/payload"
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/dad-go/smartcontract/event"
 )
 
@@ -51,7 +52,7 @@ func (this *Ledger) GetStore() store.ILedgerStore {
 	return this.ldgStore
 }
 
-func (this *Ledger) Init(defaultBookkeeper []*crypto.PubKey) error {
+func (this *Ledger) Init(defaultBookkeeper []keypair.PublicKey) error {
 	genesisBlock, err := genesis.GenesisBlockInit(defaultBookkeeper)
 	if err != nil {
 		return fmt.Errorf("genesisBlock error %s", err)

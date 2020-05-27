@@ -21,30 +21,31 @@ package test
 import (
 	"fmt"
 	"os"
-
-	. "github.com/dad-go/cli/common"
-	"github.com/dad-go/http/base/rpc"
-	"github.com/urfave/cli"
+	"encoding/json"
 	"bytes"
 	"encoding/hex"
 	"math/big"
 	"time"
+
 	vmtypes "github.com/dad-go/vm/types"
 	"github.com/dad-go/account"
 	"github.com/dad-go/core/genesis"
-	"github.com/dad-go/crypto"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/common"
 	"github.com/dad-go/smartcontract/service/native/states"
-	"encoding/json"
 	"github.com/dad-go/core/utils"
+	"github.com/dad-go/core/signature"
+	"github.com/ontio/dad-go-crypto/keypair"
+	. "github.com/dad-go/cli/common"
+	"github.com/dad-go/http/base/rpc"
+	"github.com/urfave/cli"
 )
 
 func signTransaction(signer *account.Account, tx *types.Transaction) error {
 	hash := tx.Hash()
-	sign, _ := crypto.Sign(signer.PrivateKey, hash[:])
+	sign, _ := signature.Sign(hash[:], signer.PrivateKey)
 	tx.Sigs = append(tx.Sigs, &types.Sig{
-		PubKeys: []*crypto.PubKey{signer.PublicKey},
+		PubKeys: []keypair.PublicKey{signer.PublicKey},
 		M: 1,
 		SigData: [][]byte{sign},
 	})

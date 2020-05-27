@@ -19,7 +19,8 @@
 package net
 
 import (
-	"github.com/dad-go/crypto"
+	"crypto"
+
 	ns "github.com/dad-go/net/actor"
 	"github.com/dad-go/net/node"
 	"github.com/dad-go/net/protocol"
@@ -43,7 +44,7 @@ func InitNetServerActor(noder protocol.Noder) (*actor.PID, error) {
 	return netServerPid, err
 }
 
-func StartProtocol(pubKey *crypto.PubKey) protocol.Noder {
+func StartProtocol(pubKey crypto.PublicKey) protocol.Noder {
 	net := node.InitNode(pubKey)
 	net.ConnectSeeds()
 	return net

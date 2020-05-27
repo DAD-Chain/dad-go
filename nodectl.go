@@ -21,13 +21,14 @@ package main
 import (
 	"os"
 	"sort"
+
+	"github.com/urfave/cli"
+
 	_ "github.com/dad-go/cli"
 	. "github.com/dad-go/cli/common"
 	"github.com/dad-go/cli/test"
-	"github.com/dad-go/cli/wallet"
-
-	"github.com/urfave/cli"
 	"github.com/dad-go/cli/transfer"
+	"github.com/dad-go/cli/wallet"
 )
 
 var Version string

@@ -21,14 +21,15 @@ package genesis
 import (
 	"errors"
 	"time"
+	"bytes"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/utils"
-	"github.com/dad-go/crypto"
 	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/dad-go/smartcontract/service/native/states"
-	"bytes"
 )
 
 const (
@@ -51,10 +52,10 @@ var (
 
 var GenBlockTime = (config.DEFAULTGENBLOCKTIME * time.Second)
 
-var GenesisBookkeepers []*crypto.PubKey
+var GenesisBookkeepers []keypair.PublicKey
 
-func GenesisBlockInit(defaultBookkeeper []*crypto.PubKey) (*types.Block, error) {
-	//getBookkeeper
+func GenesisBlockInit(defaultBookkeeper []keypair.PublicKey) (*types.Block, error) {
+	//getBookKeeper
 	GenesisBookkeepers = defaultBookkeeper
 	nextBookkeeper, err := types.AddressFromBookkeepers(defaultBookkeeper)
 	if err != nil {

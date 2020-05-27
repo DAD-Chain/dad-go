@@ -20,18 +20,20 @@ package ledgerstore
 
 import (
 	"fmt"
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store/statestore"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
-	"github.com/dad-go/events"
-	"github.com/dad-go/events/message"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/dad-go/common"
+	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/payload"
+	"github.com/dad-go/core/signature"
+	"github.com/dad-go/core/states"
+	"github.com/dad-go/core/store/statestore"
+	"github.com/dad-go/core/types"
+	"github.com/dad-go/events"
+	"github.com/dad-go/events/message"
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/dad-go/smartcontract/event"
 	"github.com/dad-go/vm/neovm"
 	stypes "github.com/dad-go/smartcontract/types"
@@ -108,7 +110,7 @@ func NewLedgerStore() (*LedgerStore, error) {
 	return ledgerStore, nil
 }
 
-func (this *LedgerStore) InitLedgerStoreWithGenesisBlock(genesisBlock *types.Block, defaultBookkeeper []*crypto.PubKey) error {
+func (this *LedgerStore) InitLedgerStoreWithGenesisBlock(genesisBlock *types.Block, defaultBookkeeper []keypair.PublicKey) error {
 	hasInit, err := this.hasAlreadyInitGenesisBlock()
 	if err != nil {
 		return fmt.Errorf("hasAlreadyInit error %s", err)
@@ -126,7 +128,7 @@ func (this *LedgerStore) InitLedgerStoreWithGenesisBlock(genesisBlock *types.Blo
 		if err != nil {
 			return fmt.Errorf("eventStore.ClearAll error %s", err)
 		}
-		sort.Sort(crypto.PubKeySlice(defaultBookkeeper))
+		sort.Sort(keypair.NewPublicList(defaultBookkeeper))
 		bookkeeperState := &states.BookkeeperState{
 			CurrBookkeeper: defaultBookkeeper,
 			NextBookkeeper: defaultBookkeeper,
@@ -485,7 +487,7 @@ func (this *LedgerStore) verifyHeader(header *types.Header) error {
 
 	m := len(header.Bookkeepers) - (len(header.Bookkeepers)-1)/3
 	hash := header.Hash()
-	err = crypto.VerifyMultiSignature(hash[:], header.Bookkeepers, m, header.SigData)
+	err = signature.VerifyMultiSignature(hash[:], header.Bookkeepers, m, header.SigData)
 	if err != nil {
 		return err
 	}

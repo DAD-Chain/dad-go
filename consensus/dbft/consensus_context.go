@@ -20,6 +20,7 @@ package dbft
 
 import (
 	"fmt"
+
 	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
@@ -27,8 +28,8 @@ import (
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/core/vote"
-	"github.com/dad-go/crypto"
 	msg "github.com/dad-go/net/message"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const ContextVersion uint32 = 0
@@ -38,9 +39,9 @@ type ConsensusContext struct {
 	PrevHash        Uint256
 	Height          uint32
 	ViewNumber      byte
-	Bookkeepers     []*crypto.PubKey
-	NextBookkeepers []*crypto.PubKey
-	Owner           *crypto.PubKey
+	Bookkeepers     []keypair.PublicKey
+	NextBookkeepers []keypair.PublicKey
+	Owner           keypair.PublicKey
 	BookkeeperIndex int
 	PrimaryIndex    uint32
 	Timestamp       uint32
@@ -103,7 +104,7 @@ func (cxt *ConsensusContext) MakeHeader() *types.Block {
 		for _, t := range cxt.Transactions {
 			txHash = append(txHash, t.Hash())
 		}
-		txRoot, err := crypto.ComputeRoot(txHash)
+		txRoot, err := ComputeRoot(txHash)
 		if err != nil {
 			return nil
 		}
@@ -224,7 +225,7 @@ func (cxt *ConsensusContext) Reset(bkAccount *account.Account) {
 	cxt.ExpectedView = make([]byte, bookkeeperLen)
 
 	for i := 0; i < bookkeeperLen; i++ {
-		if bkAccount.PublicKey.X.Cmp(cxt.Bookkeepers[i].X) == 0 {
+		if keypair.ComparePublicKey(bkAccount.PublicKey, cxt.Bookkeepers[i]) {
 			cxt.BookkeeperIndex = i
 			cxt.Owner = cxt.Bookkeepers[i]
 			break

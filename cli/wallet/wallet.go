@@ -29,8 +29,9 @@ import (
 	. "github.com/dad-go/cli/common"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/password"
-	"github.com/urfave/cli"
 	"github.com/dad-go/http/base/rpc"
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/urfave/cli"
 )
 
 func walletAction(c *cli.Context) error {
@@ -92,8 +93,8 @@ func walletAction(c *cli.Context) error {
 	pubKey := account.PubKey()
 	address := account.Address
 
-	encodedPubKey, _ := pubKey.EncodePoint(true)
-	fmt.Println("public key:   ", ToHexString(encodedPubKey))
+	pubKeyBytes := keypair.SerializePublicKey(pubKey)
+	fmt.Println("public key:   ", ToHexString(pubKeyBytes))
 	fmt.Println("hex address: ", ToHexString(address[:]))
 	fmt.Println("base58 address:      ", address.ToBase58())
 	asset := c.String("asset")
