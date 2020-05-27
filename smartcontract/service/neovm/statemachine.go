@@ -31,6 +31,7 @@ import (
 	vm "github.com/dad-go/vm/neovm"
 	"github.com/dad-go/core/payload"
 	vmtypes "github.com/dad-go/vm/types"
+	scommon "github.com/dad-go/core/store/common"
 )
 
 type StateMachine struct {
