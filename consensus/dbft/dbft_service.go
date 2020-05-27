@@ -21,6 +21,9 @@ package dbft
 import (
 	"bytes"
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/dad-go/account"
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/config"
@@ -38,8 +41,6 @@ import (
 	p2pmsg "github.com/dad-go/net/message"
 	"github.com/dad-go/validator/increment"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"reflect"
-	"time"
 )
 
 type DbftService struct {
@@ -347,18 +348,17 @@ func (ds *DbftService) NewConsensusPayload(payload *p2pmsg.ConsensusPayload) {
 
 	//if payload is not same height with current contex, ignore it
 	if payload.Version != ContextVersion || payload.PrevHash != ds.context.PrevHash || payload.Height != ds.context.Height {
+		log.Debug("unmatched height")
 		return
 	}
 
 	if ds.context.State.HasFlag(BlockGenerated) {
-		return
-	}
-
-	if ds.context.State.HasFlag(BlockGenerated) {
+		log.Debug("has flag 'BlockGenerated'")
 		return
 	}
 
 	if int(payload.BookkeeperIndex) >= len(ds.context.Bookkeepers) {
+		log.Debug("bookkeeper index out of range")
 		return
 	}
 
@@ -399,6 +399,8 @@ func (ds *DbftService) NewConsensusPayload(payload *p2pmsg.ConsensusPayload) {
 			ds.BlockSignaturesReceived(payload, blockSigs)
 		}
 		break
+	default:
+		log.Warn("unknown consensus message type")
 	}
 }
 

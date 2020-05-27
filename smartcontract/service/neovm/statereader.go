@@ -34,6 +34,7 @@ import (
 	vm "github.com/dad-go/vm/neovm"
 	vmtypes "github.com/dad-go/vm/neovm/types"
 	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/dad-go/core/payload"
 )
 
 var (
