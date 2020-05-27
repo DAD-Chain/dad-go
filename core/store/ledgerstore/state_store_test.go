@@ -19,18 +19,15 @@
 package ledgerstore
 
 import (
+	"testing"
+
+	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/states"
 	scommon "github.com/dad-go/core/store/common"
 	"github.com/dad-go/core/store/statestore"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/crypto"
-	vmtypes"github.com/dad-go/vm/types"
-	"testing"
+	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
-
-func init() {
-	crypto.SetAlg("")
-}
 
 func TestContractState(t *testing.T) {
 	batch, err := getStateBatch()
@@ -46,7 +43,7 @@ func TestContractState(t *testing.T) {
 		NeedStorage: false,
 		Name:        "testsm",
 		Version:     "v1.0",
-		Author:     "",
+		Author:      "",
 		Email:       "",
 		Description: "",
 	}
@@ -61,8 +58,8 @@ func TestContractState(t *testing.T) {
 		deploy,
 		false)
 	if err != nil {
-		 t.Errorf("TryGetOrAdd contract error %s", err)
-		 return
+		t.Errorf("TryGetOrAdd contract error %s", err)
+		return
 	}
 
 	err = batch.CommitTo()
@@ -97,12 +94,12 @@ func TestBookkeeperState(t *testing.T) {
 		return
 	}
 
-	_, pubKey1, _ := crypto.GenKeyPair()
-	_, pubKey2, _ := crypto.GenKeyPair()
-	currBookkeepers := make([]*crypto.PubKey, 0)
+	_, pubKey1, _ := keypair.GenerateKeyPair(keypair.PK_ECDSA, keypair.P256)
+	_, pubKey2, _ := keypair.GenerateKeyPair(keypair.PK_ECDSA, keypair.P256)
+	currBookkeepers := make([]keypair.PublicKey, 0)
 	currBookkeepers = append(currBookkeepers, &pubKey1)
 	currBookkeepers = append(currBookkeepers, &pubKey2)
-	nextBookkeepers := make([]*crypto.PubKey, 0)
+	nextBookkeepers := make([]keypair.PublicKey, 0)
 	nextBookkeepers = append(nextBookkeepers, &pubKey1)
 	nextBookkeepers = append(nextBookkeepers, &pubKey2)
 

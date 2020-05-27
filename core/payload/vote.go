@@ -19,10 +19,9 @@
 package payload
 
 import (
-	"crypto"
 	"io"
 
-	. "github.com/dad-go/common"
+	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	. "github.com/dad-go/errors"
 	"github.com/ontio/dad-go-crypto/keypair"
@@ -33,9 +32,9 @@ const (
 )
 
 type Vote struct {
-	PubKeys []crypto.PublicKey // vote node list
+	PubKeys []keypair.PublicKey // vote node list
 
-	Account Address
+	Account common.Address
 }
 
 func (self *Vote) Check() bool {
@@ -68,7 +67,7 @@ func (self *Vote) Deserialize(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	self.PubKeys = make([]crypto.PublicKey, length)
+	self.PubKeys = make([]keypair.PublicKey, length)
 	for i := 0; i < int(length); i++ {
 		buf, err := serialization.ReadVarBytes(r)
 		if err != nil {
