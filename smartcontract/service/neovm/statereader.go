@@ -21,7 +21,6 @@ package neovm
 import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/contract"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
 	"github.com/dad-go/core/types"
