@@ -26,12 +26,9 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
 	"github.com/ontio/dad-go-eventbus/actor"
 	tc "github.com/dad-go/txnpool/common"
 	tp "github.com/dad-go/txnpool/proc"
-	//"github.com/dad-go/validator/db"
-	//"github.com/dad-go/validator/statefull"
 	"github.com/dad-go/validator/stateless"
 	"sync"
 	"testing"
@@ -44,7 +41,6 @@ var (
 )
 
 func init() {
-	crypto.SetAlg("")
 	log.Init(log.Path, log.Stdout)
 	topic = "TXN"
 

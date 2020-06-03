@@ -26,7 +26,6 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
 	"github.com/dad-go/errors"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/stateless"
@@ -53,7 +52,6 @@ func (this *testActor) Receive(context actor.Context) {
 }
 
 func init() {
-	crypto.SetAlg("")
 	log.Init(log.Path, log.Stdout)
 	topic = "TXN"
 
