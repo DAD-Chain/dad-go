@@ -20,8 +20,9 @@ package dbft
 
 import (
 	"errors"
-	ser "github.com/dad-go/common/serialization"
 	"io"
+
+	ser "github.com/dad-go/common/serialization"
 )
 
 type BlockSignatures struct {

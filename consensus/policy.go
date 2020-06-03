@@ -19,12 +19,12 @@
 package consensus
 
 import (
-	. "github.com/dad-go/common"
+	"github.com/dad-go/common"
 )
 
 type Policy struct {
 	PolicyLevel PolicyLevel
-	List        []Address
+	List        []common.Address
 }
 
 func NewPolicy() *Policy {
