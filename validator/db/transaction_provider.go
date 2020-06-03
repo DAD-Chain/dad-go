@@ -19,11 +19,11 @@
 package db
 
 import (
+	"io"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/types"
-
-	"io"
 )
 
 type TransactionMeta struct {

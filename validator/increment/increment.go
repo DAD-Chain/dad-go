@@ -19,9 +19,10 @@
 package increment
 
 import (
+	"fmt"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/types"
-	"fmt"
 	"github.com/dad-go/common/log"
 )
 
