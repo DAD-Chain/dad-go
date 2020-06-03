@@ -26,7 +26,6 @@ import (
 
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/contract/program"
-	. "github.com/dad-go/errors"
 	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/ontio/dad-go-crypto/keypair"
 	s "github.com/ontio/dad-go-crypto/signature"
@@ -75,7 +74,7 @@ func getHashData(data SignableData) []byte {
 func Sign(privKey keypair.PrivateKey, data []byte) ([]byte, error) {
 	signature, err := s.Sign(defaultScheme, privKey, data, nil)
 	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "[Signature],Sign failed.")
+		return nil, err
 	}
 
 	return s.Serialize(signature)
