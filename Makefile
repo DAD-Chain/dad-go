@@ -6,7 +6,7 @@ BUILD_NODE_PAR = -ldflags "-X github.com/dad-go/common/config.Version=$(VERSION)
 BUILD_NODECTL_PAR = -ldflags "-X main.Version=$(VERSION)"
 
 all:
-	$(GC)  $(BUILD_NODE_PAR) -o node main.go
+	$(GC)  $(BUILD_NODE_PAR) -o dad-go main.go
 	$(GC)  $(BUILD_NODECTL_PAR) nodectl.go
 
 format:
