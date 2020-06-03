@@ -19,11 +19,12 @@
 package stateless
 
 import (
+	"reflect"
+
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/validation"
 	"github.com/ontio/dad-go-eventbus/actor"
 	vatypes "github.com/dad-go/validator/types"
-	"reflect"
 )
 
 type Validator interface {
