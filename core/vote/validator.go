@@ -3,7 +3,7 @@ package vote
 import (
 	"sort"
 
-	. "github.com/dad-go/common"
+	"github.com/dad-go/common"
 	"github.com/dad-go/core/genesis"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/types"
@@ -48,7 +48,7 @@ func (p PairList) Less(i, j int) bool {
 }
 
 // A function to turn a map into a PairList, then sort and return it.
-func sortMapByValue(m map[string]Fixed64) []string {
+func sortMapByValue(m map[string]common.Fixed64) []string {
 	p := make(PairList, 0, len(m))
 	for k, v := range m {
 		p = append(p, Pair{k, v.GetData()})
