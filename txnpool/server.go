@@ -20,19 +20,19 @@ package txnpool
 
 import (
 	"github.com/dad-go/common/log"
-	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/dad-go/events"
 	"github.com/dad-go/events/message"
 	tc "github.com/dad-go/txnpool/common"
 	tp "github.com/dad-go/txnpool/proc"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
-func startActor(obj interface{}) *actor.PID {
+func startActor(obj interface{}, id string) *actor.PID {
 	props := actor.FromProducer(func() actor.Actor {
 		return obj.(actor.Actor)
 	})
 
-	pid := actor.Spawn(props)
+	pid, _ := actor.SpawnNamed(props, id)
 	if pid == nil {
 		log.Error("Fail to start actor")
 		return nil
@@ -50,7 +50,7 @@ func StartTxnPoolServer() *tp.TXPoolServer {
 
 	// Initialize an actor to handle the msgs from valdiators
 	rspActor := tp.NewVerifyRspActor(s)
-	rspPid := startActor(rspActor)
+	rspPid := startActor(rspActor, "txVerifyRsp")
 	if rspPid == nil {
 		log.Error("Fail to start verify rsp actor")
 		return nil
@@ -59,7 +59,7 @@ func StartTxnPoolServer() *tp.TXPoolServer {
 
 	// Initialize an actor to handle the msgs from consensus
 	tpa := tp.NewTxPoolActor(s)
-	txPoolPid := startActor(tpa)
+	txPoolPid := startActor(tpa, "txPool")
 	if txPoolPid == nil {
 		log.Error("Fail to start txnpool actor")
 		return nil
@@ -68,7 +68,7 @@ func StartTxnPoolServer() *tp.TXPoolServer {
 
 	// Initialize an actor to handle the msgs from p2p and api
 	ta := tp.NewTxActor(s)
-	txPid := startActor(ta)
+	txPid := startActor(ta, "tx")
 	if txPid == nil {
 		log.Error("Fail to start txn actor")
 		return nil
