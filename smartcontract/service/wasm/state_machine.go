@@ -24,6 +24,12 @@ import (
 	"github.com/dad-go/core/store"
 	scommon "github.com/dad-go/core/store/common"
 	"github.com/dad-go/core/types"
+	"github.com/dad-go/core/ledger"
+	"github.com/dad-go/vm/wasmvm/exec"
+	"bytes"
+	"github.com/dad-go/common"
+	"github.com/dad-go/core/states"
+	"errors"
 )
 
 type WasmStateMachine struct {
@@ -43,15 +49,17 @@ func NewWasmStateMachine(ldgerStore store.LedgerStore, dbCache scommon.StateStor
 	stateMachine.trigger = trigger
 	stateMachine.block = block
 
-	//stateMachine.Register("getBlockHeight",bcGetHeight)
+	stateMachine.Register("getBlockHeight",bcGetHeight)
+	stateMachine.Register("PutStorage",putstore)
+	stateMachine.Register("GetStorage",getstore)
+	stateMachine.Register("DeleteStorage",deletestore)
 	//todo add and register services
 	return &stateMachine
 }
 
 //======================some block api ===============
-/*
 func  bcGetHeight(engine *exec.ExecutionEngine) (bool, error) {
-	vm := engine.GetVM()
+/*	vm := engine.GetVM()
 	var i uint32
 	if ledger.DefaultLedger == nil {
 		i = 0
@@ -62,6 +70,28 @@ func  bcGetHeight(engine *exec.ExecutionEngine) (bool, error) {
 	vm.RestoreCtx()
 	if vm.GetEnvCall().GetReturns(){
 		vm.PushResult(uint64(i))
-	}
+	}*/
 	return true,nil
-}*/
+}
+
+func putstore(engine *exec.ExecutionEngine) (bool, error) {
+	return true,nil
+}
+
+func getstore(engine *exec.ExecutionEngine) (bool, error) {
+	return true,nil
+}
+
+
+func deletestore(engine *exec.ExecutionEngine) (bool, error) {
+	return true,nil
+}
+
+func serializeStorageKey(codeHash common.Address, key []byte) ([]byte, error) {
+	bf := new(bytes.Buffer)
+	storageKey := &states.StorageKey{CodeHash: codeHash, Key: key}
+	if _, err := storageKey.Serialize(bf); err != nil {
+		return []byte{}, errors.New("[serializeStorageKey] StorageKey serialize error!")
+	}
+	return bf.Bytes(), nil
+}
