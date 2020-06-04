@@ -28,7 +28,12 @@ import (
 	"github.com/dad-go/vm/neovm"
 	"github.com/dad-go/smartcontract/context"
 	"github.com/dad-go/smartcontract/event"
+
 	"github.com/dad-go/common"
+	"github.com/dad-go/smartcontract/service/wasm"
+	"github.com/dad-go/vm/wasmvm/exec"
+	"github.com/dad-go/vm/wasmvm/util"
+
 )
 
 type SmartContract struct {
@@ -50,6 +55,7 @@ type Config struct {
 type Engine interface {
 	StepInto()
 }
+
 
 //put current context to smart contract
 func(sc *SmartContract) PushContext(context *context.Context) {
@@ -112,6 +118,17 @@ func (sc *SmartContract) Execute() error {
 		stateMachine.CloneCache.Commit()
 		sc.Notifications = append(sc.Notifications, stateMachine.Notifications...)
 	case vmtypes.WASMVM:
+		stateMachine:= wasm.NewWasmStateMachine(sc.Config.Store, sc.Config.DBCache, stypes.Application,sc.Config.Time)
+		engine := exec.NewExecutionEngine(
+			sc.Config.Tx,
+			new(util.ECDsaCrypto),
+			sc.Config.Table,
+			stateMachine,
+			"product",
+		)
+		//todo how to get the input
+		//engine.Call(ctx.ContractAddress,ctx.Code.Code,input)
+		sc.Notifications = append(sc.Notifications, stateMachine.Notifications...)
 	}
 	return nil
 }

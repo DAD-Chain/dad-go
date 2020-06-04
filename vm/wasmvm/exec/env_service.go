@@ -23,13 +23,12 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/vm/types"
 	"github.com/dad-go/vm/wasmvm/memory"
 	"github.com/dad-go/vm/wasmvm/wasm"
 	"strconv"
 	"strings"
+	"io/ioutil"
+	"fmt"
 )
 
 type Args struct {
@@ -114,7 +113,7 @@ func (i *InteropService) GetServiceMap() map[string]func(*ExecutionEngine) (bool
 }
 
 //******************* basic functions ***************************
-//TODO deside to replace the PUNKNOW type
+//TODO decide to replace the P_UNKNOW type
 
 //for the c language "calloc" function
 func calloc(engine *ExecutionEngine) (bool, error) {
@@ -265,10 +264,11 @@ func readMessage(engine *ExecutionEngine) (bool, error) {
 }
 
 //call other contract
+//todo rewrite logic
 func callContract(engine *ExecutionEngine) (bool, error) {
 	envCall := engine.vm.envCall
 	params := envCall.envParams
-	if len(params) < 2 {
+	if len(params) != 3 {
 		return false, errors.New("parameter count error while call readMessage")
 	}
 	contractAddressIdx := params[0]
@@ -289,11 +289,23 @@ func callContract(engine *ExecutionEngine) (bool, error) {
 
 	methodad-gome, err := engine.vm.GetPointerMemory(params[1])
 	if err != nil {
-		return false, errors.New("get Contract address failed")
+		return false, errors.New("[callContract]get Contract methodad-gome failed")
+	}
+
+	arg ,err := engine.vm.GetPointerMemory(params[2])
+	if err != nil {
+		return false, errors.New("[callContract]get Contract arg failed")
+	}
+
+	res, err := engine.vm.CallProductContract(module,methodad-gome,arg)
+
+	engine.vm.ctx = envCall.envPreCtx
+	if envCall.envReturns {
+		engine.vm.pushUint64(res)
 	}
 	//if has args
-	var args []uint64
-	if len(params) > 2 {
+/*	var args []uint64
+	if len(params) > 2 { // must be 3
 		args = params[2:]
 	}
 
@@ -304,7 +316,7 @@ func callContract(engine *ExecutionEngine) (bool, error) {
 	//engine.vm.RestoreStat()
 	if envCall.envReturns {
 		engine.vm.pushUint64(res)
-	}
+	}*/
 
 	return true, nil
 }
@@ -719,15 +731,15 @@ func getContractFromAddr(addr []byte) ([]byte, error) {
 
 	//todo get the contract code from ledger
 	//just for test
-	/*		contract := trimBuffToString(addr)
+			contract := trimBuffToString(addr)
 			code, err := ioutil.ReadFile(fmt.Sprintf("./testdata2/%s.wasm",contract))
 			if err != nil {
 				fmt.Printf("./testdata2/%s.wasm is not exist",contract)
 				return nil,err
 			}
 
-			return code,nil*/
-	codeHash, err := common.Uint160ParseFromBytes(addr)
+			return code,nil
+/*	codeHash, err := common.Uint160ParseFromBytes(addr)
 	if err != nil {
 		return nil, errors.New("get address Code hash failed")
 	}
@@ -741,7 +753,7 @@ func getContractFromAddr(addr []byte) ([]byte, error) {
 		return nil, errors.New(" contract is not a wasm contract")
 	}
 
-	return contract.Code, nil
+	return contract.Code, nil*/
 
 }
 
