@@ -23,6 +23,7 @@ import (
 	"errors"
 	"github.com/dad-go/vm/wasmvm/util"
 	"reflect"
+	"math"
 )
 
 type P_Type int
@@ -48,7 +49,8 @@ type VMmemory struct {
 	Memory          []byte
 	AllocedMemIdex  int
 	PointedMemIndex int
-	MemPoints map[uint64]*TypeLength
+	ParamIndex      int //args analyze pointer
+	MemPoints       map[uint64]*TypeLength
 }
 
 func (vm *VMmemory) Malloc(size int) (int, error) {
@@ -90,15 +92,16 @@ func (vm *VMmemory) copyMemAndGetIdx(b []byte, p_type P_Type) (int, error) {
 		return 0, err
 	}
 	copy(vm.Memory[idx:idx+len(b)], b)
-	//set the pointer(address) to the front memory
-	tmp, err := vm.SetMemory(idx)
-	if err != nil {
-		return 0, err
-	}
-	return tmp, nil
+
+	return idx, nil
 }
 
 func (vm *VMmemory) GetPointerMemSize(addr uint64) int {
+	//nil case
+	if addr == uint64(math.MaxInt64){
+		return 0
+	}
+
 	v, ok := vm.MemPoints[addr]
 	if ok {
 		return v.Length
@@ -109,6 +112,11 @@ func (vm *VMmemory) GetPointerMemSize(addr uint64) int {
 
 //when wasm returns a pointer, call this function to get the pointed memory
 func (vm *VMmemory) GetPointerMemory(addr uint64) ([]byte, error) {
+	//nil case
+	if addr == uint64(math.MaxInt64){
+		return nil,nil
+	}
+
 	length := vm.GetPointerMemSize(addr)
 	if int(addr)+length > len(vm.Memory) {
 		return nil, errors.New("memory out of bound")
@@ -119,19 +127,24 @@ func (vm *VMmemory) GetPointerMemory(addr uint64) ([]byte, error) {
 
 func (vm *VMmemory) SetPointerMemory(val interface{}) (int, error) {
 
+	////nil case
 	if val == nil {
-		return 0, nil
+		return math.MaxInt64, nil
 	}
+
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.String:
 		b := []byte(val.(string))
 		return vm.copyMemAndGetIdx(b, P_STRING)
 	case reflect.Array, reflect.Struct, reflect.Ptr:
 
-		//todo not implement
+		//todo  implement
 		return 0, nil
 	case reflect.Slice:
 		switch val.(type) {
+		case []byte:
+			return vm.copyMemAndGetIdx(val.([]byte), P_STRING)
+
 		case []int:
 			intBytes := make([]byte, len(val.([]int))*4)
 			for i, v := range val.([]int) {
@@ -213,11 +226,22 @@ func (vm *VMmemory) SetStructMemory(val interface{}) (int, error) {
 				idx, err = vm.SetMemory(fieldVal)
 			case reflect.String:
 				fieldVal = field.String()
-				idx, err = vm.SetPointerMemory(fieldVal)
+				tmp, err := vm.SetPointerMemory(fieldVal)
+				if err != nil{
+					return 0,err
+				}
+				//add the point address to memory
+				idx, err = vm.SetMemory(tmp)
+
 			case reflect.Slice:
 				//fieldVal = field.Interface()
 				//TODO note the struct field MUST be public
-				idx, err = vm.SetPointerMemory(field.Interface())
+				tmp, err := vm.SetPointerMemory(fieldVal)
+				if err != nil{
+					return 0,err
+				}
+				//add the point address to memory
+				idx, err = vm.SetMemory(tmp)
 			}
 
 			if err != nil {
@@ -236,14 +260,15 @@ func (vm *VMmemory) SetStructMemory(val interface{}) (int, error) {
 func (vm *VMmemory) SetMemory(val interface{}) (int, error) {
 
 	switch val.(type) {
-	case string:
-		b := []byte(val.(string))
+	case string: //use SetPointerMemory for string
+		return vm.SetPointerMemory(val.(string))
+/*		b := []byte(val.(string))
 		idx, err := vm.Malloc(len(b))
 		if err != nil {
 			return 0, err
 		}
 		copy(vm.Memory[idx:idx+len(b)], b)
-		return idx, nil
+		return idx, nil*/
 	case int:
 		tmp := make([]byte, 4)
 		binary.LittleEndian.PutUint32(tmp, uint32(val.(int)))
