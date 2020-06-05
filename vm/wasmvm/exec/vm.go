@@ -110,7 +110,7 @@ func (vm *VM) Malloc(size int) (int, error) {
 }
 
 //alloc memory for pointer and return the first index
-func (vm *VM) MallocPointer(size int, ptype memory.P_Type) (int, error) {
+func (vm *VM) MallocPointer(size int, ptype memory.PType) (int, error) {
 	return vm.memory.MallocPointer(size, ptype)
 }
 
@@ -189,7 +189,7 @@ func (vm *VM) GetMessageBytes() ([]byte, error) {
 
 		default:
 			//todo need support array types???
-			return nil,errors.New("[GetMessageBytes] unsupported type")
+			return nil, errors.New("[GetMessageBytes] unsupported type")
 
 		}
 	}
@@ -448,7 +448,7 @@ outer:
 //start a new vm
 func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []byte) (uint64, error) {
 
-	methodad-gome:= CONTRACT_METHOD_NAME
+	methodad-gome := CONTRACT_METHOD_NAME
 
 	//1. exec the method code
 	entry, ok := module.Export.Entries[methodad-gome]
@@ -458,10 +458,6 @@ func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []
 
 	//get entry index
 	index := int64(entry.Index)
-	//get function index
-	//fidx := module.Function.Types[int(index)]
-	//get  function type
-	//ftype := module.Types.Entries[int(fidx)]
 
 	//new vm
 	newvm, err := NewVM(module)
@@ -475,33 +471,32 @@ func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []
 
 	engine.SetNewVM(newvm)
 
-	actionIdx,err:=newvm.SetPointerMemory(actionName)
-	if err != nil{
-		return uint64(0),err
+	actionIdx, err := newvm.SetPointerMemory(actionName)
+	if err != nil {
+		return uint64(0), err
 	}
-	argIdx,err := newvm.SetPointerMemory(arg)
-	if err != nil{
-		return uint64(0),err
+	argIdx, err := newvm.SetPointerMemory(arg)
+	if err != nil {
+		return uint64(0), err
 	}
 
-	res, err := newvm.ExecCode(true, int64(index), uint64(actionIdx),uint64(argIdx))
-	if err != nil{
-		return uint64(0),err
+	res, err := newvm.ExecCode(true, int64(index), uint64(actionIdx), uint64(argIdx))
+	if err != nil {
+		return uint64(0), err
 	}
-	resBytes ,err := newvm.GetPointerMemory(res.(uint64))
-	if err != nil{
-		return uint64(0),err
+	resBytes, err := newvm.GetPointerMemory(res.(uint64))
+	if err != nil {
+		return uint64(0), err
 	}
 	//copy memory if need!!!
 	engine.RestoreVM()
-	idx,err := vm.SetPointerMemory(resBytes)
-	if err != nil{
-		return uint64(0),err
+	idx, err := vm.SetPointerMemory(resBytes)
+	if err != nil {
+		return uint64(0), err
 	}
 
 	return uint64(idx), nil
 }
-
 
 //todo implement the "call other contract function"
 //this is for the "test" version call
@@ -535,10 +530,7 @@ func (vm *VM) CallContract(module *wasm.Module, methodad-gome string, args ...ui
 
 	res, err := newvm.ExecCode(true, int64(index), args...)
 
-	//todo copy memory if need!!!
-	//fmt.Printf("CallContract res is %v\n ",res)
 	//2 copy memory if need!!!
-
 	vm.Engine.vm = vm
 
 	return res.(uint64), nil
@@ -590,13 +582,11 @@ func (vm *VM) loadModule(module *wasm.Module) error {
 				splited := bytes.Split(entry.Data, []byte{byte(0)})
 				var tmpoffset = int(offset)
 				for _, tmp := range splited {
-					vm.memory.MemPoints[uint64(tmpoffset)] = &memory.TypeLength{Ptype: memory.P_STRING, Length: len(tmp) + 1}
-					//vm.memory.AllocedMemIdex = int(tmpoffset)+len(tmp) +1
+					vm.memory.MemPoints[uint64(tmpoffset)] = &memory.TypeLength{Ptype: memory.PString, Length: len(tmp) + 1}
 					tmpoffset += len(tmp) + 1
 				}
 			} else {
-				vm.memory.MemPoints[uint64(offset)] = &memory.TypeLength{Ptype: memory.P_STRING, Length: len(entry.Data)}
-				//vm.memory.AllocedMemIdex = int(offset)+len(entry.Data)
+				vm.memory.MemPoints[uint64(offset)] = &memory.TypeLength{Ptype: memory.PString, Length: len(entry.Data)}
 			}
 		}
 		//

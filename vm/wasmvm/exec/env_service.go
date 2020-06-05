@@ -43,7 +43,7 @@ type Result struct {
 	Pval  string `json:"value"`
 }
 
-type IInteropService interface {
+type InteropServiceInterface interface {
 	Register(method string, handler func(*ExecutionEngine) (bool, error)) bool
 	GetServiceMap() map[string]func(*ExecutionEngine) (bool, error)
 }
@@ -126,7 +126,7 @@ func calloc(engine *ExecutionEngine) (bool, error) {
 	count := int(params[0])
 	length := int(params[1])
 	//we don't know whats the alloc type here
-	index, err := engine.vm.memory.MallocPointer(count*length, memory.P_UNKNOW)
+	index, err := engine.vm.memory.MallocPointer(count*length, memory.PUnkown)
 	if err != nil {
 		return false, err
 	}
@@ -149,7 +149,7 @@ func malloc(engine *ExecutionEngine) (bool, error) {
 	}
 	size := int(params[0])
 	//we don't know whats the alloc type here
-	index, err := engine.vm.memory.MallocPointer(size, memory.P_UNKNOW)
+	index, err := engine.vm.memory.MallocPointer(size, memory.PUnkown)
 	if err != nil {
 		return false, err
 	}
@@ -178,15 +178,15 @@ func arrayLen(engine *ExecutionEngine) (bool, error) {
 	var result uint64
 	if ok {
 		switch tl.Ptype {
-		case memory.P_INT8, memory.P_STRING:
+		case memory.PInt8, memory.PString:
 			result = uint64(tl.Length / 1)
-		case memory.P_INT16:
+		case memory.PInt16:
 			result = uint64(tl.Length / 2)
-		case memory.P_INT32, memory.P_FLOAT32:
+		case memory.PInt32, memory.PFloat32:
 			result = uint64(tl.Length / 4)
-		case memory.P_INT64, memory.P_FLOAT64:
+		case memory.PInt64, memory.PFloat64:
 			result = uint64(tl.Length / 8)
-		case memory.P_UNKNOW:
+		case memory.PUnkown:
 			//todo assume it's byte
 			result = uint64(tl.Length / 1)
 		default:
@@ -250,7 +250,7 @@ func readMessage(engine *ExecutionEngine) (bool, error) {
 		return false, errors.New("readMessage length error")
 	}
 	copy(engine.vm.memory.Memory[addr:addr+length], msgBytes[:length])
-	engine.vm.memory.MemPoints[uint64(addr)] = &memory.TypeLength{Ptype: memory.P_UNKNOW, Length: length}
+	engine.vm.memory.MemPoints[uint64(addr)] = &memory.TypeLength{Ptype: memory.PUnkown, Length: length}
 
 	//1. recover the vm context
 	//2. if the call returns value,push the result to the stack
@@ -261,49 +261,6 @@ func readMessage(engine *ExecutionEngine) (bool, error) {
 
 	return true, nil
 }
-
-//call other contract
-//todo move to statemachine
-/*func callContract(engine *ExecutionEngine) (bool, error) {
-	envCall := engine.vm.envCall
-	params := envCall.envParams
-	if len(params) != 3 {
-		return false, errors.New("parameter count error while call readMessage")
-	}
-	contractAddressIdx := params[0]
-	addr, err := engine.vm.GetPointerMemory(contractAddressIdx)
-	if err != nil {
-		return false, errors.New("get Contract address failed")
-	}
-	//the contract codes
-	contractBytes, err := getContractFromAddr(addr)
-	if err != nil {
-		return false, err
-	}
-	bf := bytes.NewBuffer(contractBytes)
-	module, err := wasm.ReadModule(bf, emptyImporter)
-	if err != nil {
-		return false, errors.New("load Module failed")
-	}
-
-	methodad-gome, err := engine.vm.GetPointerMemory(params[1])
-	if err != nil {
-		return false, errors.New("[callContract]get Contract methodad-gome failed")
-	}
-
-	arg ,err := engine.vm.GetPointerMemory(params[2])
-	if err != nil {
-		return false, errors.New("[callContract]get Contract arg failed")
-	}
-
-	res, err := engine.vm.CallProductContract(module,methodad-gome,arg)
-
-	engine.vm.ctx = envCall.envPreCtx
-	if envCall.envReturns {
-		engine.vm.pushUint64(res)
-	}
-	return true, nil
-}*/
 
 //read int value from args bytes
 func readInt32Param(engine *ExecutionEngine) (bool, error) {
@@ -706,38 +663,3 @@ func GetCodeHash(engine *ExecutionEngine) (bool, error) {
 	}
 	return true, nil
 }
-
-/*
-func getContractFromAddr(addr []byte) ([]byte, error) {
-
-	//just for test
-			contract := util.TrimBuffToString(addr)
-			code, err := ioutil.ReadFile(fmt.Sprintf("./testdata2/%s.wasm",contract))
-			if err != nil {
-				fmt.Printf("./testdata2/%s.wasm is not exist",contract)
-				return nil,err
-			}
-
-			return code,nil
-*/
-/*
-	codeHash, err := common.Uint160ParseFromBytes(addr)
-	if err != nil {
-		return nil, errors.New("get address Code hash failed")
-	}
-
-	contract, err := ledger.DefLedger.GetContractState(codeHash)
-	if err != nil {
-		return nil, errors.New("get contract state failed")
-	}
-
-	if contract.VmType != types.WASMVM {
-		return nil, errors.New(" contract is not a wasm contract")
-	}
-
-	return contract.Code, nil
-*/ /*
-
-
-}
-*/

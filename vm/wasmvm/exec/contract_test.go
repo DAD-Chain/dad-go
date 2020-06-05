@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 The dad-go Authors
+ * This file is part of The dad-go library.
+ *
+ * The dad-go is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The dad-go is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package exec
 
 import (
@@ -14,7 +32,7 @@ import (
 func TestContract1(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/contract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/contract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -71,7 +89,7 @@ func TestContract1(t *testing.T){
 func TestContract2(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/contract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/contract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -127,7 +145,7 @@ func TestContract2(t *testing.T){
 func TestContract3(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/contract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/contract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -177,7 +195,7 @@ func TestContract3(t *testing.T){
 func TestContract4(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/contract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/contract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -227,7 +245,7 @@ func TestContract4(t *testing.T){
 func TestRawContract(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/rawcontract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/rawcontract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -268,7 +286,7 @@ func TestRawContract(t *testing.T){
 func TestRawContract2(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/rawcontract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/rawcontract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -314,7 +332,7 @@ func TestRawContract2(t *testing.T){
 func TestRawContract3(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/rawcontract2.wasm")
+	code, err := ioutil.ReadFile("./test_data2/rawcontract2.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -361,7 +379,7 @@ func TestRawContract3(t *testing.T){
 func TestRawContract4(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/rawcontract2.wasm")
+	code, err := ioutil.ReadFile("./test_data2/rawcontract2.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return
@@ -405,7 +423,7 @@ func TestRawContract4(t *testing.T){
 func TestCallContract(t *testing.T){
 	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
 	//test
-	code, err := ioutil.ReadFile("./testdata2/callcontract.wasm")
+	code, err := ioutil.ReadFile("./test_data2/callcontract.wasm")
 	if err != nil {
 		fmt.Println("error in read file", err.Error())
 		return

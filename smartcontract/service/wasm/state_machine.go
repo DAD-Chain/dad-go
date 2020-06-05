@@ -23,7 +23,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dad-go/common"
-	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
 	scommon "github.com/dad-go/core/store/common"
@@ -41,9 +40,7 @@ type WasmStateMachine struct {
 	CloneCache *storage.CloneCache
 	trigger    vmtypes.TriggerType
 	time       uint32
-	}
-
-
+}
 
 func NewWasmStateMachine(ldgerStore store.LedgerStore, dbCache scommon.StateStore, trigger vmtypes.TriggerType, time uint32) *WasmStateMachine {
 
@@ -54,32 +51,15 @@ func NewWasmStateMachine(ldgerStore store.LedgerStore, dbCache scommon.StateStor
 	stateMachine.trigger = trigger
 	stateMachine.time = time
 
-	stateMachine.Register("GetBlockHeight", stateMachine.getblockheight)
 	stateMachine.Register("PutStorage", stateMachine.putstore)
 	stateMachine.Register("GetStorage", stateMachine.getstore)
 	stateMachine.Register("DeleteStorage", stateMachine.deletestore)
 	stateMachine.Register("callContract", callContract)
 
-	//todo add and register services
 	return &stateMachine
 }
 
-//======================some block api ===============
-func (s *WasmStateMachine) getblockheight(engine *exec.ExecutionEngine) (bool, error) {
-	vm := engine.GetVM()
-	var i uint32
-	if ledger.DefLedger == nil {
-		i = 0
-	} else {
-		i = ledger.DefLedger.GetCurrentBlockHeight()
-	}
-	vm.RestoreCtx()
-	if vm.GetEnvCall().GetReturns() {
-		vm.PushResult(uint64(i))
-	}
-	return true, nil
-}
-
+//======================store apis here============================================
 func (s *WasmStateMachine) putstore(engine *exec.ExecutionEngine) (bool, error) {
 
 	vm := engine.GetVM()
@@ -235,7 +215,6 @@ func serializeStorageKey(codeHash common.Address, key []byte) ([]byte, error) {
 
 func getContractFromAddr(addr []byte) ([]byte, error) {
 
-	//todo get the contract code from ledger
 	//just for test
 	contract := util.TrimBuffToString(addr)
 	code, err := ioutil.ReadFile(fmt.Sprintf("./testdata2/%s.wasm", contract))
@@ -245,6 +224,7 @@ func getContractFromAddr(addr []byte) ([]byte, error) {
 	}
 
 	return code, nil
+	//Fixme get the contract code from ledger
 	/*
 		codeHash, err := common.Uint160ParseFromBytes(addr)
 		if err != nil {

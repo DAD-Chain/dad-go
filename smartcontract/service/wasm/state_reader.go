@@ -20,29 +20,28 @@ package wasm
 
 import (
 	"errors"
+	"github.com/dad-go/core/store"
 	"github.com/dad-go/smartcontract/event"
 	trigger "github.com/dad-go/smartcontract/types"
-
 	"github.com/dad-go/vm/wasmvm/exec"
-	"github.com/dad-go/core/store"
 )
 
-
-
-type WasmStateReader struct{
-	serviceMap map[string]func(*exec.ExecutionEngine) (bool, error)
-	trigger    trigger.TriggerType
+type WasmStateReader struct {
+	serviceMap    map[string]func(*exec.ExecutionEngine) (bool, error)
+	trigger       trigger.TriggerType
 	Notifications []*event.NotifyEventInfo
 	ldgerStore    store.LedgerStore
 }
 
-func NewWasmStateReader(ldgerStore store.LedgerStore,trigger trigger.TriggerType) *WasmStateReader {
-
+func NewWasmStateReader(ldgerStore store.LedgerStore, trigger trigger.TriggerType) *WasmStateReader {
 	i := &WasmStateReader{
-		ldgerStore:ldgerStore,
+		ldgerStore: ldgerStore,
 		serviceMap: make(map[string]func(*exec.ExecutionEngine) (bool, error)),
-		trigger:trigger,
-		}
+		trigger:    trigger,
+	}
+
+	i.Register("GetBlockHeight", i.getblockheight)
+
 	return i
 }
 
@@ -54,7 +53,7 @@ func (i *WasmStateReader) Register(name string, handler func(*exec.ExecutionEngi
 	return true
 }
 
-func (i *WasmStateReader) Invoke(methodad-gome string,engine *exec.ExecutionEngine) (bool, error) {
+func (i *WasmStateReader) Invoke(methodad-gome string, engine *exec.ExecutionEngine) (bool, error) {
 
 	if v, ok := i.serviceMap[methodad-gome]; ok {
 		return v(engine)
@@ -79,4 +78,17 @@ func (i *WasmStateReader) GetServiceMap() map[string]func(*exec.ExecutionEngine)
 func (i *WasmStateReader) Exists(name string) bool {
 	_, ok := i.serviceMap[name]
 	return ok
+}
+
+//============================block apis here============================/
+
+func (i *WasmStateReader) getblockheight(engine *exec.ExecutionEngine) (bool, error) {
+	vm := engine.GetVM()
+
+	h := i.ldgerStore.GetCurrentBlockHeight()
+	vm.RestoreCtx()
+	if vm.GetEnvCall().GetReturns() {
+		vm.PushResult(uint64(h))
+	}
+	return true, nil
 }
