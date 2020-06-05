@@ -26,10 +26,10 @@ import (
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-	"github.com/ontio/dad-go-eventbus/actor"
 	tc "github.com/dad-go/txnpool/common"
 	tp "github.com/dad-go/txnpool/proc"
 	"github.com/dad-go/validator/stateless"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"sync"
 	"testing"
 	"time"
@@ -80,7 +80,7 @@ func Test_RCV(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start txnpool server to receive msgs from p2p, consensus and valdiators
-	s = tp.NewTxPoolServer(tc.MAXWORKERNUM)
+	s = tp.NewTxPoolServer(tc.MAX_WORKER_NUM)
 
 	// Initialize an actor to handle the msgs from valdiators
 	rspActor := tp.NewVerifyRspActor(s)
