@@ -19,8 +19,9 @@
 package types
 
 import (
-	"github.com/dad-go/common"
 	"math/big"
+
+	"github.com/dad-go/common"
 )
 
 func ConvertBigIntegerToBytes(data *big.Int) []byte {

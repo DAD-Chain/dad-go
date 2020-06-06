@@ -20,6 +20,7 @@ package types
 
 import (
 	"math/big"
+
 	"github.com/dad-go/vm/neovm/interfaces"
 )
 

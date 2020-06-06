@@ -17,8 +17,9 @@
 package neovm
 
 import (
-	"github.com/dad-go/vm/neovm/interfaces"
 	"io"
+
+	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/vm/neovm/errors"

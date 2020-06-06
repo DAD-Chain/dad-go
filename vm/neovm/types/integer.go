@@ -19,8 +19,9 @@
 package types
 
 import (
-	"github.com/dad-go/vm/neovm/interfaces"
 	"math/big"
+
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type Integer struct {
