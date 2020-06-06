@@ -19,11 +19,10 @@
 package neovm
 
 import (
-	. "github.com/dad-go/vm/neovm/errors"
-	"github.com/dad-go/common/log"
+	"github.com/dad-go/vm/neovm/errors"
 )
 
-type IInteropService interface {
+type InteropServices interface {
 	Register(method string, handler func(*ExecutionEngine) (bool, error)) bool
 	GetServiceMap() map[string]func(*ExecutionEngine) (bool, error)
 }
@@ -64,10 +63,9 @@ func (i *InteropService) GetServiceMap() map[string]func(*ExecutionEngine) (bool
 
 func (i *InteropService) Invoke(methodad-gome string, engine *ExecutionEngine) (bool, error) {
 	if v, ok := i.serviceMap[methodad-gome]; ok {
-		log.Error("Invoke Methodad-gome:", methodad-gome)
 		return v(engine)
 	}
-	return false, ErrNotSupportService
+	return false, errors.ERR_NOT_SUPPORT_SERVICE
 }
 
 func (i *InteropService) GetCodeContainer(engine *ExecutionEngine) (bool, error) {
