@@ -21,10 +21,11 @@ package neovm
 import (
 	"crypto/sha1"
 	"crypto/sha256"
-	"github.com/dad-go/vm/neovm/interfaces"
-	"github.com/dad-go/vm/neovm/types"
 	"hash"
 	"math/big"
+
+	"github.com/dad-go/vm/neovm/interfaces"
+	"github.com/dad-go/vm/neovm/types"
 )
 
 type BigIntSorter []big.Int
