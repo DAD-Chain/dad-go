@@ -16,21 +16,24 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package event
+package neovm
 
-import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/events"
-	"github.com/dad-go/events/message"
-	"github.com/dad-go/core/types"
-)
+import "github.com/dad-go/vm/neovm/types"
 
-func PushSmartCodeEvent(txHash common.Uint256, errcode int64, action string, result interface{}) {
-	smartCodeEvt := &types.SmartCodeEvent{
-		TxHash: common.ToHexString(txHash.ToArray()),
-		Action: action,
-		Result: result,
-		Error:  errcode,
-	}
-	events.DefActorPublisher.Publish(message.TOPIC_SMART_CODE_EVENT, &message.SmartCodeEventMsg{smartCodeEvt})
+type StackItem struct {
+	_object types.StackItems
+}
+
+func NewStackItem(object types.StackItems) *StackItem {
+	var stackItem StackItem
+	stackItem._object = object
+	return &stackItem
+}
+
+func (s *StackItem) GetStackItem() types.StackItems {
+	return s._object
+}
+
+func (s *StackItem) GetExecutionContext() *ExecutionContext {
+	return nil
 }
