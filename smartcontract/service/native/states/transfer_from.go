@@ -19,9 +19,10 @@
 package states
 
 import (
-	"github.com/dad-go/common"
-	"math/big"
 	"io"
+	"math/big"
+
+	"github.com/dad-go/common"
 	"github.com/dad-go/errors"
 	"github.com/dad-go/common/serialization"
 )

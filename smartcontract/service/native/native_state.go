@@ -19,9 +19,11 @@
 package native
 
 import (
+	"bytes"
+	"fmt"
+
 	"github.com/dad-go/smartcontract/storage"
 	scommon "github.com/dad-go/core/store/common"
-	"bytes"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/smartcontract/event"
 	"github.com/dad-go/common"
@@ -30,7 +32,6 @@ import (
 	"github.com/dad-go/smartcontract/service/native/states"
 	"github.com/dad-go/errors"
 	vmtypes "github.com/dad-go/vm/types"
-	"fmt"
 )
 
 type (

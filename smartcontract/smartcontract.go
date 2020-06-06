@@ -28,7 +28,6 @@ import (
 	"github.com/dad-go/vm/neovm"
 	"github.com/dad-go/smartcontract/context"
 	"github.com/dad-go/smartcontract/event"
-
 	"github.com/dad-go/common"
 	"github.com/dad-go/smartcontract/service/wasm"
 	"github.com/dad-go/vm/wasmvm/exec"

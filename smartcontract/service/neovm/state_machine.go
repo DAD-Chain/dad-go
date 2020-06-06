@@ -21,6 +21,7 @@ package neovm
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/states"
 	scommon "github.com/dad-go/core/store/common"
