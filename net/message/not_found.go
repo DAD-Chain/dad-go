@@ -37,7 +37,7 @@ func NewNotFound(hash common.Uint256) ([]byte, error) {
 	log.Debug()
 	var msg notFound
 	msg.hash = hash
-	msg.msgHdr.Magic = NETMAGIC
+	msg.msgHdr.Magic = NET_MAGIC
 	cmd := "notfound"
 	copy(msg.msgHdr.CMD[0:len(cmd)], cmd)
 	tmpBuffer := bytes.NewBuffer([]byte{})
@@ -51,7 +51,7 @@ func NewNotFound(hash common.Uint256) ([]byte, error) {
 	s := sha256.Sum256(p.Bytes())
 	s2 := s[:]
 	s = sha256.Sum256(s2)
-	buf := bytes.NewBuffer(s[:4])
+	buf := bytes.NewBuffer(s[:CHECKSUM_LEN])
 	binary.Read(buf, binary.LittleEndian, &(msg.msgHdr.Checksum))
 	msg.msgHdr.Length = uint32(len(p.Bytes()))
 	log.Debug("The message payload length is ", msg.msgHdr.Length)
@@ -67,7 +67,6 @@ func NewNotFound(hash common.Uint256) ([]byte, error) {
 
 func (msg notFound) Verify(buf []byte) error {
 	err := msg.msgHdr.Verify(buf)
-	// TODO verify the message Content
 	return err
 }
 
