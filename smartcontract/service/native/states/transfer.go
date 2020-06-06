@@ -19,11 +19,12 @@
 package states
 
 import (
+	"io"
+	"math/big"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/errors"
-	"io"
-	"math/big"
 )
 
 type Transfers struct {

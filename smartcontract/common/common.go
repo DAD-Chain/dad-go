@@ -19,10 +19,11 @@
 package common
 
 import (
-	"github.com/dad-go/vm/neovm/types"
-	"github.com/dad-go/common"
 	"fmt"
 	"reflect"
+
+	"github.com/dad-go/vm/neovm/types"
+	"github.com/dad-go/common"
 )
 
 type States struct {
