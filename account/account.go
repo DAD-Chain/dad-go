@@ -19,7 +19,7 @@
 package account
 
 import (
-	. "github.com/dad-go/common"
+	"github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
@@ -30,7 +30,7 @@ import (
 type Account struct {
 	PrivateKey keypair.PrivateKey
 	PublicKey  keypair.PublicKey
-	Address    Address
+	Address    common.Address
 }
 
 func NewAccount() *Account {
