@@ -28,27 +28,27 @@ import (
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/types"
-	ontError "github.com/dad-go/errors"
+	ontErrors "github.com/dad-go/errors"
 )
 
 // VerifyTransaction verifys received single transaction
-func VerifyTransaction(tx *types.Transaction) ontError.ErrCode {
+func VerifyTransaction(tx *types.Transaction) ontErrors.ErrCode {
 	if err := checkTransactionSignatures(tx); err != nil {
 		log.Info("transaction verify error:", err)
-		return ontError.ErrTransactionContracts
+		return ontErrors.ErrTransactionContracts
 	}
 
 	if err := checkTransactionPayload(tx); err != nil {
 		log.Warn("[VerifyTransaction],", err)
-		return ontError.ErrTransactionPayload
+		return ontErrors.ErrTransactionPayload
 	}
 
-	return ontError.ErrNoError
+	return ontErrors.ErrNoError
 }
 
-func VerifyTransactionWithLedger(tx *types.Transaction, ledger *ledger.Ledger) ontError.ErrCode {
+func VerifyTransactionWithLedger(tx *types.Transaction, ledger *ledger.Ledger) ontErrors.ErrCode {
 	//TODO: replay check
-	return ontError.ErrNoError
+	return ontErrors.ErrNoError
 }
 
 func checkTransactionSignatures(tx *types.Transaction) error {

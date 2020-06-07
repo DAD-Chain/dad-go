@@ -24,7 +24,7 @@ import (
 
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
-	. "github.com/dad-go/errors"
+	ontErrors "github.com/dad-go/errors"
 	"github.com/ontio/dad-go-crypto/keypair"
 	s "github.com/ontio/dad-go-crypto/signature"
 )
@@ -51,13 +51,13 @@ func (c *ECDsaCrypto) VerifySignature(message []byte, signature []byte, pubkey [
 
 	pk, err := keypair.DeserializePublicKey(pubkey)
 	if err != nil {
-		return false, NewDetailErr(errors.New("[ECDsaCrypto], deserializing public key failed."), ErrNoCode, "")
+		return false, ontErrors.NewDetailErr(errors.New("[ECDsaCrypto], deserializing public key failed."), ontErrors.ErrNoCode, "")
 	}
 
 	sig, err := s.Deserialize(signature)
 	ok := s.Verify(pk, message, sig)
 	if !ok {
-		return false, NewDetailErr(errors.New("[ECDsaCrypto], VerifySignature failed."), ErrNoCode, "")
+		return false, ontErrors.NewDetailErr(errors.New("[ECDsaCrypto], VerifySignature failed."), ontErrors.ErrNoCode, "")
 	}
 
 	return true, nil

@@ -20,13 +20,14 @@ package actor
 
 import (
 	"errors"
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
-	onterr "github.com/dad-go/errors"
+	ontErrors "github.com/dad-go/errors"
 	tcomn "github.com/dad-go/txnpool/common"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"time"
 )
 
 var txnPid *actor.PID
@@ -38,13 +39,13 @@ func SetTxPid(actr *actor.PID) {
 func SetTxnPoolPid(actr *actor.PID) {
 	txnPoolPid = actr
 }
-func AppendTxToPool(txn *types.Transaction) onterr.ErrCode {
+func AppendTxToPool(txn *types.Transaction) ontErrors.ErrCode {
 	txReq := &tcomn.TxReq{
 		Tx:     txn,
 		Sender: tcomn.HttpSender,
 	}
 	txnPid.Tell(txReq)
-	return onterr.ErrNoError
+	return ontErrors.ErrNoError
 }
 
 func GetTxsFromPool(byCount bool) (map[common.Uint256]*types.Transaction, common.Fixed64) {
