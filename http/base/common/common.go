@@ -22,11 +22,10 @@ import (
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
-	onterr "github.com/dad-go/errors"
+	ontErrors "github.com/dad-go/errors"
 	bactor "github.com/dad-go/http/base/actor"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
-
 
 type BalanceOfRsp struct {
 	Ont string `json:"ont"`
@@ -127,7 +126,7 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 		trans.Attributes[i].Usage = v.Usage
 		trans.Attributes[i].Data = common.ToHexString(v.Data)
 	}
-	trans.Fee  = []Fee{}
+	trans.Fee = []Fee{}
 	for _, fee := range ptx.Fee {
 		e := Fee{fee.Amount, common.ToHexString(fee.Payer[:])}
 		trans.Fee = append(trans.Fee, e)
@@ -152,13 +151,13 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 	return trans
 }
 
-func VerifyAndSendTx(txn *types.Transaction) onterr.ErrCode {
+func VerifyAndSendTx(txn *types.Transaction) ontErrors.ErrCode {
 	// if transaction is verified unsucessfully then will not put it into transaction pool
-	if errCode := bactor.AppendTxToPool(txn); errCode != onterr.ErrNoError {
+	if errCode := bactor.AppendTxToPool(txn); errCode != ontErrors.ErrNoError {
 		log.Warn("Can NOT add the transaction to TxnPool")
 		return errCode
 	}
-	return onterr.ErrNoError
+	return ontErrors.ErrNoError
 }
 
 func GetBlockInfo(block *types.Block) BlockInfo {
@@ -186,7 +185,7 @@ func GetBlockInfo(block *types.Block) BlockInfo {
 		NextBookkeeper:   block.Header.NextBookkeeper.ToBase58(),
 		Bookkeepers:      bookKeepers,
 		SigData:          sigData,
-		Hash: common.ToHexString(hash.ToArray()),
+		Hash:             common.ToHexString(hash.ToArray()),
 	}
 
 	trans := make([]*Transactions, len(block.Transactions))

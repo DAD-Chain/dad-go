@@ -24,7 +24,7 @@ import (
 
 	. "github.com/dad-go/common"
 	pg "github.com/dad-go/core/contract/program"
-	. "github.com/dad-go/errors"
+	"github.com/dad-go/errors"
 	vm "github.com/dad-go/vm/neovm"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
@@ -34,7 +34,7 @@ func CreateSignatureContract(ownerPubKey keypair.PublicKey) (*Contract, error) {
 	temp := keypair.SerializePublicKey(ownerPubKey)
 	signatureRedeemScript, err := CreateSignatureRedeemScript(ownerPubKey)
 	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "[Contract],CreateSignatureContract failed.")
+		return nil, errors.NewDetailErr(err, errors.ErrNoCode, "[Contract],CreateSignatureContract failed.")
 	}
 	hash := ToCodeHash(temp)
 	signatureRedeemScriptHashToCodeHash := ToCodeHash(signatureRedeemScript)
@@ -63,7 +63,7 @@ func CreateMultiSigContract(publicKeyHash Address, m int, publicKeys []keypair.P
 	}
 	MultiSigRedeemScript, err := CreateMultiSigRedeemScript(m, publicKeys)
 	if err != nil {
-		return nil, NewDetailErr(err, ErrNoCode, "[Contract],CreateSignatureRedeemScript failed.")
+		return nil, errors.NewDetailErr(err, errors.ErrNoCode, "[Contract],CreateSignatureRedeemScript failed.")
 	}
 	signatureRedeemScriptHashToCodeHash := ToCodeHash(MultiSigRedeemScript)
 	return &Contract{
