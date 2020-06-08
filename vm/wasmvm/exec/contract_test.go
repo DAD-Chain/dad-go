@@ -22,11 +22,12 @@ import (
 	"testing"
 	"io/ioutil"
 	"fmt"
-	"github.com/dad-go/common"
 	"encoding/json"
 	"encoding/binary"
 	"bytes"
+
 	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/common"
 )
 
 func TestContract1(t *testing.T){

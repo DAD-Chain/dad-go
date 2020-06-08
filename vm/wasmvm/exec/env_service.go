@@ -23,10 +23,11 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"github.com/dad-go/vm/wasmvm/memory"
-	"github.com/dad-go/vm/wasmvm/util"
 	"strconv"
 	"strings"
+
+	"github.com/dad-go/vm/wasmvm/memory"
+	"github.com/dad-go/vm/wasmvm/util"
 )
 
 type Args struct {

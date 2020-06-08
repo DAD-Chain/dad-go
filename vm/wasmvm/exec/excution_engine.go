@@ -23,15 +23,17 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"math"
+	"os"
+	"reflect"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/dad-go/vm/wasmvm/memory"
 	"github.com/dad-go/vm/wasmvm/util"
 	"github.com/dad-go/vm/wasmvm/validate"
 	"github.com/dad-go/vm/wasmvm/wasm"
-	"math"
-	"os"
-	"reflect"
+
 )
 
 const (

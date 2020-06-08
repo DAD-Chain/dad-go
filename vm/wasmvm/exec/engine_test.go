@@ -21,12 +21,12 @@ package exec
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/dad-go/common"
 	"io/ioutil"
 	"testing"
 	"math"
-	"github.com/dad-go/vm/wasmvm/util"
 
+	"github.com/dad-go/vm/wasmvm/util"
+	"github.com/dad-go/common"
 )
 
 var service = NewInteropService()
