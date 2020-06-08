@@ -22,6 +22,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/states"
 	"github.com/dad-go/core/store"
@@ -31,7 +33,7 @@ import (
 	"github.com/dad-go/vm/wasmvm/exec"
 	"github.com/dad-go/vm/wasmvm/util"
 	"github.com/dad-go/vm/wasmvm/wasm"
-	"io/ioutil"
+
 )
 
 type WasmStateMachine struct {
@@ -161,7 +163,6 @@ func (s *WasmStateMachine) deletestore(engine *exec.ExecutionEngine) (bool, erro
 }
 
 //call other contract
-//todo move to statemachine
 func callContract(engine *exec.ExecutionEngine) (bool, error) {
 	vm := engine.GetVM()
 	envCall := vm.GetEnvCall()

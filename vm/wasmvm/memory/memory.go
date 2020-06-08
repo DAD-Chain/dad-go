@@ -21,9 +21,10 @@ package memory
 import (
 	"encoding/binary"
 	"errors"
-	"github.com/dad-go/vm/wasmvm/util"
 	"reflect"
 	"math"
+
+	"github.com/dad-go/vm/wasmvm/util"
 )
 
 type PType int

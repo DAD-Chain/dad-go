@@ -23,10 +23,11 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"github.com/dad-go/vm/wasmvm/memory"
-	"github.com/dad-go/vm/wasmvm/util"
 	"strconv"
 	"strings"
+
+	"github.com/dad-go/vm/wasmvm/memory"
+	"github.com/dad-go/vm/wasmvm/util"
 )
 
 type Args struct {
@@ -62,8 +63,7 @@ func NewInteropService() *InteropService {
 	service.Register("arrayLen", arrayLen)
 	service.Register("memcpy", memcpy)
 	service.Register("read_message", readMessage)
-	//todo move this to wasmstatemachine
-	//service.Register("callContract", callContract)
+
 	service.Register("ReadInt32Param", readInt32Param)
 	service.Register("ReadInt64Param", readInt64Param)
 	service.Register("ReadStringParam", readStringParam)

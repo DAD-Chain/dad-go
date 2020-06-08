@@ -9,15 +9,14 @@ import (
 	"encoding/binary"
 	"errors"
 	"math"
-
 	"bytes"
 	"fmt"
+
 	"github.com/dad-go/vm/wasmvm/disasm"
 	"github.com/dad-go/vm/wasmvm/exec/internal/compile"
 	"github.com/dad-go/vm/wasmvm/memory"
 	"github.com/dad-go/vm/wasmvm/wasm"
 	ops "github.com/dad-go/vm/wasmvm/wasm/operators"
-
 	"github.com/dad-go/common"
 )
 
