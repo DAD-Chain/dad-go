@@ -1,3 +1,5 @@
+package common
+
 /*
  * Copyright (C) 2018 The dad-go Authors
  * This file is part of The dad-go library.
@@ -15,13 +17,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package crypto
-
 import (
 	"crypto/sha256"
 	"fmt"
-	. "github.com/dad-go/common"
 	"testing"
 )
 

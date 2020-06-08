@@ -23,17 +23,18 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/http/base/rest"
-	Err "github.com/dad-go/http/base/error"
-	"github.com/dad-go/http/websocket/session"
-	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	cfg "github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	Err "github.com/dad-go/http/base/error"
+	"github.com/dad-go/http/base/rest"
+	"github.com/dad-go/http/websocket/session"
+	"github.com/gorilla/websocket"
 )
 
 type handler func(map[string]interface{}) map[string]interface{}

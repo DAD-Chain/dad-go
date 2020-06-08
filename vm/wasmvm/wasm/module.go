@@ -25,6 +25,7 @@ package wasm
 import (
 	"errors"
 	"io"
+
 	"github.com/dad-go/vm/wasmvm/wasm/internal/readpos"
 )
 

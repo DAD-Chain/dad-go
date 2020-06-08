@@ -22,12 +22,13 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/types"
-	"testing"
-	"time"
 )
 
 var (

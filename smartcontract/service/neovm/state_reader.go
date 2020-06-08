@@ -23,8 +23,6 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/payload"
@@ -37,11 +35,12 @@ import (
 	trigger "github.com/dad-go/smartcontract/types"
 	vm "github.com/dad-go/vm/neovm"
 	vmtypes "github.com/dad-go/vm/neovm/types"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 var (
 	ERR_DB_NOT_FOUND = "leveldb: not found"
-	LOG = "Log"
+	LOG              = "Log"
 )
 
 type StateReader struct {
@@ -218,7 +217,7 @@ func (s *StateReader) BlockChainGetHeader(e *vm.ExecutionEngine) (bool, error) {
 	data := vm.PopByteArray(e)
 	var (
 		header *types.Header
-		err error
+		err    error
 	)
 	l := len(data)
 	if l <= 5 {

@@ -22,20 +22,20 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/dad-go/smartcontract/storage"
+	"github.com/dad-go/common"
+	"github.com/dad-go/core/genesis"
 	scommon "github.com/dad-go/core/store/common"
 	"github.com/dad-go/core/types"
-	"github.com/dad-go/smartcontract/event"
-	"github.com/dad-go/common"
-	"github.com/dad-go/smartcontract/context"
-	"github.com/dad-go/core/genesis"
-	"github.com/dad-go/smartcontract/service/native/states"
 	"github.com/dad-go/errors"
+	"github.com/dad-go/smartcontract/context"
+	"github.com/dad-go/smartcontract/event"
+	"github.com/dad-go/smartcontract/service/native/states"
+	"github.com/dad-go/smartcontract/storage"
 	vmtypes "github.com/dad-go/vm/types"
 )
 
 type (
-	Handler func(native *NativeService) error
+	Handler         func(native *NativeService) error
 	RegisterService func(native *NativeService)
 )
 
@@ -47,13 +47,13 @@ var (
 )
 
 type NativeService struct {
-	CloneCache *storage.CloneCache
-	ServiceMap  map[string]Handler
+	CloneCache    *storage.CloneCache
+	ServiceMap    map[string]Handler
 	Notifications []*event.NotifyEventInfo
-	Input []byte
-	Tx *types.Transaction
-	Height uint32
-	ContextRef context.ContextRef
+	Input         []byte
+	Tx            *types.Transaction
+	Height        uint32
+	ContextRef    context.ContextRef
 }
 
 func NewNativeService(dbCache scommon.StateStore, height uint32, tx *types.Transaction, ctxRef context.ContextRef) *NativeService {
@@ -66,11 +66,11 @@ func NewNativeService(dbCache scommon.StateStore, height uint32, tx *types.Trans
 	return &nativeService
 }
 
-func(native *NativeService) Register(methodad-gome string, handler Handler) {
+func (native *NativeService) Register(methodad-gome string, handler Handler) {
 	native.ServiceMap[methodad-gome] = handler
 }
 
-func(native *NativeService) Invoke() error {
+func (native *NativeService) Invoke() error {
 	ctx := native.ContextRef.CurrentContext()
 	if ctx == nil {
 		return errors.NewErr("[Invoke] Native service current context doesn't exist!")
@@ -80,11 +80,13 @@ func(native *NativeService) Invoke() error {
 	if err := contract.Deserialize(bf); err != nil {
 		return err
 	}
-	services, ok := Contracts[contract.Address]; if !ok {
+	services, ok := Contracts[contract.Address]
+	if !ok {
 		return fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
 	}
 	services(native)
-	service, ok := native.ServiceMap[contract.Method]; if !ok {
+	service, ok := native.ServiceMap[contract.Method]
+	if !ok {
 		return fmt.Errorf("Native contract %x doesn't support this function %s.", contract.Address, contract.Method)
 	}
 	native.ContextRef.PushContext(&context.Context{ContractAddress: contract.Address})
@@ -98,12 +100,12 @@ func(native *NativeService) Invoke() error {
 	return nil
 }
 
-func(native *NativeService) AppCall(address common.Address, method string, args []byte) error {
+func (native *NativeService) AppCall(address common.Address, method string, args []byte) error {
 	bf := new(bytes.Buffer)
 	contract := &states.Contract{
 		Address: address,
-		Method: method,
-		Args: args,
+		Method:  method,
+		Args:    args,
 	}
 
 	if err := contract.Serialize(bf); err != nil {
@@ -111,10 +113,10 @@ func(native *NativeService) AppCall(address common.Address, method string, args 
 	}
 	code := vmtypes.VmCode{
 		VmType: vmtypes.Native,
-		Code: bf.Bytes(),
+		Code:   bf.Bytes(),
 	}
 	native.ContextRef.PushContext(&context.Context{
-		Code: code,
+		Code:            code,
 		ContractAddress: code.AddressFromVmCode(),
 	})
 	if err := native.ContextRef.Execute(); err != nil {
@@ -137,11 +139,3 @@ func RegisterOngContract(native *NativeService) {
 	native.Register("approve", OngApprove)
 	native.Register("transferFrom", OngTransferFrom)
 }
-
-
-
-
-
-
-
-

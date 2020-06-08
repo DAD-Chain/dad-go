@@ -20,14 +20,15 @@ package proc
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	tx "github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/types"
-	"sync"
-	"time"
 )
 
 type pendingTx struct {

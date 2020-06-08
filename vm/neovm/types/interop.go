@@ -21,8 +21,8 @@ package types
 import (
 	"math/big"
 
-	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/dad-go/common"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 type Interop struct {
@@ -71,4 +71,3 @@ func (this *Interop) GetArray() []StackItems {
 func (this *Interop) GetStruct() []StackItems {
 	return []StackItems{this}
 }
-

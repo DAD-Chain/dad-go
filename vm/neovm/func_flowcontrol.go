@@ -21,8 +21,8 @@ package neovm
 import (
 	"fmt"
 
-	"github.com/dad-go/vm/neovm/errors"
 	"github.com/dad-go/common/log"
+	"github.com/dad-go/vm/neovm/errors"
 )
 
 func opNop(e *ExecutionEngine) (VMState, error) {

@@ -21,17 +21,18 @@ package ledgerstore
 import (
 	"bytes"
 	"fmt"
+
+	"github.com/dad-go/common"
 	"github.com/dad-go/core/payload"
 	"github.com/dad-go/core/states"
+	"github.com/dad-go/core/store"
 	scommon "github.com/dad-go/core/store/common"
-	"github.com/dad-go/common"
 	"github.com/dad-go/core/store/statestore"
 	"github.com/dad-go/core/types"
-	vmtypes "github.com/dad-go/vm/types"
 	"github.com/dad-go/smartcontract"
-	"github.com/dad-go/core/store"
 	"github.com/dad-go/smartcontract/context"
 	"github.com/dad-go/smartcontract/event"
+	vmtypes "github.com/dad-go/vm/types"
 )
 
 const (
@@ -78,17 +79,17 @@ func (this *StateStore) HandleInvokeTransaction(store store.LedgerStore, stateBa
 
 	// init smart contract configuration info
 	config := &smartcontract.Config{
-		Time: block.Header.Timestamp,
-		Height: block.Header.Height,
-		Tx: tx,
-		Table: &CacheCodeTable{stateBatch},
+		Time:    block.Header.Timestamp,
+		Height:  block.Header.Height,
+		Tx:      tx,
+		Table:   &CacheCodeTable{stateBatch},
 		DBCache: stateBatch,
-		Store: store,
+		Store:   store,
 	}
 
 	//init smart contract context info
 	ctx := &context.Context{
-		Code: invoke.Code,
+		Code:            invoke.Code,
 		ContractAddress: invoke.Code.AddressFromVmCode(),
 	}
 
@@ -126,7 +127,3 @@ func (this *StateStore) HandleVoteTransaction(stateBatch *statestore.StateBatch,
 	stateBatch.TryAdd(scommon.ST_VOTE, buf.Bytes(), &states.VoteState{PublicKeys: vote.PubKeys}, false)
 	return nil
 }
-
-
-
-

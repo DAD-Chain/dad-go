@@ -19,6 +19,9 @@
 package proc
 
 import (
+	"sort"
+	"sync"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	tx "github.com/dad-go/core/types"
@@ -26,8 +29,6 @@ import (
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/dad-go/validator/types"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"sort"
-	"sync"
 )
 
 type txStats struct {

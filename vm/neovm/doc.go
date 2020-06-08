@@ -11,4 +11,4 @@ package vm implemented a blockchain virtual machine, which provide following mai
 - crypto for external crypto implementations with triggered by opcode
 -
 */
-package vm
+package neovm

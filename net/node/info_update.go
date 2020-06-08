@@ -19,16 +19,16 @@
 package node
 
 import (
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
 	"math/rand"
 	"net"
-	//"github.com/dad-go/core/ledger"
+	"strconv"
+	"time"
+
+	"github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
 	"github.com/dad-go/net/actor"
 	. "github.com/dad-go/net/message"
 	. "github.com/dad-go/net/protocol"
-	"strconv"
-	"time"
 )
 
 func (node *node) GetBlkHdrs() {

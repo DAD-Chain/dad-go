@@ -19,10 +19,10 @@ package neovm
 import (
 	"io"
 
-	"github.com/dad-go/vm/neovm/interfaces"
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/vm/neovm/errors"
+	"github.com/dad-go/vm/neovm/interfaces"
 )
 
 func NewExecutionEngine(container interfaces.CodeContainer, crypto interfaces.Crypto, table interfaces.CodeTable, service InteropServices) *ExecutionEngine {
@@ -51,9 +51,9 @@ func NewExecutionEngine(container interfaces.CodeContainer, crypto interfaces.Cr
 }
 
 type ExecutionEngine struct {
-	crypto          interfaces.Crypto
-	table           interfaces.CodeTable
-	service         *InteropService
+	crypto  interfaces.Crypto
+	table   interfaces.CodeTable
+	service *InteropService
 
 	codeContainer   interfaces.CodeContainer
 	invocationStack *RandomAccessStack
@@ -63,11 +63,11 @@ type ExecutionEngine struct {
 	altStack        *RandomAccessStack
 	state           VMState
 
-	context         *ExecutionContext
+	context *ExecutionContext
 
 	//current opcode
-	opCode          OpCode
-	gas             int64
+	opCode OpCode
+	gas    int64
 }
 
 func (e *ExecutionEngine) Create(caller common.Address, code []byte) ([]byte, error) {

@@ -20,16 +20,17 @@ package websocket
 
 import (
 	"bytes"
+
 	"github.com/dad-go/common"
 	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/core/types"
-	bactor "github.com/dad-go/http/base/actor"
-	"github.com/dad-go/http/base/rest"
-	Err "github.com/dad-go/http/base/error"
-	"github.com/dad-go/http/websocket/websocket"
-	bcomn "github.com/dad-go/http/base/common"
-	"github.com/dad-go/events/message"
 	"github.com/dad-go/common/log"
+	"github.com/dad-go/core/types"
+	"github.com/dad-go/events/message"
+	bactor "github.com/dad-go/http/base/actor"
+	bcomn "github.com/dad-go/http/base/common"
+	Err "github.com/dad-go/http/base/error"
+	"github.com/dad-go/http/base/rest"
+	"github.com/dad-go/http/websocket/websocket"
 )
 
 var ws *websocket.WsServer
@@ -40,8 +41,8 @@ var (
 )
 
 func StartServer() {
-	bactor.SubscribeEvent(message.TOPIC_SAVE_BLOCK_COMPLETE,SendBlock2WSclient)
-	bactor.SubscribeEvent(message.TOPIC_SMART_CODE_EVENT,PushSmartCodeEvent)
+	bactor.SubscribeEvent(message.TOPIC_SAVE_BLOCK_COMPLETE, SendBlock2WSclient)
+	bactor.SubscribeEvent(message.TOPIC_SMART_CODE_EVENT, PushSmartCodeEvent)
 	go func() {
 		ws = websocket.InitWsServer()
 		ws.Start()
@@ -100,10 +101,10 @@ func SetTxHashMap(txhash string, sessionid string) {
 
 func PushSmartCodeEvent(v interface{}) {
 	if ws != nil {
-		log.Info("[PushSmartCodeEvent]",v)
+		log.Info("[PushSmartCodeEvent]", v)
 		rs, ok := v.(types.SmartCodeEvent)
 		if !ok {
-			log.Errorf("[PushSmartCodeEvent]","SmartCodeEvent err")
+			log.Errorf("[PushSmartCodeEvent]", "SmartCodeEvent err")
 			return
 		}
 		go func() {

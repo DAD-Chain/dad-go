@@ -20,12 +20,13 @@ package proc
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/events/message"
 	tc "github.com/dad-go/txnpool/common"
 	vt "github.com/dad-go/validator/types"
-	"testing"
-	"time"
 )
 
 func TestTxActor(t *testing.T) {

@@ -24,8 +24,8 @@ import (
 
 	"github.com/dad-go/core/types"
 	ontErrors "github.com/dad-go/errors"
-	"github.com/ontio/dad-go-eventbus/actor"
 	txpool "github.com/dad-go/txnpool/common"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type TxPoolActor struct {
@@ -66,7 +66,7 @@ type P2PActor struct {
 	P2P *actor.PID
 }
 
-func (self *P2PActor) Xmit(msg interface{})  {
+func (self *P2PActor) Xmit(msg interface{}) {
 	self.P2P.Tell(msg)
 }
 

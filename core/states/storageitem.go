@@ -19,8 +19,9 @@
 package states
 
 import (
-	"io"
 	"bytes"
+	"io"
+
 	"github.com/dad-go/common/serialization"
 )
 
@@ -56,4 +57,3 @@ func (storageItem *StorageItem) ToArray() []byte {
 	storageItem.Serialize(b)
 	return b.Bytes()
 }
-

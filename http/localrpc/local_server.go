@@ -19,11 +19,12 @@
 package localrpc
 
 import (
+	"net/http"
+	"strconv"
+
 	. "github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/http/base/rpc"
-	"net/http"
-	"strconv"
 )
 
 const (

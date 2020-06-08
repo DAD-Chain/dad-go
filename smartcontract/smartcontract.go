@@ -17,67 +17,66 @@
 package smartcontract
 
 import (
-	vmtypes "github.com/dad-go/vm/types"
-	"github.com/dad-go/vm/neovm/interfaces"
-	ctypes "github.com/dad-go/core/types"
-	"github.com/dad-go/smartcontract/service/native"
-	scommon "github.com/dad-go/core/store/common"
-	sneovm "github.com/dad-go/smartcontract/service/neovm"
+	"github.com/dad-go/common"
 	"github.com/dad-go/core/store"
-	stypes "github.com/dad-go/smartcontract/types"
-	"github.com/dad-go/vm/neovm"
+	scommon "github.com/dad-go/core/store/common"
+	ctypes "github.com/dad-go/core/types"
 	"github.com/dad-go/smartcontract/context"
 	"github.com/dad-go/smartcontract/event"
-	"github.com/dad-go/common"
+	"github.com/dad-go/smartcontract/service/native"
+	sneovm "github.com/dad-go/smartcontract/service/neovm"
 	"github.com/dad-go/smartcontract/service/wasm"
+	stypes "github.com/dad-go/smartcontract/types"
+	"github.com/dad-go/vm/neovm"
+	"github.com/dad-go/vm/neovm/interfaces"
+	vmtypes "github.com/dad-go/vm/types"
 	"github.com/dad-go/vm/wasmvm/exec"
 	"github.com/dad-go/vm/wasmvm/util"
 )
 
 type SmartContract struct {
-	Context []*context.Context
-	Config *Config
-	Engine Engine
+	Context       []*context.Context
+	Config        *Config
+	Engine        Engine
 	Notifications []*event.NotifyEventInfo
 }
 
 type Config struct {
-	Time uint32
-	Height uint32
-	Tx *ctypes.Transaction
-	Table interfaces.CodeTable
+	Time    uint32
+	Height  uint32
+	Tx      *ctypes.Transaction
+	Table   interfaces.CodeTable
 	DBCache scommon.StateStore
-	Store store.LedgerStore
+	Store   store.LedgerStore
 }
 
 type Engine interface {
 	StepInto()
 }
 
-
 //put current context to smart contract
-func(sc *SmartContract) PushContext(context *context.Context) {
+func (sc *SmartContract) PushContext(context *context.Context) {
 	sc.Context = append(sc.Context, context)
 }
 
 //get smart contract current context
-func(sc *SmartContract) CurrentContext() *context.Context {
+func (sc *SmartContract) CurrentContext() *context.Context {
 	if len(sc.Context) < 1 {
 		return nil
 	}
-	return sc.Context[len(sc.Context) - 1]
+	return sc.Context[len(sc.Context)-1]
 }
 
 //get smart contract caller context
-func(sc *SmartContract) CallingContext() *context.Context {
+func (sc *SmartContract) CallingContext() *context.Context {
 	if len(sc.Context) < 2 {
 		return nil
 	}
-	return sc.Context[len(sc.Context) - 2]
+	return sc.Context[len(sc.Context)-2]
 }
 
 //get smart contract entry entrance context
-func(sc *SmartContract) EntryContext() *context.Context {
+func (sc *SmartContract) EntryContext() *context.Context {
 	if len(sc.Context) < 1 {
 		return nil
 	}
@@ -85,11 +84,11 @@ func(sc *SmartContract) EntryContext() *context.Context {
 }
 
 //pop smart contract current context
-func(sc *SmartContract) PopContext() {
-	sc.Context = sc.Context[:len(sc.Context) - 1]
+func (sc *SmartContract) PopContext() {
+	sc.Context = sc.Context[:len(sc.Context)-1]
 }
 
-func(sc *SmartContract) PushNotifications(notifications []*event.NotifyEventInfo) {
+func (sc *SmartContract) PushNotifications(notifications []*event.NotifyEventInfo) {
 	sc.Notifications = append(sc.Notifications, notifications...)
 }
 
@@ -116,7 +115,7 @@ func (sc *SmartContract) Execute() error {
 		stateMachine.CloneCache.Commit()
 		sc.Notifications = append(sc.Notifications, stateMachine.Notifications...)
 	case vmtypes.WASMVM:
-		stateMachine:= wasm.NewWasmStateMachine(sc.Config.Store, sc.Config.DBCache, stypes.Application,sc.Config.Time)
+		stateMachine := wasm.NewWasmStateMachine(sc.Config.Store, sc.Config.DBCache, stypes.Application, sc.Config.Time)
 
 		engine := exec.NewExecutionEngine(
 			sc.Config.Tx,
@@ -126,8 +125,8 @@ func (sc *SmartContract) Execute() error {
 			"product",
 		)
 		//todo how to get the input
-		input:= []byte{}
-		engine.Call(ctx.ContractAddress,ctx.Code.Code,input)
+		input := []byte{}
+		engine.Call(ctx.ContractAddress, ctx.Code.Code, input)
 		//fmt.Println(engine)
 		stateMachine.CloneCache.Commit()
 		sc.Notifications = append(sc.Notifications, stateMachine.Notifications...)

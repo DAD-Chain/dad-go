@@ -20,6 +20,7 @@ package states
 
 import (
 	"io"
+
 	. "github.com/dad-go/common/serialization"
 )
 
@@ -43,4 +44,3 @@ func (this *StateBase) Deserialize(r io.Reader) error {
 	this.StateVersion = stateVersion
 	return nil
 }
-
