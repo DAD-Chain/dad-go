@@ -22,13 +22,14 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
 	tc "github.com/dad-go/txnpool/common"
 	vt "github.com/dad-go/validator/types"
-	"testing"
-	"time"
 )
 
 func TestWorker(t *testing.T) {

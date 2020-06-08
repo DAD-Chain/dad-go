@@ -19,11 +19,6 @@
 package restful
 
 import (
-	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/http/base/rest"
-	berr "github.com/dad-go/http/base/error"
-	"github.com/dad-go/http/websocket"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -34,6 +29,12 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	cfg "github.com/dad-go/common/config"
+	"github.com/dad-go/common/log"
+	berr "github.com/dad-go/http/base/error"
+	"github.com/dad-go/http/base/rest"
+	"github.com/dad-go/http/websocket"
 )
 
 type handler func(map[string]interface{}) map[string]interface{}

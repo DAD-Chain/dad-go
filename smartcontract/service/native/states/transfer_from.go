@@ -23,16 +23,16 @@ import (
 	"math/big"
 
 	"github.com/dad-go/common"
-	"github.com/dad-go/errors"
 	"github.com/dad-go/common/serialization"
+	"github.com/dad-go/errors"
 )
 
 type TransferFrom struct {
 	Version byte
-	Sender common.Address
-	From common.Address
-	To common.Address
-	Value *big.Int
+	Sender  common.Address
+	From    common.Address
+	To      common.Address
+	Value   *big.Int
 }
 
 func (this *TransferFrom) Serialize(w io.Writer) error {
@@ -55,7 +55,8 @@ func (this *TransferFrom) Serialize(w io.Writer) error {
 }
 
 func (this *TransferFrom) Deserialize(r io.Reader) error {
-	version, err := serialization.ReadByte(r); if err != nil {
+	version, err := serialization.ReadByte(r)
+	if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[TransferFrom] Deserialize version error!")
 	}
 	this.Version = version

@@ -23,6 +23,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/net/protocol"

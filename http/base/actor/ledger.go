@@ -19,19 +19,20 @@
 package actor
 
 import (
-	"time"
-	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/dad-go/core/types"
-	lactor "github.com/dad-go/core/ledger/actor"
-	"github.com/dad-go/common"
 	"errors"
-	"github.com/dad-go/smartcontract/event"
-	"github.com/dad-go/core/payload"
+	"time"
+
+	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
+	lactor "github.com/dad-go/core/ledger/actor"
+	"github.com/dad-go/core/payload"
+	"github.com/dad-go/core/types"
+	"github.com/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 const (
-	REQ_TIMEOUT   = 5
+	REQ_TIMEOUT    = 5
 	ERR_ACTOR_COMM = "[http] Actor comm error: %v"
 )
 
@@ -133,7 +134,7 @@ func GetContractStateFromStore(hash common.Address) (*payload.DeployCode, error)
 		return nil, err
 	}
 	if rsp, ok := result.(*lactor.GetContractStateRsp); !ok {
-		log.Error(ERR_ACTOR_COMM,"GetContractStateRsp")
+		log.Error(ERR_ACTOR_COMM, "GetContractStateRsp")
 		return nil, errors.New("fail")
 	} else {
 		return rsp.ContractState, rsp.Error
@@ -190,9 +191,9 @@ func GetEventNotifyByTxHash(txHash common.Uint256) ([]*event.NotifyEventInfo, er
 		return nil, err
 	}
 	if rsp, ok := result.(*lactor.GetEventNotifyByTxRsp); !ok {
-		return nil,errors.New("fail")
-	}else {
-		return rsp.Notifies,rsp.Error
+		return nil, errors.New("fail")
+	} else {
+		return rsp.Notifies, rsp.Error
 	}
 }
 
@@ -204,8 +205,8 @@ func GetEventNotifyByHeight(height uint32) ([]common.Uint256, error) {
 		return nil, err
 	}
 	if rsp, ok := result.(*lactor.GetEventNotifyByBlockRsp); !ok {
-		return nil,errors.New("fail")
-	}else {
-		return rsp.TxHashes,rsp.Error
+		return nil, errors.New("fail")
+	} else {
+		return rsp.TxHashes, rsp.Error
 	}
 }

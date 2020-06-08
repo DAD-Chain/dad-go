@@ -20,10 +20,11 @@ package node
 
 import (
 	"fmt"
-	"github.com/dad-go/common/config"
-	. "github.com/dad-go/net/protocol"
 	"strings"
 	"sync"
+
+	"github.com/dad-go/common/config"
+	. "github.com/dad-go/net/protocol"
 )
 
 // The neighbor node list

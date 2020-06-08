@@ -16,28 +16,21 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package common
+package event
 
 import (
-	"testing"
+	"github.com/dad-go/common"
 	"github.com/dad-go/vm/neovm/types"
-	"math/big"
 )
 
-func TestConvertTypes(t *testing.T) {
-	arr := types.NewArray([]types.StackItemInterface{types.NewByteArray([]byte{1,2,3}), types.NewInteger(big.NewInt(32))})
-	var states []States
-	for _, v := range arr.GetArray() {
-		states = append(states, ConvertTypes(v)...)
-	}
-	t.Log("result:", states)
+type NotifyEventArgs struct {
+	TxHash   common.Uint256
+	CodeHash common.Address
+	States   types.StackItems
 }
 
-func TestConvertReturnTypes(t *testing.T) {
-	arr := types.NewArray([]types.StackItemInterface{types.NewByteArray([]byte{1,2,3}), types.NewInteger(big.NewInt(32)), types.NewArray([]types.StackItemInterface{types.NewByteArray([]byte{1,2,3}), types.NewInteger(big.NewInt(32))})})
-	var states []interface{}
-	for _, v := range arr.GetArray() {
-		states = append(states, ConvertReturnTypes(v)...)
-	}
-	t.Log("result:", states)
+type NotifyEventInfo struct {
+	TxHash   common.Uint256
+	CodeHash common.Address
+	States   interface{}
 }

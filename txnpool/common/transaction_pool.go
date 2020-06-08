@@ -20,13 +20,14 @@ package common
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
 	vt "github.com/dad-go/validator/types"
-	"sync"
 )
 
 type TXAttr struct {

@@ -22,6 +22,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/payload"
@@ -31,8 +34,6 @@ import (
 	"github.com/dad-go/validator/stateless"
 	vt "github.com/dad-go/validator/types"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"testing"
-	"time"
 )
 
 var (

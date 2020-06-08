@@ -19,10 +19,10 @@
 package neovm
 
 import (
-	"math/big"
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"math/big"
 
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/vm/neovm/errors"

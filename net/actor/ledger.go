@@ -19,13 +19,14 @@
 package actor
 
 import (
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	ledger "github.com/dad-go/core/ledger/actor"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"time"
 )
 
 const ledgerReqTimeout = 5 * time.Second

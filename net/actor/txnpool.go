@@ -19,16 +19,17 @@
 package actor
 
 import (
+	"time"
+
 	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/core/types"
 	"github.com/dad-go/errors"
 	tc "github.com/dad-go/txnpool/common"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"time"
 )
 
-const txnPoolReqTimeout = 5* time.Second
+const txnPoolReqTimeout = 5 * time.Second
 
 var txnPoolPid *actor.PID
 

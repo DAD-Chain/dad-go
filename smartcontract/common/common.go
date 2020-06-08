@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/dad-go/vm/neovm/types"
 	"github.com/dad-go/common"
+	"github.com/dad-go/vm/neovm/types"
 )
 
 type States struct {

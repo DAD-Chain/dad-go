@@ -24,10 +24,11 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"io"
+
 	. "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/common/serialization"
-	"io"
 	"github.com/dad-go/net/actor"
 	. "github.com/dad-go/net/protocol"
 )
@@ -42,7 +43,7 @@ type hashReq struct {
 
 type blocksReq struct {
 	msgHdr
-	p	hashReq
+	p hashReq
 }
 
 type InvPayload struct {

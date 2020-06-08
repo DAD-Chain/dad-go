@@ -33,7 +33,6 @@ import (
 	"github.com/dad-go/vm/wasmvm/exec"
 	"github.com/dad-go/vm/wasmvm/util"
 	"github.com/dad-go/vm/wasmvm/wasm"
-
 )
 
 type WasmStateMachine struct {

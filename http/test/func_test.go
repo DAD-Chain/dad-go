@@ -28,12 +28,10 @@ import (
 
 	"github.com/dad-go/account"
 	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
 	"github.com/dad-go/core/signature"
 	"github.com/dad-go/core/types"
 	ctypes "github.com/dad-go/core/types"
 	"github.com/dad-go/core/utils"
-	"github.com/dad-go/smartcontract/service/native/states"
 	"github.com/dad-go/vm/neovm"
 	vmtypes "github.com/dad-go/vm/types"
 	"github.com/ontio/dad-go-crypto/keypair"
@@ -82,7 +80,7 @@ func TestMultiPubKeysAddress(t *testing.T) {
 		fmt.Println(err)
 		os.Exit(0)
 	}
-	ui60,_ := types.AddressFromMultiPubKeys([]*crypto.PubKey{pk,pk2},1)
+	ui60, _ := types.AddressFromMultiPubKeys([]*keypair.PublicKey{pk, pk2}, 1)
 	addr := common.ToHexString(ui60[:])
 	fmt.Println(addr)
 	fmt.Println(ui60.ToBase58())

@@ -2,8 +2,8 @@ package context
 
 import (
 	"github.com/dad-go/common"
-	vmtypes "github.com/dad-go/vm/types"
 	"github.com/dad-go/smartcontract/event"
+	vmtypes "github.com/dad-go/vm/types"
 )
 
 type ContextRef interface {
@@ -17,8 +17,7 @@ type ContextRef interface {
 	Execute() error
 }
 
-
 type Context struct {
 	ContractAddress common.Address
-	Code vmtypes.VmCode
+	Code            vmtypes.VmCode
 }

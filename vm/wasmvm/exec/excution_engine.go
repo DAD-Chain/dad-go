@@ -33,7 +33,6 @@ import (
 	"github.com/dad-go/vm/wasmvm/util"
 	"github.com/dad-go/vm/wasmvm/validate"
 	"github.com/dad-go/vm/wasmvm/wasm"
-
 )
 
 const (

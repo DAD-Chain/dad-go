@@ -19,12 +19,13 @@
 package actor
 
 import (
-	"time"
-	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/dad-go/net/protocol"
-	ac "github.com/dad-go/net/actor"
 	"errors"
+	"time"
+
 	"github.com/dad-go/common/log"
+	ac "github.com/dad-go/net/actor"
+	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 var netServerPid *actor.PID

@@ -20,9 +20,10 @@ package program
 
 import (
 	"bytes"
-	. "github.com/dad-go/common"
-	vm "github.com/dad-go/vm/neovm"
 	"math/big"
+
+	"github.com/dad-go/common"
+	vm "github.com/dad-go/vm/neovm"
 )
 
 type ProgramBuilder struct {
@@ -31,7 +32,7 @@ type ProgramBuilder struct {
 
 func NewProgramBuilder() *ProgramBuilder {
 	return &ProgramBuilder{
-		//TODO: add sync pool for create ProgramBuilder
+	//TODO: add sync pool for create ProgramBuilder
 	}
 }
 
@@ -73,12 +74,12 @@ func (pb *ProgramBuilder) PushData(data []byte) {
 		pb.buffer.Write(data[0:len(data)])
 	} else if len(data) < 0x10000 {
 		pb.AddOp(vm.PUSHDATA2)
-		dataByte := IntToBytes(len(data))
+		dataByte := common.IntToBytes(len(data))
 		pb.buffer.Write(dataByte[0:2])
 		pb.buffer.Write(data[0:len(data)])
 	} else {
 		pb.AddOp(vm.PUSHDATA4)
-		dataByte := IntToBytes(len(data))
+		dataByte := common.IntToBytes(len(data))
 		pb.buffer.Write(dataByte[0:4])
 		pb.buffer.Write(data[0:len(data)])
 	}

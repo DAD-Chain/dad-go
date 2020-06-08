@@ -19,8 +19,9 @@
 package node
 
 import (
-	"github.com/dad-go/common"
 	"sync"
+
+	"github.com/dad-go/common"
 )
 
 type idCache struct {

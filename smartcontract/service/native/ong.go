@@ -22,15 +22,15 @@ import (
 	"bytes"
 	"math/big"
 
+	"github.com/dad-go/core/genesis"
+	cstates "github.com/dad-go/core/states"
 	scommon "github.com/dad-go/core/store/common"
 	"github.com/dad-go/errors"
 	"github.com/dad-go/smartcontract/service/native/states"
-	cstates "github.com/dad-go/core/states"
-	"github.com/dad-go/core/genesis"
 )
 
 var (
-	DECIMALS = big.NewInt(9)
+	DECIMALS         = big.NewInt(9)
 	ONG_TOTAL_SUPPLY = new(big.Int).Mul(big.NewInt(1000000000), (new(big.Int).Exp(big.NewInt(10), DECIMALS, nil)))
 )
 
@@ -90,5 +90,3 @@ func OngTransferFrom(native *NativeService) error {
 func getOntContext() []byte {
 	return genesis.OntContractAddress[:]
 }
-
-

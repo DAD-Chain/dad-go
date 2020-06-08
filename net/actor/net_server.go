@@ -19,10 +19,11 @@
 package actor
 
 import (
+	"reflect"
+
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/net/protocol"
 	"github.com/ontio/dad-go-eventbus/actor"
-	"reflect"
 )
 
 var netServerPid *actor.PID

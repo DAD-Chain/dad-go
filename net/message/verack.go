@@ -21,9 +21,10 @@ package message
 import (
 	"encoding/hex"
 	"errors"
+	"strconv"
+
 	"github.com/dad-go/common/log"
 	. "github.com/dad-go/net/protocol"
-	"strconv"
 )
 
 type verACK struct {
