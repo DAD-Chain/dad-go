@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"sort"
 
-	. "github.com/dad-go/common"
+	"github.com/dad-go/common"
 	pg "github.com/dad-go/core/contract/program"
 	"github.com/dad-go/errors"
 	vm "github.com/dad-go/vm/neovm"
@@ -36,8 +36,8 @@ func CreateSignatureContract(ownerPubKey keypair.PublicKey) (*Contract, error) {
 	if err != nil {
 		return nil, errors.NewDetailErr(err, errors.ErrNoCode, "[Contract],CreateSignatureContract failed.")
 	}
-	hash := ToCodeHash(temp)
-	signatureRedeemScriptHashToCodeHash := ToCodeHash(signatureRedeemScript)
+	hash := common.ToCodeHash(temp)
+	signatureRedeemScriptHashToCodeHash := common.ToCodeHash(signatureRedeemScript)
 	return &Contract{
 		Code:            signatureRedeemScript,
 		Parameters:      []ContractParameterType{Signature},
@@ -55,7 +55,7 @@ func CreateSignatureRedeemScript(pubkey keypair.PublicKey) ([]byte, error) {
 }
 
 //create a Multi Singature contract for owner  。
-func CreateMultiSigContract(publicKeyHash Address, m int, publicKeys []keypair.PublicKey) (*Contract, error) {
+func CreateMultiSigContract(publicKeyHash common.Address, m int, publicKeys []keypair.PublicKey) (*Contract, error) {
 
 	params := make([]ContractParameterType, m)
 	for i, _ := range params {
@@ -65,7 +65,7 @@ func CreateMultiSigContract(publicKeyHash Address, m int, publicKeys []keypair.P
 	if err != nil {
 		return nil, errors.NewDetailErr(err, errors.ErrNoCode, "[Contract],CreateSignatureRedeemScript failed.")
 	}
-	signatureRedeemScriptHashToCodeHash := ToCodeHash(MultiSigRedeemScript)
+	signatureRedeemScriptHashToCodeHash := common.ToCodeHash(MultiSigRedeemScript)
 	return &Contract{
 		Code:            MultiSigRedeemScript,
 		Parameters:      params,

@@ -25,7 +25,7 @@ import (
 	"github.com/urfave/cli"
 
 	_ "github.com/dad-go/cli"
-	. "github.com/dad-go/cli/common"
+	"github.com/dad-go/cli/common"
 	"github.com/dad-go/cli/test"
 	"github.com/dad-go/cli/transfer"
 	"github.com/dad-go/cli/wallet"
@@ -44,8 +44,8 @@ func main() {
 	app.HideVersion = false
 	//global options
 	app.Flags = []cli.Flag{
-		NewIpFlag(),
-		NewPortFlag(),
+		common.NewIpFlag(),
+		common.NewPortFlag(),
 	}
 	//commands
 	app.Commands = []cli.Command{
