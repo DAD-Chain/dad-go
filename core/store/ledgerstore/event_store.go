@@ -24,11 +24,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	scom "github.com/dad-go/core/store/common"
-	"github.com/dad-go/core/store/leveldbstore"
-	"github.com/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/serialization"
+	scom "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/store/leveldbstore"
+	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

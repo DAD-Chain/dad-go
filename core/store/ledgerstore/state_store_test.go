@@ -21,11 +21,11 @@ package ledgerstore
 import (
 	"testing"
 
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/states"
-	scommon "github.com/dad-go/core/store/common"
-	"github.com/dad-go/core/store/statestore"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/states"
+	scommon "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/store/statestore"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

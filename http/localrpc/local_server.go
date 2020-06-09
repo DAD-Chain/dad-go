@@ -22,9 +22,9 @@ import (
 	"net/http"
 	"strconv"
 
-	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/http/base/rpc"
+	cfg "github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/http/base/rpc"
 )
 
 const (

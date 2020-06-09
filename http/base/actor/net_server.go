@@ -22,9 +22,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dad-go/common/log"
-	ac "github.com/dad-go/net/actor"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common/log"
+	ac "github.com/ontio/dad-go/net/actor"
+	"github.com/ontio/dad-go/net/protocol"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

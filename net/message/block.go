@@ -24,11 +24,11 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/net/actor"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/net/actor"
+	"github.com/ontio/dad-go/net/protocol"
 )
 
 type blockReq struct {

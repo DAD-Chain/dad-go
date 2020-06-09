@@ -19,7 +19,7 @@
 package rpc
 
 import (
-	Err "github.com/dad-go/http/base/error"
+	Err "github.com/ontio/dad-go/http/base/error"
 )
 
 func responseSuccess(result interface{}) map[string]interface{} {

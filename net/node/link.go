@@ -30,11 +30,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/events"
-	msg "github.com/dad-go/net/message"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/events"
+	msg "github.com/ontio/dad-go/net/message"
+	"github.com/ontio/dad-go/net/protocol"
 )
 
 type RxBuff struct {

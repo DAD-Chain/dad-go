@@ -24,15 +24,15 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store"
-	scommon "github.com/dad-go/core/store/common"
-	"github.com/dad-go/smartcontract/storage"
-	vmtypes "github.com/dad-go/smartcontract/types"
-	"github.com/dad-go/vm/wasmvm/exec"
-	"github.com/dad-go/vm/wasmvm/util"
-	"github.com/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/store"
+	scommon "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/smartcontract/storage"
+	vmtypes "github.com/ontio/dad-go/smartcontract/types"
+	"github.com/ontio/dad-go/vm/wasmvm/exec"
+	"github.com/ontio/dad-go/vm/wasmvm/util"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 )
 
 type WasmStateMachine struct {

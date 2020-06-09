@@ -60,8 +60,8 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/dad-go/vm/wasmvm/disasm"
-	ops "github.com/dad-go/vm/wasmvm/wasm/operators"
+	"github.com/ontio/dad-go/vm/wasmvm/disasm"
+	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
 )
 
 // A small note on the usage of discard instructions:

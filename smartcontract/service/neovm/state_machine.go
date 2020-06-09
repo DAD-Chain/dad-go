@@ -22,16 +22,16 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store"
-	scommon "github.com/dad-go/core/store/common"
-	"github.com/dad-go/errors"
-	"github.com/dad-go/smartcontract/storage"
-	stypes "github.com/dad-go/smartcontract/types"
-	vm "github.com/dad-go/vm/neovm"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/store"
+	scommon "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/errors"
+	"github.com/ontio/dad-go/smartcontract/storage"
+	stypes "github.com/ontio/dad-go/smartcontract/types"
+	vm "github.com/ontio/dad-go/vm/neovm"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 type StateMachine struct {

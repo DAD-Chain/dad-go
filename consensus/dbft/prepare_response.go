@@ -21,7 +21,7 @@ package dbft
 import (
 	"io"
 
-	ser "github.com/dad-go/common/serialization"
+	ser "github.com/ontio/dad-go/common/serialization"
 )
 
 type PrepareResponse struct {

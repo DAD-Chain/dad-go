@@ -18,7 +18,7 @@
 
 package neovm
 
-import "github.com/dad-go/vm/neovm/types"
+import "github.com/ontio/dad-go/vm/neovm/types"
 
 type StackItem struct {
 	_object types.StackItems

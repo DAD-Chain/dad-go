@@ -22,7 +22,7 @@ import (
 	"errors"
 	"io"
 
-	ser "github.com/dad-go/common/serialization"
+	ser "github.com/ontio/dad-go/common/serialization"
 )
 
 type BlockSignatures struct {

@@ -29,11 +29,11 @@ import (
 	"sync"
 	"time"
 
-	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	Err "github.com/dad-go/http/base/error"
-	"github.com/dad-go/http/base/rest"
-	"github.com/dad-go/http/websocket/session"
+	cfg "github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	Err "github.com/ontio/dad-go/http/base/error"
+	"github.com/ontio/dad-go/http/base/rest"
+	"github.com/ontio/dad-go/http/websocket/session"
 	"github.com/gorilla/websocket"
 )
 

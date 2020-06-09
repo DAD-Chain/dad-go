@@ -22,9 +22,9 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/store/common"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

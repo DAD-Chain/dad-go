@@ -22,8 +22,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"time"
-	"github.com/dad-go/common"
-	"github.com/dad-go/events"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

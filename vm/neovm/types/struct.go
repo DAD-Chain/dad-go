@@ -21,7 +21,7 @@ package types
 import (
 	"math/big"
 
-	"github.com/dad-go/vm/neovm/interfaces"
+	"github.com/ontio/dad-go/vm/neovm/interfaces"
 )
 
 type Struct struct {

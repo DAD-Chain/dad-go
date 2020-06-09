@@ -26,9 +26,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/common"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/serialization"
+	"github.com/ontio/dad-go/common"
 )
 
 func TestContract1(t *testing.T) {

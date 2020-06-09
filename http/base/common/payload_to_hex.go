@@ -1,9 +1,9 @@
 package common
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 
@@ -88,9 +88,9 @@ func TransPayloadToHex(p types.Payload) PayloadInfo {
 		obj := new(BookkeeperInfo)
 		pubKeyBytes := keypair.SerializePublicKey(object.PubKey)
 		obj.PubKey = common.ToHexString(pubKeyBytes)
-		if object.Action == payload.BookKeeperAction_ADD {
+		if object.Action == payload.BookkeeperAction_ADD {
 			obj.Action = "add"
-		} else if object.Action == payload.BookKeeperAction_SUB {
+		} else if object.Action == payload.BookkeeperAction_SUB {
 			obj.Action = "sub"
 		} else {
 			obj.Action = "nil"

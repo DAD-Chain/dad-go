@@ -22,7 +22,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common/log"
 )
 
 func init() {

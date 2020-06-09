@@ -22,8 +22,8 @@ import (
 	"bytes"
 	"math/big"
 
-	"github.com/dad-go/common"
-	vm "github.com/dad-go/vm/neovm"
+	"github.com/ontio/dad-go/common"
+	vm "github.com/ontio/dad-go/vm/neovm"
 )
 
 type ProgramBuilder struct {

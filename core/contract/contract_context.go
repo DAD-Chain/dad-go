@@ -23,11 +23,11 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	pg "github.com/dad-go/core/contract/program"
-	sig "github.com/dad-go/core/signature"
-	_ "github.com/dad-go/errors"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	pg "github.com/ontio/dad-go/core/contract/program"
+	sig "github.com/ontio/dad-go/core/signature"
+	_ "github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

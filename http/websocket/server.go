@@ -21,16 +21,16 @@ package websocket
 import (
 	"bytes"
 
-	"github.com/dad-go/common"
-	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/events/message"
-	bactor "github.com/dad-go/http/base/actor"
-	bcomn "github.com/dad-go/http/base/common"
-	Err "github.com/dad-go/http/base/error"
-	"github.com/dad-go/http/base/rest"
-	"github.com/dad-go/http/websocket/websocket"
+	"github.com/ontio/dad-go/common"
+	cfg "github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/events/message"
+	bactor "github.com/ontio/dad-go/http/base/actor"
+	bcomn "github.com/ontio/dad-go/http/base/common"
+	Err "github.com/ontio/dad-go/http/base/error"
+	"github.com/ontio/dad-go/http/base/rest"
+	"github.com/ontio/dad-go/http/websocket/websocket"
 )
 
 var ws *websocket.WsServer

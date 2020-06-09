@@ -29,15 +29,15 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/dad-go/account"
-	clicommon "github.com/dad-go/cli/common"
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/signature"
-	ctypes "github.com/dad-go/core/types"
-	cutils "github.com/dad-go/core/utils"
-	"github.com/dad-go/http/base/rpc"
-	"github.com/dad-go/smartcontract/service/native/states"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/account"
+	clicommon "github.com/ontio/dad-go/cli/common"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/signature"
+	ctypes "github.com/ontio/dad-go/core/types"
+	cutils "github.com/ontio/dad-go/core/utils"
+	"github.com/ontio/dad-go/http/base/rpc"
+	"github.com/ontio/dad-go/smartcontract/service/native/states"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

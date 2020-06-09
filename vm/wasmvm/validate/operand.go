@@ -23,7 +23,7 @@
 package validate
 
 import (
-	"github.com/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 )
 
 type operand struct {

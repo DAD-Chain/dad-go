@@ -22,12 +22,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/dad-go/common"
-	cstates "github.com/dad-go/core/states"
-	scommon "github.com/dad-go/core/store/common"
-	"github.com/dad-go/errors"
-	"github.com/dad-go/smartcontract/event"
-	"github.com/dad-go/smartcontract/service/native/states"
+	"github.com/ontio/dad-go/common"
+	cstates "github.com/ontio/dad-go/core/states"
+	scommon "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/errors"
+	"github.com/ontio/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/smartcontract/service/native/states"
 )
 
 var (

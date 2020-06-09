@@ -23,11 +23,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dad-go/account"
-	cliCommon "github.com/dad-go/cli/common"
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/password"
-	"github.com/dad-go/http/base/rpc"
+	"github.com/ontio/dad-go/account"
+	cliCommon "github.com/ontio/dad-go/cli/common"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/password"
+	"github.com/ontio/dad-go/http/base/rpc"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/urfave/cli"
 )

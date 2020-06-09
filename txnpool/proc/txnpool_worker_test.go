@@ -25,11 +25,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/errors"
-	tc "github.com/dad-go/txnpool/common"
-	vt "github.com/dad-go/validator/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/errors"
+	tc "github.com/ontio/dad-go/txnpool/common"
+	vt "github.com/ontio/dad-go/validator/types"
 )
 
 func TestWorker(t *testing.T) {

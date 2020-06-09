@@ -33,14 +33,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/events"
-	"github.com/dad-go/net/actor"
-	msg "github.com/dad-go/net/message"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/events"
+	"github.com/ontio/dad-go/net/actor"
+	msg "github.com/ontio/dad-go/net/message"
+	"github.com/ontio/dad-go/net/protocol"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

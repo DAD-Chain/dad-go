@@ -22,9 +22,9 @@ import (
 	"crypto/sha256"
 	"errors"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	ontErrors "github.com/dad-go/errors"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	ontErrors "github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go-crypto/keypair"
 	s "github.com/ontio/dad-go-crypto/signature"
 )

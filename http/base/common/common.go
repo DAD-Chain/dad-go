@@ -19,11 +19,11 @@
 package common
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	ontErrors "github.com/dad-go/errors"
-	bactor "github.com/dad-go/http/base/actor"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	ontErrors "github.com/ontio/dad-go/errors"
+	bactor "github.com/ontio/dad-go/http/base/actor"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 
@@ -163,7 +163,7 @@ func VerifyAndSendTx(txn *types.Transaction) ontErrors.ErrCode {
 
 func GetBlockInfo(block *types.Block) BlockInfo {
 	hash := block.Hash()
-	var bookKeepers = []string{}
+	var bookkeepers = []string{}
 	var sigData = []string{}
 	for i := 0; i < len(block.Header.SigData); i++ {
 		s := common.ToHexString(block.Header.SigData[i])
@@ -172,7 +172,7 @@ func GetBlockInfo(block *types.Block) BlockInfo {
 	for i := 0; i < len(block.Header.Bookkeepers); i++ {
 		e := block.Header.Bookkeepers[i]
 		key := keypair.SerializePublicKey(e)
-		bookKeepers = append(bookKeepers, common.ToHexString(key))
+		bookkeepers = append(bookkeepers, common.ToHexString(key))
 	}
 
 	blockHead := &BlockHead{
@@ -184,7 +184,7 @@ func GetBlockInfo(block *types.Block) BlockInfo {
 		Height:           block.Header.Height,
 		ConsensusData:    block.Header.ConsensusData,
 		NextBookkeeper:   block.Header.NextBookkeeper.ToBase58(),
-		Bookkeepers:      bookKeepers,
+		Bookkeepers:      bookkeepers,
 		SigData:          sigData,
 		Hash:             common.ToHexString(hash.ToArray()),
 	}

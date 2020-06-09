@@ -23,7 +23,7 @@
 package operators
 
 import (
-	"github.com/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 )
 
 var (

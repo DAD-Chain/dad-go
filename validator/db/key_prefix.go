@@ -21,7 +21,7 @@ package db
 import (
 	pool "github.com/valyala/bytebufferpool"
 
-	"github.com/dad-go/common"
+	"github.com/ontio/dad-go/common"
 )
 
 // DataEntryPrefix

@@ -22,10 +22,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/core/signature"
-	"github.com/dad-go/core/types"
-	ontErrors "github.com/dad-go/errors"
+	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/signature"
+	"github.com/ontio/dad-go/core/types"
+	ontErrors "github.com/ontio/dad-go/errors"
 )
 
 func VerifyBlock(block *types.Block, ld *ledger.Ledger, completely bool) error {

@@ -27,8 +27,8 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/dad-go/vm/wasmvm/wasm"
-	ops "github.com/dad-go/vm/wasmvm/wasm/operators"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
+	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
 )
 
 // vibhavp: TODO: We do not verify whether blocks don't access for the parent block, do that.

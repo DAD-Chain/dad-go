@@ -27,12 +27,12 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/vm/neovm/interfaces"
-	"github.com/dad-go/vm/wasmvm/memory"
-	"github.com/dad-go/vm/wasmvm/util"
-	"github.com/dad-go/vm/wasmvm/validate"
-	"github.com/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/vm/neovm/interfaces"
+	"github.com/ontio/dad-go/vm/wasmvm/memory"
+	"github.com/ontio/dad-go/vm/wasmvm/util"
+	"github.com/ontio/dad-go/vm/wasmvm/validate"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 )
 
 const (

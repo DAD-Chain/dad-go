@@ -22,10 +22,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/dad-go/common/log"
-	bactor "github.com/dad-go/http/base/actor"
-	"github.com/dad-go/http/base/common"
-	berr "github.com/dad-go/http/base/error"
+	"github.com/ontio/dad-go/common/log"
+	bactor "github.com/ontio/dad-go/http/base/actor"
+	"github.com/ontio/dad-go/http/base/common"
+	berr "github.com/ontio/dad-go/http/base/error"
 )
 
 const (

@@ -19,10 +19,10 @@ package neovm
 import (
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/vm/neovm/errors"
-	"github.com/dad-go/vm/neovm/interfaces"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/vm/neovm/errors"
+	"github.com/ontio/dad-go/vm/neovm/interfaces"
 )
 
 func NewExecutionEngine(container interfaces.CodeContainer, crypto interfaces.Crypto, table interfaces.CodeTable, service InteropServices) *ExecutionEngine {

@@ -18,7 +18,7 @@
 
 package error
 
-import ontErrors "github.com/dad-go/errors"
+import ontErrors "github.com/ontio/dad-go/errors"
 
 const (
 	SUCCESS            int64 = 0

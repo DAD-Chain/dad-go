@@ -21,10 +21,10 @@ package vote
 import (
 	"sort"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/genesis"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/genesis"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

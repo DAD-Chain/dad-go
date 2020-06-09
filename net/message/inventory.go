@@ -26,11 +26,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/net/actor"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/common/serialization"
+	"github.com/ontio/dad-go/net/actor"
+	"github.com/ontio/dad-go/net/protocol"
 )
 
 var LastInvHash common.Uint256

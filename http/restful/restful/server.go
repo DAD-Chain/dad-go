@@ -30,11 +30,11 @@ import (
 	"sync"
 	"time"
 
-	cfg "github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	berr "github.com/dad-go/http/base/error"
-	"github.com/dad-go/http/base/rest"
-	"github.com/dad-go/http/websocket"
+	cfg "github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	berr "github.com/ontio/dad-go/http/base/error"
+	"github.com/ontio/dad-go/http/base/rest"
+	"github.com/ontio/dad-go/http/websocket"
 )
 
 type handler func(map[string]interface{}) map[string]interface{}

@@ -21,11 +21,11 @@ package actor
 import (
 	"time"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	ledger "github.com/dad-go/core/ledger/actor"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/errors"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	ledger "github.com/ontio/dad-go/core/ledger/actor"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

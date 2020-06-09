@@ -25,8 +25,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/vm/wasmvm/util"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/vm/wasmvm/util"
 )
 
 var service = NewInteropService()

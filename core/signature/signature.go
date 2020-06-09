@@ -24,9 +24,9 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/contract/program"
-	"github.com/dad-go/vm/neovm/interfaces"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/contract/program"
+	"github.com/ontio/dad-go/vm/neovm/interfaces"
 	"github.com/ontio/dad-go-crypto/keypair"
 	s "github.com/ontio/dad-go-crypto/signature"
 )

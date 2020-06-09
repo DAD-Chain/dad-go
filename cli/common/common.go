@@ -25,8 +25,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/password"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/password"
 
 	"github.com/urfave/cli"
 )

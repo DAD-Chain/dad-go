@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dad-go/common/serialization"
+	"github.com/ontio/dad-go/common/serialization"
 )
 
 type TransactionAttributeUsage byte

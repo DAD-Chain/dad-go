@@ -21,8 +21,8 @@ package ledgerstore
 import (
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/hashicorp/golang-lru"
 )
 

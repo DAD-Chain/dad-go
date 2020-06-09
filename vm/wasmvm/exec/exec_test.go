@@ -35,9 +35,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dad-go/vm/wasmvm/exec"
-	"github.com/dad-go/vm/wasmvm/validate"
-	"github.com/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/vm/wasmvm/exec"
+	"github.com/ontio/dad-go/vm/wasmvm/validate"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 )
 
 const (

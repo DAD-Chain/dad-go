@@ -19,8 +19,8 @@
 package actor
 
 import (
-	"github.com/dad-go/events"
-	"github.com/dad-go/events/message"
+	"github.com/ontio/dad-go/events"
+	"github.com/ontio/dad-go/events/message"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

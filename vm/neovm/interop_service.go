@@ -19,7 +19,7 @@
 package neovm
 
 import (
-	"github.com/dad-go/vm/neovm/errors"
+	"github.com/ontio/dad-go/vm/neovm/errors"
 )
 
 type InteropServices interface {
