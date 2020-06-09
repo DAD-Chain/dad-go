@@ -30,10 +30,10 @@ import (
 	"io"
 	"math"
 
-	"github.com/dad-go/vm/wasmvm/internal/stack"
-	"github.com/dad-go/vm/wasmvm/wasm"
-	"github.com/dad-go/vm/wasmvm/wasm/leb128"
-	ops "github.com/dad-go/vm/wasmvm/wasm/operators"
+	"github.com/ontio/dad-go/vm/wasmvm/internal/stack"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm/leb128"
+	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
 )
 
 // Instr describes an instruction, consisting of an operator, with its

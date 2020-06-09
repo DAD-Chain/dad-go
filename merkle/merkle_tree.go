@@ -23,8 +23,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
 )
 
 // const UINT256_SIZE int = 32

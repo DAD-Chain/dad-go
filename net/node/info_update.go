@@ -24,11 +24,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/net/actor"
-	"github.com/dad-go/net/message"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/net/actor"
+	"github.com/ontio/dad-go/net/message"
+	"github.com/ontio/dad-go/net/protocol"
 )
 
 func (node *node) GetBlkHdrs() {

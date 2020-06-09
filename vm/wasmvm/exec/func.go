@@ -28,7 +28,7 @@ import (
 
 	"fmt"
 
-	"github.com/dad-go/vm/wasmvm/exec/internal/compile"
+	"github.com/ontio/dad-go/vm/wasmvm/exec/internal/compile"
 )
 
 type function interface {

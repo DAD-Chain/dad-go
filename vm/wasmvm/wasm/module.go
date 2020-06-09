@@ -26,7 +26,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dad-go/vm/wasmvm/wasm/internal/readpos"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm/internal/readpos"
 )
 
 var ErrInvalidMagic = errors.New("wasm: Invalid magic number")

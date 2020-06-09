@@ -19,9 +19,9 @@
 package utils
 
 import (
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/types"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/types"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 func NewDeployTransaction(code *vmtypes.VmCode, name, version, author, email, desp string, needStorage bool) *types.Transaction {

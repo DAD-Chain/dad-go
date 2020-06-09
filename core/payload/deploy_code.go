@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dad-go/common/serialization"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/common/serialization"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 type DeployCode struct {

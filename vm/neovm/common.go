@@ -24,8 +24,8 @@ import (
 	"hash"
 	"math/big"
 
-	"github.com/dad-go/vm/neovm/interfaces"
-	"github.com/dad-go/vm/neovm/types"
+	"github.com/ontio/dad-go/vm/neovm/interfaces"
+	"github.com/ontio/dad-go/vm/neovm/types"
 )
 
 type BigIntSorter []big.Int

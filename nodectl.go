@@ -24,11 +24,11 @@ import (
 
 	"github.com/urfave/cli"
 
-	_ "github.com/dad-go/cli"
-	"github.com/dad-go/cli/common"
-	"github.com/dad-go/cli/test"
-	"github.com/dad-go/cli/transfer"
-	"github.com/dad-go/cli/wallet"
+	_ "github.com/ontio/dad-go/cli"
+	"github.com/ontio/dad-go/cli/common"
+	"github.com/ontio/dad-go/cli/test"
+	"github.com/ontio/dad-go/cli/transfer"
+	"github.com/ontio/dad-go/cli/wallet"
 )
 
 var Version string

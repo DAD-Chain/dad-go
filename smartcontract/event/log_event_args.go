@@ -19,7 +19,7 @@
 package event
 
 import (
-	"github.com/dad-go/common"
+	"github.com/ontio/dad-go/common"
 )
 
 type LogEventArgs struct {

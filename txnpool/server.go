@@ -19,11 +19,11 @@
 package txnpool
 
 import (
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/events"
-	"github.com/dad-go/events/message"
-	tc "github.com/dad-go/txnpool/common"
-	tp "github.com/dad-go/txnpool/proc"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/events"
+	"github.com/ontio/dad-go/events/message"
+	tc "github.com/ontio/dad-go/txnpool/common"
+	tp "github.com/ontio/dad-go/txnpool/proc"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

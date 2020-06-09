@@ -22,17 +22,17 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store"
-	scommon "github.com/dad-go/core/store/common"
-	"github.com/dad-go/core/store/statestore"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/smartcontract"
-	"github.com/dad-go/smartcontract/context"
-	"github.com/dad-go/smartcontract/event"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/store"
+	scommon "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/store/statestore"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/smartcontract"
+	"github.com/ontio/dad-go/smartcontract/context"
+	"github.com/ontio/dad-go/smartcontract/event"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 const (

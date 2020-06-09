@@ -17,21 +17,21 @@
 package smartcontract
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/store"
-	scommon "github.com/dad-go/core/store/common"
-	ctypes "github.com/dad-go/core/types"
-	"github.com/dad-go/smartcontract/context"
-	"github.com/dad-go/smartcontract/event"
-	"github.com/dad-go/smartcontract/service/native"
-	sneovm "github.com/dad-go/smartcontract/service/neovm"
-	"github.com/dad-go/smartcontract/service/wasm"
-	stypes "github.com/dad-go/smartcontract/types"
-	"github.com/dad-go/vm/neovm"
-	"github.com/dad-go/vm/neovm/interfaces"
-	vmtypes "github.com/dad-go/vm/types"
-	"github.com/dad-go/vm/wasmvm/exec"
-	"github.com/dad-go/vm/wasmvm/util"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/store"
+	scommon "github.com/ontio/dad-go/core/store/common"
+	ctypes "github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/smartcontract/context"
+	"github.com/ontio/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/smartcontract/service/native"
+	sneovm "github.com/ontio/dad-go/smartcontract/service/neovm"
+	"github.com/ontio/dad-go/smartcontract/service/wasm"
+	stypes "github.com/ontio/dad-go/smartcontract/types"
+	"github.com/ontio/dad-go/vm/neovm"
+	"github.com/ontio/dad-go/vm/neovm/interfaces"
+	vmtypes "github.com/ontio/dad-go/vm/types"
+	"github.com/ontio/dad-go/vm/wasmvm/exec"
+	"github.com/ontio/dad-go/vm/wasmvm/util"
 )
 
 type SmartContract struct {

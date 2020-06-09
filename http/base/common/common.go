@@ -19,11 +19,11 @@
 package common
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	ontErrors "github.com/dad-go/errors"
-	bactor "github.com/dad-go/http/base/actor"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	ontErrors "github.com/ontio/dad-go/errors"
+	bactor "github.com/ontio/dad-go/http/base/actor"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

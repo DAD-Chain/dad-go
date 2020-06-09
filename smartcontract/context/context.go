@@ -19,9 +19,9 @@
 package context
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/smartcontract/event"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/smartcontract/event"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 type ContextRef interface {

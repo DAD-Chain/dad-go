@@ -22,10 +22,10 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/dad-go/common"
-	pg "github.com/dad-go/core/contract/program"
-	"github.com/dad-go/errors"
-	vm "github.com/dad-go/vm/neovm"
+	"github.com/ontio/dad-go/common"
+	pg "github.com/ontio/dad-go/core/contract/program"
+	"github.com/ontio/dad-go/errors"
+	vm "github.com/ontio/dad-go/vm/neovm"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

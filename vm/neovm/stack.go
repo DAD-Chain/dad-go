@@ -19,7 +19,7 @@
 package neovm
 
 import (
-	"github.com/dad-go/vm/neovm/types"
+	"github.com/ontio/dad-go/vm/neovm/types"
 )
 
 type Element interface {

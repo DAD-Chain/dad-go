@@ -19,10 +19,10 @@
 package event
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/events"
-	"github.com/dad-go/events/message"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/events"
+	"github.com/ontio/dad-go/events/message"
 )
 
 func PushSmartCodeEvent(txHash common.Uint256, errcode int64, action string, result interface{}) {

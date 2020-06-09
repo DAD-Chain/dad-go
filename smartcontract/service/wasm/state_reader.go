@@ -21,10 +21,10 @@ package wasm
 import (
 	"errors"
 
-	"github.com/dad-go/core/store"
-	"github.com/dad-go/smartcontract/event"
-	trigger "github.com/dad-go/smartcontract/types"
-	"github.com/dad-go/vm/wasmvm/exec"
+	"github.com/ontio/dad-go/core/store"
+	"github.com/ontio/dad-go/smartcontract/event"
+	trigger "github.com/ontio/dad-go/smartcontract/types"
+	"github.com/ontio/dad-go/vm/wasmvm/exec"
 )
 
 type WasmStateReader struct {

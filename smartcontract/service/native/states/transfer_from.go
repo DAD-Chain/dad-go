@@ -22,9 +22,9 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/errors"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/serialization"
+	"github.com/ontio/dad-go/errors"
 )
 
 type TransferFrom struct {

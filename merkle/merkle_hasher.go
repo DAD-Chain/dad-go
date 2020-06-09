@@ -21,7 +21,7 @@ package merkle
 import (
 	"crypto/sha256"
 
-	"github.com/dad-go/common"
+	"github.com/ontio/dad-go/common"
 )
 
 type TreeHasher struct {

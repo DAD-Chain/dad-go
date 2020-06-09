@@ -23,7 +23,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/dad-go/common"
+	"github.com/ontio/dad-go/common"
 )
 
 type HashStore interface {

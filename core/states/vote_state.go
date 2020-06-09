@@ -21,8 +21,8 @@ package states
 import (
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

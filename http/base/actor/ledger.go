@@ -22,12 +22,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	lactor "github.com/dad-go/core/ledger/actor"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	lactor "github.com/ontio/dad-go/core/ledger/actor"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

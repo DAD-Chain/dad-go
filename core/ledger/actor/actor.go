@@ -22,10 +22,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/core/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

@@ -27,9 +27,9 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/dad-go/vm/wasmvm/wasm"
-	"github.com/dad-go/vm/wasmvm/wasm/leb128"
-	ops "github.com/dad-go/vm/wasmvm/wasm/operators"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm/leb128"
+	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
 )
 
 // mockVM is a minimal implementation of a virtual machine to

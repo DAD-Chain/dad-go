@@ -24,7 +24,7 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/dad-go/vm/wasmvm/util"
+	"github.com/ontio/dad-go/vm/wasmvm/util"
 )
 
 type PType int

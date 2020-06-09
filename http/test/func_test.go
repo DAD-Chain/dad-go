@@ -26,14 +26,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dad-go/account"
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/signature"
-	"github.com/dad-go/core/types"
-	ctypes "github.com/dad-go/core/types"
-	"github.com/dad-go/core/utils"
-	"github.com/dad-go/vm/neovm"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/account"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/signature"
+	"github.com/ontio/dad-go/core/types"
+	ctypes "github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/core/utils"
+	"github.com/ontio/dad-go/vm/neovm"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

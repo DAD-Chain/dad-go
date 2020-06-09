@@ -19,9 +19,9 @@
 package common
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/smartcontract/event"
 )
 
 type StoreIterator interface {

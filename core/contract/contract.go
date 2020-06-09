@@ -22,9 +22,9 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	vm "github.com/dad-go/vm/neovm"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/serialization"
+	vm "github.com/ontio/dad-go/vm/neovm"
 )
 
 //Contract address is the hash of contract program .

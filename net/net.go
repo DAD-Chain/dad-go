@@ -19,9 +19,9 @@
 package net
 
 import (
-	ns "github.com/dad-go/net/actor"
-	"github.com/dad-go/net/node"
-	"github.com/dad-go/net/protocol"
+	ns "github.com/ontio/dad-go/net/actor"
+	"github.com/ontio/dad-go/net/node"
+	"github.com/ontio/dad-go/net/protocol"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
 )

@@ -19,7 +19,7 @@
 package actor
 
 import (
-	cactor "github.com/dad-go/consensus/actor"
+	cactor "github.com/ontio/dad-go/consensus/actor"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

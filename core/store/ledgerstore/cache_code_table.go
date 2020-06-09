@@ -21,8 +21,8 @@ package ledgerstore
 import (
 	"fmt"
 
-	"github.com/dad-go/core/payload"
-	scom "github.com/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/payload"
+	scom "github.com/ontio/dad-go/core/store/common"
 )
 
 type CacheCodeTable struct {

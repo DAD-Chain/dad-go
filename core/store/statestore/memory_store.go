@@ -19,8 +19,8 @@
 package statestore
 
 import (
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/store/common"
 )
 
 type MemoryStore struct {

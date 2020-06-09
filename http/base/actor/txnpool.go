@@ -22,11 +22,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	ontErrors "github.com/dad-go/errors"
-	tcomn "github.com/dad-go/txnpool/common"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	ontErrors "github.com/ontio/dad-go/errors"
+	tcomn "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

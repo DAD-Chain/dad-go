@@ -22,13 +22,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/signature"
-	"github.com/dad-go/core/types"
-	ontErrors "github.com/dad-go/errors"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/signature"
+	"github.com/ontio/dad-go/core/types"
+	ontErrors "github.com/ontio/dad-go/errors"
 )
 
 // VerifyTransaction verifys received single transaction

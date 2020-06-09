@@ -23,8 +23,8 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dad-go/common/log"
-	ser "github.com/dad-go/common/serialization"
+	"github.com/ontio/dad-go/common/log"
+	ser "github.com/ontio/dad-go/common/serialization"
 )
 
 type ConsensusMessage interface {

@@ -19,8 +19,8 @@
 package account
 
 import (
-	"github.com/dad-go/common"
-	ct "github.com/dad-go/core/contract"
+	"github.com/ontio/dad-go/common"
+	ct "github.com/ontio/dad-go/core/contract"
 )
 
 type ClientStore interface {

@@ -19,7 +19,7 @@
 package restful
 
 import (
-	"github.com/dad-go/http/restful/restful"
+	"github.com/ontio/dad-go/http/restful/restful"
 )
 
 func StartServer() {

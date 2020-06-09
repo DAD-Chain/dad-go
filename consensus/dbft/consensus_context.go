@@ -21,14 +21,14 @@ package dbft
 import (
 	"fmt"
 
-	"github.com/dad-go/account"
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	ser "github.com/dad-go/common/serialization"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/core/vote"
-	msg "github.com/dad-go/net/message"
+	"github.com/ontio/dad-go/account"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	ser "github.com/ontio/dad-go/common/serialization"
+	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/core/vote"
+	msg "github.com/ontio/dad-go/net/message"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

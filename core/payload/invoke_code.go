@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dad-go/common"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/common"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 type InvokeCode struct {

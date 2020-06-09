@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dad-go/vm/wasmvm/wasm"
+	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 )
 
 func TestNewConversionOp(t *testing.T) {

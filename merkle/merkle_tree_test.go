@@ -24,7 +24,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/dad-go/common"
+	"github.com/ontio/dad-go/common"
 )
 
 func TestMerkleLeaf3(t *testing.T) {

@@ -22,12 +22,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/errors"
-	vt "github.com/dad-go/validator/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/errors"
+	vt "github.com/ontio/dad-go/validator/types"
 )
 
 type TXAttr struct {

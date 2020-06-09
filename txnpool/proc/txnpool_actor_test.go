@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/events/message"
-	tc "github.com/dad-go/txnpool/common"
-	vt "github.com/dad-go/validator/types"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/events/message"
+	tc "github.com/ontio/dad-go/txnpool/common"
+	vt "github.com/ontio/dad-go/validator/types"
 )
 
 func TestTxActor(t *testing.T) {

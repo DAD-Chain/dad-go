@@ -21,10 +21,10 @@ package neovm
 import (
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/vm/neovm/types"
-	"github.com/dad-go/vm/neovm/utils"
-	vmtypes "github.com/dad-go/vm/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/vm/neovm/types"
+	"github.com/ontio/dad-go/vm/neovm/utils"
+	vmtypes "github.com/ontio/dad-go/vm/types"
 )
 
 type ExecutionContext struct {

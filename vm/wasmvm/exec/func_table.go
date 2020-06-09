@@ -23,7 +23,7 @@
 package exec
 
 import (
-	ops "github.com/dad-go/vm/wasmvm/wasm/operators"
+	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
 )
 
 func (vm *VM) newFuncTable() {

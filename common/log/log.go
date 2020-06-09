@@ -32,7 +32,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dad-go/common/config"
+	"github.com/ontio/dad-go/common/config"
 )
 
 const (

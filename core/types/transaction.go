@@ -25,10 +25,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/serialization"
-	"github.com/dad-go/core/payload"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/serialization"
+	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

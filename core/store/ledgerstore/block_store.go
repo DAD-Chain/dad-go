@@ -23,11 +23,11 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/serialization"
-	scom "github.com/dad-go/core/store/common"
-	"github.com/dad-go/core/store/leveldbstore"
-	"github.com/dad-go/core/types"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/serialization"
+	scom "github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/core/store/leveldbstore"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

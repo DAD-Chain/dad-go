@@ -19,11 +19,11 @@
 package store
 
 import (
-	"github.com/dad-go/common"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/states"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

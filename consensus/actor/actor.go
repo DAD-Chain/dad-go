@@ -22,9 +22,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dad-go/core/types"
-	ontErrors "github.com/dad-go/errors"
-	txpool "github.com/dad-go/txnpool/common"
+	"github.com/ontio/dad-go/core/types"
+	ontErrors "github.com/ontio/dad-go/errors"
+	txpool "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 

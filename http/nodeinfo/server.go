@@ -25,9 +25,9 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/net/protocol"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/net/protocol"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 

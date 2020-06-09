@@ -18,7 +18,7 @@
 
 package actor
 
-import "github.com/dad-go/core/types"
+import "github.com/ontio/dad-go/core/types"
 
 type StartConsensus struct{}
 type StopConsensus struct{}

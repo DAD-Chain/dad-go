@@ -26,8 +26,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dad-go/vm/wasmvm/memory"
-	"github.com/dad-go/vm/wasmvm/util"
+	"github.com/ontio/dad-go/vm/wasmvm/memory"
+	"github.com/ontio/dad-go/vm/wasmvm/util"
 )
 
 type Args struct {

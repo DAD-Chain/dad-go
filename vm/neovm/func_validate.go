@@ -24,9 +24,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/dad-go/common/log"
-	"github.com/dad-go/vm/neovm/errors"
-	"github.com/dad-go/vm/neovm/types"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/vm/neovm/errors"
+	"github.com/ontio/dad-go/vm/neovm/types"
 )
 
 func validateCount1(e *ExecutionEngine) error {

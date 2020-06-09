@@ -21,7 +21,7 @@ package node
 import (
 	"fmt"
 
-	"github.com/dad-go/events"
+	"github.com/ontio/dad-go/events"
 )
 
 type eventQueue struct {
