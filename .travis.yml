@@ -1,9 +1,9 @@
 language: go
 
 install:
-  - grep 'import' -rl ./| grep ".go"| xargs sed -i 's#"github.com/ontio/dad-go/#"github.com/ontio/dad-go/dad-go/#g'
   - go get github.com/Masterminds/glide
   - glide install
-
+  - pwd
+  - echo $GOPATH
 go:
-  - 1.8.x
+  - 1.9.x
