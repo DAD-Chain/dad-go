@@ -30,7 +30,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/dad-go/account"
-	. "github.com/dad-go/cli/common"
+	clicommon "github.com/dad-go/cli/common"
 	"github.com/dad-go/common"
 	"github.com/dad-go/core/signature"
 	ctypes "github.com/dad-go/core/types"
@@ -129,7 +129,7 @@ func transferAction(c *cli.Context) error {
 		fmt.Println("Serialize transaction error.")
 		os.Exit(1)
 	}
-	resp, err := rpc.Call(RpcAddress(), "sendrawtransaction", 0,
+	resp, err := rpc.Call(clicommon.RpcAddress(), "sendrawtransaction", 0,
 		[]interface{}{hex.EncodeToString(txbf.Bytes())})
 
 	if err != nil {

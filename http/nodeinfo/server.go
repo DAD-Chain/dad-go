@@ -27,7 +27,7 @@ import (
 
 	"github.com/dad-go/common/config"
 	"github.com/dad-go/core/ledger"
-	. "github.com/dad-go/net/protocol"
+	"github.com/dad-go/net/protocol"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 
@@ -50,7 +50,7 @@ const (
 	SERVICENODE = "Service Node"
 )
 
-var node Noder
+var node protocol.Noder
 
 var templates = template.Must(template.New("info").Parse(TEMPLATE_PAGE))
 
@@ -126,7 +126,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func StartServer(n Noder) {
+func StartServer(n protocol.Noder) {
 	node = n
 	port := int(config.Parameters.HttpInfoPort)
 	http.HandleFunc("/info", viewHandler)
