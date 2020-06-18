@@ -22,12 +22,13 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/ontio/dad-go-eventbus/actor"
+
 	"github.com/ontio/dad-go/common/log"
 	tx "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/events/message"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go/validator/types"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 func NewTxActor(s *TXPoolServer) *TxActor {
