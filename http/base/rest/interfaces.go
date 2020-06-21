@@ -282,11 +282,6 @@ func SendRawTransaction(cmd map[string]interface{}) map[string]interface{} {
 	}
 	resp["Result"] = common.ToHexString(hash.ToArray())
 
-	if txn.TxType == types.Invoke {
-		if userid, ok := cmd["Userid"].(string); ok && len(userid) > 0 {
-			resp["Userid"] = userid
-		}
-	}
 	return resp
 }
 
@@ -333,9 +328,9 @@ func GetSmartCodeEventByTxHash(cmd map[string]interface{}) map[string]interface{
 	}
 	var evs []map[string]interface{}
 	for _, v := range eventInfos {
-		evs = append(evs, map[string]interface{}{"CodeHash": v.CodeHash,
+		evs = append(evs, map[string]interface{}{"CodeHash": v.CodeHash.ToHexString(),
 			"States": v.States,
-			"TxHash": v.TxHash})
+			"TxHash": common.ToHexString(v.TxHash[:])})
 	}
 	resp["Result"] = evs
 	return resp
