@@ -20,7 +20,6 @@ package websocket
 
 import (
 	"bytes"
-
 	"github.com/ontio/dad-go/common"
 	cfg "github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
@@ -31,32 +30,24 @@ import (
 	Err "github.com/ontio/dad-go/http/base/error"
 	"github.com/ontio/dad-go/http/base/rest"
 	"github.com/ontio/dad-go/http/websocket/websocket"
+	"github.com/ontio/dad-go/smartcontract/event"
 )
 
 var ws *websocket.WsServer
-var (
-	pushBlockFlag    bool = false
-	pushRawBlockFlag bool = false
-	pushBlockTxsFlag bool = false
-)
 
 func StartServer() {
-	bactor.SubscribeEvent(message.TOPIC_SAVE_BLOCK_COMPLETE, SendBlock2WSclient)
-	bactor.SubscribeEvent(message.TOPIC_SMART_CODE_EVENT, PushSmartCodeEvent)
+	bactor.SubscribeEvent(message.TOPIC_SAVE_BLOCK_COMPLETE, sendBlock2WSclient)
+	bactor.SubscribeEvent(message.TOPIC_SMART_CODE_EVENT, pushSmartCodeEvent)
 	go func() {
 		ws = websocket.InitWsServer()
 		ws.Start()
 	}()
 }
-func SendBlock2WSclient(v interface{}) {
-	if cfg.Parameters.HttpWsPort != 0 && pushBlockFlag {
+func sendBlock2WSclient(v interface{}) {
+	if cfg.Parameters.HttpWsPort != 0 {
 		go func() {
-			PushBlock(v)
-		}()
-	}
-	if cfg.Parameters.HttpWsPort != 0 && pushBlockTxsFlag {
-		go func() {
-			PushBlockTransactions(v)
+			pushBlock(v)
+			pushBlockTransactions(v)
 		}()
 	}
 }
@@ -74,46 +65,45 @@ func ReStartServer() {
 	}
 	ws.Restart()
 }
-func GetWsPushBlockFlag() bool {
-	return pushBlockFlag
-}
-func SetWsPushBlockFlag(b bool) {
-	pushBlockFlag = b
-}
-func GetPushRawBlockFlag() bool {
-	return pushRawBlockFlag
-}
-func SetPushRawBlockFlag(b bool) {
-	pushRawBlockFlag = b
-}
-func GetPushBlockTxsFlag() bool {
-	return pushBlockTxsFlag
-}
-func SetPushBlockTxsFlag(b bool) {
-	pushBlockTxsFlag = b
-}
-func SetTxHashMap(txhash string, sessionid string) {
+
+func pushSmartCodeEvent(v interface{}) {
 	if ws == nil {
 		return
 	}
-	ws.SetTxHashMap(txhash, sessionid)
-}
-
-func PushSmartCodeEvent(v interface{}) {
-	if ws != nil {
-		log.Info("[PushSmartCodeEvent]", v)
-		rs, ok := v.(types.SmartCodeEvent)
-		if !ok {
-			log.Errorf("[PushSmartCodeEvent]", "SmartCodeEvent err")
-			return
-		}
-		go func() {
-			PushEvent(rs.TxHash, rs.Error, rs.Action, rs.Result)
-		}()
+	rs, ok := v.(types.SmartCodeEvent)
+	if !ok {
+		log.Errorf("[PushSmartCodeEvent]", "SmartCodeEvent err")
+		return
 	}
+	go func() {
+		switch object := rs.Result.(type) {
+		case []*event.NotifyEventInfo:
+			type notifyEventInfo struct {
+				TxHash   string
+				CodeHash string
+				States   interface{}
+			}
+			evts := []notifyEventInfo{}
+			for _, v := range object {
+				txhash := v.TxHash
+				evts = append(evts, notifyEventInfo{common.ToHexString(txhash[:]), v.CodeHash.ToHexString(), v.States})
+			}
+			pushEvent(rs.TxHash, rs.Error, rs.Action, evts)
+		case event.LogEventArgs:
+			type logEventArgs struct {
+				TxHash   string
+				CodeHash string
+				Message  string
+			}
+			hash := object.Container
+			pushEvent(rs.TxHash, rs.Error, rs.Action, logEventArgs{common.ToHexString(hash[:]), object.CodeHash.ToHexString(), object.Message})
+		default:
+			pushEvent(rs.TxHash, rs.Error, rs.Action, rs.Result)
+		}
+	}()
 }
 
-func PushEvent(txHash string, errcode int64, action string, result interface{}) {
+func pushEvent(txHash string, errcode int64, action string, result interface{}) {
 	if ws != nil {
 		resp := rest.ResponsePack(Err.SUCCESS)
 		resp["Result"] = result
@@ -121,37 +111,36 @@ func PushEvent(txHash string, errcode int64, action string, result interface{}) 
 		resp["Action"] = action
 		resp["Desc"] = Err.ErrMap[resp["Error"].(int64)]
 		ws.PushTxResult(txHash, resp)
-		//ws.BroadcastResult(resp)
+		ws.BroadcastToSubscribers(websocket.WSTOPIC_EVENT, resp)
 	}
 }
 
-func PushBlock(v interface{}) {
+func pushBlock(v interface{}) {
 	if ws == nil {
 		return
 	}
 	resp := rest.ResponsePack(Err.SUCCESS)
-	if block, ok := v.(*types.Block); ok {
-		if pushRawBlockFlag {
-			w := bytes.NewBuffer(nil)
-			block.Serialize(w)
-			resp["Result"] = common.ToHexString(w.Bytes())
-		} else {
-			resp["Result"] = bcomn.GetBlockInfo(block)
-		}
+	if block, ok := v.(types.Block); ok {
 		resp["Action"] = "sendrawblock"
-		ws.BroadcastResult(resp)
+		w := bytes.NewBuffer(nil)
+		block.Serialize(w)
+		resp["Result"] = common.ToHexString(w.Bytes())
+		ws.BroadcastToSubscribers(websocket.WSTOPIC_RAW_BLOCK, resp)
+
+		resp["Action"] = "sendjsonblock"
+		resp["Result"] = bcomn.GetBlockInfo(&block)
+		ws.BroadcastToSubscribers(websocket.WSTOPIC_JSON_BLOCK, resp)
 	}
 }
-func PushBlockTransactions(v interface{}) {
+func pushBlockTransactions(v interface{}) {
 	if ws == nil {
 		return
 	}
 	resp := rest.ResponsePack(Err.SUCCESS)
-	if block, ok := v.(*types.Block); ok {
-		if pushBlockTxsFlag {
-			resp["Result"] = rest.GetBlockTransactions(block)
-		}
-		resp["Action"] = "sendblocktransactions"
-		ws.BroadcastResult(resp)
+	if block, ok := v.(types.Block); ok {
+		resp["Result"] = rest.GetBlockTransactions(&block)
+		resp["Action"] = "sendblocktxhashs"
+		ws.BroadcastToSubscribers(websocket.WSTOPIC_TXHASHS, resp)
 	}
 }
+
