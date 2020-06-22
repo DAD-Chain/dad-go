@@ -27,6 +27,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
@@ -47,7 +48,6 @@ import (
 	tc "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go/validator/statefull"
 	"github.com/ontio/dad-go/validator/stateless"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const (
