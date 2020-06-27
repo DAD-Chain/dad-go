@@ -19,9 +19,7 @@
 package common
 
 import (
-	"bytes"
 	"crypto/sha256"
-	"encoding/binary"
 	"encoding/hex"
 	"io"
 	"math/rand"
@@ -30,6 +28,7 @@ import (
 	"golang.org/x/crypto/ripemd160"
 )
 
+// todo : deprecate this function
 func ToCodeHash(code []byte) Address {
 	temp := sha256.Sum256(code)
 	md := ripemd160.New()
@@ -46,58 +45,12 @@ func GetNonce() uint64 {
 	return nonce
 }
 
-func IntToBytes(n int) []byte {
-	tmp := int32(n)
-	bytesBuffer := bytes.NewBuffer([]byte{})
-	binary.Write(bytesBuffer, binary.LittleEndian, tmp)
-	return bytesBuffer.Bytes()
-}
-
-func BytesToInt16(b []byte) int16 {
-	bytesBuffer := bytes.NewBuffer(b)
-	var tmp int16
-	binary.Read(bytesBuffer, binary.BigEndian, &tmp)
-	return int16(tmp)
-}
-
-func IsEqualBytes(b1 []byte, b2 []byte) bool {
-	len1 := len(b1)
-	len2 := len(b2)
-	if len1 != len2 {
-		return false
-	}
-
-	for i := 0; i < len1; i++ {
-		if b1[i] != b2[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
 func ToHexString(data []byte) string {
 	return hex.EncodeToString(data)
 }
 
 func HexToBytes(value string) ([]byte, error) {
 	return hex.DecodeString(value)
-}
-
-func BytesReverse(u []byte) []byte {
-	for i, j := 0, len(u)-1; i < j; i, j = i+1, j-1 {
-		u[i], u[j] = u[j], u[i]
-	}
-	return u
-}
-
-func CompareHeight(blockHeight uint64, heights []uint64) bool {
-	for _, height := range heights {
-		if blockHeight < height {
-			return false
-		}
-	}
-	return true
 }
 
 func FileExisted(filename string) bool {
