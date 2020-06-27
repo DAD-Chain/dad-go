@@ -69,7 +69,7 @@ type node struct {
 	rxTxnCnt                 uint64   // The transaction received by this node
 	publicKey                keypair.PublicKey
 	chF                      chan func() error // Channel used to operate the node without lock
-	link                                       // The link status and infomation
+	link                                       // The link status and information
 	local                    *node             // The pointer to local node
 	nbrNodes                                   // The neighbor node connect with currently node except itself
 	eventQueue                                 // The event queue to notice notice other modules
@@ -418,11 +418,20 @@ func (node *node) SetBookkeeperAddr(pk keypair.PublicKey) {
 	node.publicKey = pk
 }
 
+func compareHeight(blockHeight uint64, heights []uint64) bool {
+	for _, height := range heights {
+		if blockHeight < height {
+			return false
+		}
+	}
+	return true
+}
+
 func (node *node) SyncNodeHeight() {
 	for {
 		heights, _ := node.GetNeighborHeights()
 		height, _ := actor.GetCurrentBlockHeight()
-		if common.CompareHeight(uint64(height), heights) {
+		if compareHeight(uint64(height), heights) {
 			break
 		}
 		<-time.After(5 * time.Second)
