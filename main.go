@@ -34,7 +34,6 @@ import (
 	"github.com/ontio/dad-go/consensus"
 	"github.com/ontio/dad-go/core/ledger"
 	ldgactor "github.com/ontio/dad-go/core/ledger/actor"
-	"github.com/ontio/dad-go/core/signature"
 	"github.com/ontio/dad-go/events"
 	hserver "github.com/ontio/dad-go/http/base/actor"
 	"github.com/ontio/dad-go/http/jsonrpc"
@@ -78,12 +77,6 @@ func main() {
 	if consensusType == "dbft" && len(config.Parameters.Bookkeepers) < account.DEFAULT_BOOKKEEPER_COUNT {
 		log.Fatal("With dbft consensus type, at least ", account.DEFAULT_BOOKKEEPER_COUNT, " Bookkeepers should be set in config.json")
 		os.Exit(1)
-	}
-
-	// Set default signature scheme
-	err = signature.SetDefaultScheme(config.Parameters.SignatureScheme)
-	if err != nil {
-		log.Warn("Config error: ", err)
 	}
 
 	log.Info("0. Open the account")

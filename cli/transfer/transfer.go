@@ -29,6 +29,7 @@ import (
 
 	"github.com/urfave/cli"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	clicommon "github.com/ontio/dad-go/cli/common"
 	"github.com/ontio/dad-go/common"
@@ -38,7 +39,6 @@ import (
 	"github.com/ontio/dad-go/http/base/rpc"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
 	vmtypes "github.com/ontio/dad-go/vm/types"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 func transferAction(c *cli.Context) error {
@@ -154,7 +154,7 @@ func transferAction(c *cli.Context) error {
 
 func signTransaction(signer *account.Account, tx *ctypes.Transaction) error {
 	hash := tx.Hash()
-	sign, _ := signature.Sign(signer.PrivateKey, hash[:])
+	sign, _ := signature.Sign(signer, hash[:])
 	tx.Sigs = append(tx.Sigs, &ctypes.Sig{
 		PubKeys: []keypair.PublicKey{signer.PublicKey},
 		M:       1,

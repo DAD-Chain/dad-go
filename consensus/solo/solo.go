@@ -23,6 +23,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
@@ -36,8 +38,6 @@ import (
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
 	"github.com/ontio/dad-go/validator/increment"
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 /*
@@ -232,7 +232,7 @@ func (self *SoloService) makeBlock() (*types.Block, error) {
 
 	blockHash := block.Hash()
 
-	sig, err := signature.Sign(self.Account.PrivKey(), blockHash[:])
+	sig, err := signature.Sign(self.Account, blockHash[:])
 	if err != nil {
 		return nil, fmt.Errorf("[Signature],Sign error:%s.", err)
 	}
@@ -255,7 +255,7 @@ func (self *SoloService) createBookkeepingTransaction(nonce uint64, fee common.F
 	}
 	txHash := tx.Hash()
 	acc := self.Account
-	s, err := signature.Sign(acc.PrivateKey, txHash[:])
+	s, err := signature.Sign(acc, txHash[:])
 	if err != nil {
 		return nil
 	}
