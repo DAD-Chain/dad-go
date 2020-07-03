@@ -33,6 +33,21 @@ type BalanceOfRsp struct {
 	OngAppove string `json:"ong_appove"`
 }
 
+type MerkleProof struct {
+	Type             string
+	TransactionsRoot string
+	BlockHeight      uint32
+	CurBlockRoot     string
+	CurBlockHeight   uint32
+	TargetHashes     []string
+}
+
+type NotifyEventInfo struct {
+	TxHash          string
+	ContractAddress string
+	States          interface{}
+}
+
 type TxAttributeInfo struct {
 	Usage types.TransactionAttributeUsage
 	Data  string
@@ -153,7 +168,7 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 }
 
 func VerifyAndSendTx(txn *types.Transaction) ontErrors.ErrCode {
-	// if transaction is verified unsucessfully then will not put it into transaction pool
+	// if transaction is verified unsuccessfully then will not put it into transaction pool
 	if errCode := bactor.AppendTxToPool(txn); errCode != ontErrors.ErrNoError {
 		log.Warn("Can NOT add the transaction to TxnPool")
 		return errCode
