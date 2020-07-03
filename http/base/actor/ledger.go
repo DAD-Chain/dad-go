@@ -22,13 +22,13 @@ import (
 	"errors"
 	"time"
 
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	lactor "github.com/ontio/dad-go/core/ledger/actor"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 const (
@@ -195,7 +195,7 @@ func AddBlock(block *types.Block) error {
 	}
 }
 
-func PreExecuteContract(tx *types.Transaction) ([]interface{}, error) {
+func PreExecuteContract(tx *types.Transaction) (interface{}, error) {
 	future := defLedgerPid.RequestFuture(&lactor.PreExecuteContractReq{tx}, REQ_TIMEOUT*time.Second)
 	result, err := future.Result()
 	if err != nil {
@@ -237,8 +237,8 @@ func GetEventNotifyByHeight(height uint32) ([]common.Uint256, error) {
 	}
 }
 
-func GetMerkleProof(proofHeight uint32,rootHeight uint32) ([]common.Uint256, error) {
-	future := defLedgerPid.RequestFuture(&lactor.GetMerkleProofReq{proofHeight,rootHeight}, REQ_TIMEOUT*time.Second)
+func GetMerkleProof(proofHeight uint32, rootHeight uint32) ([]common.Uint256, error) {
+	future := defLedgerPid.RequestFuture(&lactor.GetMerkleProofReq{proofHeight, rootHeight}, REQ_TIMEOUT*time.Second)
 	result, err := future.Result()
 	if err != nil {
 		log.Errorf(ERR_ACTOR_COMM, err)
