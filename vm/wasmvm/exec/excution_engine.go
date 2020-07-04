@@ -71,12 +71,11 @@ func newStack(depth int) *vmstack {
 }
 
 //todo add parameters
-func NewExecutionEngine(container interfaces.CodeContainer, crypto interfaces.Crypto, table interfaces.CodeTable, service InteropServiceInterface, ver string) *ExecutionEngine {
+func NewExecutionEngine(container interfaces.CodeContainer, crypto interfaces.Crypto, service InteropServiceInterface, ver string) *ExecutionEngine {
 
 	engine := &ExecutionEngine{
 		crypto:        crypto,
-		table:         table,
-		codeContainer: container,
+		CodeContainer: container,
 		service:       NewInteropService(),
 		version:       ver,
 	}
@@ -90,9 +89,8 @@ func NewExecutionEngine(container interfaces.CodeContainer, crypto interfaces.Cr
 
 type ExecutionEngine struct {
 	crypto        interfaces.Crypto
-	table         interfaces.CodeTable
 	service       *InteropService
-	codeContainer interfaces.CodeContainer
+	CodeContainer interfaces.CodeContainer
 	vm            *VM
 	//todo ,move to contract info later
 	version  string //for test different contracts
@@ -310,12 +308,11 @@ func (e *ExecutionEngine) Call(caller common.Address, code, input []byte) (retur
 	defer func() {
 		if err := recover(); err != nil {
 			returnbytes = nil
-			er = errors.New("[Call]error happend")
+			er = errors.New("[Call] error happened")
 		}
 	}()
 
 	if e.version != "test" {
-
 		methodad-gome := CONTRACT_METHOD_NAME //fix to "invoke"
 
 		tmparr := bytes.Split(input, []byte(PARAM_SPLITER))
@@ -331,7 +328,6 @@ func (e *ExecutionEngine) Call(caller common.Address, code, input []byte) (retur
 		if err != nil {
 			return nil, errors.New("[Call]Verify wasm failed!" + err.Error())
 		}
-
 		//3. verify the module
 		//already verified in step 2
 
@@ -368,7 +364,6 @@ func (e *ExecutionEngine) Call(caller common.Address, code, input []byte) (retur
 
 		//get  function type
 		ftype := m.Types.Entries[int(fidx)]
-
 		//method ,param bytes
 		params := make([]uint64, 2)
 
