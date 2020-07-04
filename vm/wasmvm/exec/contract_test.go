@@ -28,7 +28,6 @@ import (
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go/common"
 )
 
 func TestContract1(t *testing.T) {
@@ -411,48 +410,3 @@ func TestRawContract4(t *testing.T) {
 	}
 
 }
-
-//todo rewrite this test in up level
-/*
-
-func TestCallContract(t *testing.T){
-	engine := NewExecutionEngine(nil,nil,nil,nil,"product")
-	//test
-	code, err := ioutil.ReadFile("./test_data2/callcontract.wasm")
-	if err != nil {
-		fmt.Println("error in read file", err.Error())
-		return
-	}
-	bf := bytes.NewBufferString("add")
-	bf.WriteString("|")
-
-	tmp:=make([]byte,8)
-	binary.LittleEndian.PutUint32(tmp[:4],uint32(10))
-	binary.LittleEndian.PutUint32(tmp[4:],uint32(20))
-	bf.Write(tmp)
-
-	fmt.Printf("input is %v\n", bf.Bytes())
-
-	res, err := engine.Call(common.Address{}, code, bf.Bytes())
-	if err != nil {
-		fmt.Println("call error!", err.Error())
-	}
-	fmt.Printf("res:%v\n", res)
-
-	retbytes,err := engine.vm.GetPointerMemory(uint64(binary.LittleEndian.Uint32(res)))
-	if err != nil{
-		fmt.Println(err)
-		t.Fatal("errors:" + err.Error())
-	}
-
-	fmt.Println("retbytes is " +string(retbytes))
-
-	result := &Result{}
-	json.Unmarshal(retbytes,result)
-
-	if result.Pval != "30"{
-		t.Fatal("the res should be '30'")
-	}
-
-}
-*/
