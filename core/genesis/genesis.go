@@ -27,17 +27,14 @@ import (
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
-	"github.com/ontio/dad-go/smartcontract/service/native/states"
-	vmtypes "github.com/ontio/dad-go/vm/types"
+	"github.com/ontio/dad-go/smartcontract/states"
+	stypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const (
 	BlockVersion uint32 = 0
 	GenesisNonce uint64 = 2083236893
-
-	OntRegisterAmount = 1000000000
-	OngRegisterAmount = 1000000000
 )
 
 var (
@@ -93,13 +90,13 @@ func GenesisBlockInit(defaultBookkeeper []keypair.PublicKey) (*types.Block, erro
 }
 
 func NewGoverningToken() *types.Transaction {
-	tx := utils.NewDeployTransaction(&vmtypes.VmCode{Code: OntContractAddress[:], VmType: vmtypes.Native}, "ONT", "1.0",
+	tx := utils.NewDeployTransaction(stypes.VmCode{Code: OntContractAddress[:], VmType: stypes.Native}, "ONT", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network ONT Token", true)
 	return tx
 }
 
 func NewUtilityToken() *types.Transaction {
-	tx := utils.NewDeployTransaction(&vmtypes.VmCode{Code: OngContractAddress[:], VmType: vmtypes.Native}, "ONG", "1.0",
+	tx := utils.NewDeployTransaction(stypes.VmCode{Code: OngContractAddress[:], VmType: stypes.Native}, "ONG", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network ONG Token", true)
 	return tx
 }
@@ -108,12 +105,11 @@ func NewGoverningInit() *types.Transaction {
 	init := states.Contract{
 		Address: OntContractAddress,
 		Method:  "init",
-		Args:    []byte{},
 	}
 	bf := new(bytes.Buffer)
 	init.Serialize(bf)
-	vmCode := vmtypes.VmCode{
-		VmType: vmtypes.Native,
+	vmCode := stypes.VmCode{
+		VmType: stypes.Native,
 		Code:   bf.Bytes(),
 	}
 	tx := utils.NewInvokeTransaction(vmCode)
@@ -124,12 +120,11 @@ func NewUtilityInit() *types.Transaction {
 	init := states.Contract{
 		Address: OngContractAddress,
 		Method:  "init",
-		Args:    []byte{},
 	}
 	bf := new(bytes.Buffer)
 	init.Serialize(bf)
-	vmCode := vmtypes.VmCode{
-		VmType: vmtypes.Native,
+	vmCode := stypes.VmCode{
+		VmType: stypes.Native,
 		Code:   bf.Bytes(),
 	}
 	tx := utils.NewInvokeTransaction(vmCode)

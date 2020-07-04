@@ -25,7 +25,7 @@ import (
 	"github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/core/store/statestore"
-	vmtypes "github.com/ontio/dad-go/vm/types"
+	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go-crypto/keypair"
 )
 
