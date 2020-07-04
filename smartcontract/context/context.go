@@ -21,7 +21,7 @@ package context
 import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/smartcontract/event"
-	vmtypes "github.com/ontio/dad-go/vm/types"
+	stypes "github.com/ontio/dad-go/smartcontract/types"
 )
 
 type ContextRef interface {
@@ -32,10 +32,10 @@ type ContextRef interface {
 	PopContext()
 	CheckWitness(address common.Address) bool
 	PushNotifications(notifications []*event.NotifyEventInfo)
-	Execute() error
+	AppCall(address common.Address, method string, codes, args []byte, isLoad bool) error
 }
 
 type Context struct {
 	ContractAddress common.Address
-	Code            vmtypes.VmCode
+	Code            stypes.VmCode
 }
