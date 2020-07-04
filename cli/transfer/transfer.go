@@ -29,7 +29,6 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	clicommon "github.com/ontio/dad-go/cli/common"
 	"github.com/ontio/dad-go/common"
@@ -37,8 +36,10 @@ import (
 	ctypes "github.com/ontio/dad-go/core/types"
 	cutils "github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/http/base/rpc"
-	"github.com/ontio/dad-go/smartcontract/service/native/states"
-	vmtypes "github.com/ontio/dad-go/vm/types"
+	"github.com/ontio/dad-go/smartcontract/states"
+	nstates "github.com/ontio/dad-go/smartcontract/service/native/states"
+	vmtypes "github.com/ontio/dad-go/smartcontract/types"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 func transferAction(c *cli.Context) error {
@@ -74,13 +75,13 @@ func transferAction(c *cli.Context) error {
 		os.Exit(1)
 	}
 
-	var sts []*states.State
-	sts = append(sts, &states.State{
+	var sts []*nstates.State
+	sts = append(sts, &nstates.State{
 		From:  fu,
 		To:    tu,
 		Value: big.NewInt(value),
 	})
-	transfers := &states.Transfers{
+	transfers := &nstates.Transfers{
 		States: sts,
 	}
 	bf := new(bytes.Buffer)
