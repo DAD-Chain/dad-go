@@ -6,18 +6,18 @@
 package exec
 
 import (
+	"bytes"
 	"encoding/binary"
 	"errors"
-	"math"
-	"bytes"
 	"fmt"
+	"math"
 
+	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/vm/wasmvm/disasm"
 	"github.com/ontio/dad-go/vm/wasmvm/exec/internal/compile"
 	"github.com/ontio/dad-go/vm/wasmvm/memory"
 	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
-	"github.com/ontio/dad-go/common"
 )
 
 var (
@@ -334,10 +334,8 @@ func (vm *VM) ExecCode(insideCall bool, fnIndex int64, args ...uint64) (interfac
 	for i, arg := range args {
 		vm.ctx.locals[i] = arg
 	}
-
 	var rtrn interface{}
 	res := vm.execCode(insideCall, compiled)
-
 	// for the call contract case
 	if insideCall {
 		return res, nil
@@ -445,7 +443,7 @@ outer:
 }
 
 //start a new vm
-func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []byte) (uint64, error) {
+func (vm *VM) CallContract(caller common.Address, codeHash common.Address, module *wasm.Module, actionName []byte, arg []byte) (uint64, error) {
 
 	methodad-gome := CONTRACT_METHOD_NAME
 
@@ -463,6 +461,9 @@ func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []
 	if err != nil {
 		return uint64(0), err
 	}
+
+	newvm.Caller = caller
+	newvm.CodeHash = codeHash
 	newvm.Services = vm.Services
 
 	engine := vm.Engine
@@ -478,7 +479,6 @@ func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []
 	if err != nil {
 		return uint64(0), err
 	}
-
 	res, err := newvm.ExecCode(true, int64(index), uint64(actionIdx), uint64(argIdx))
 	if err != nil {
 		return uint64(0), err
@@ -495,44 +495,6 @@ func (vm *VM) CallProductContract(module *wasm.Module, actionName []byte, arg []
 	}
 
 	return uint64(idx), nil
-}
-
-//todo implement the "call other contract function"
-//this is for the "test" version call
-func (vm *VM) CallContract(module *wasm.Module, methodad-gome string, args ...uint64) (uint64, error) {
-
-	//1. exec the method code
-	entry, ok := module.Export.Entries[methodad-gome]
-	if ok == false {
-		return uint64(0), errors.New("Method:" + methodad-gome + " does not exist!")
-	}
-
-	//get entry index
-	index := int64(entry.Index)
-	//get function index
-	fidx := module.Function.Types[int(index)]
-	//get  function type
-	ftype := module.Types.Entries[int(fidx)]
-
-	if len(ftype.ParamTypes) != len(args) {
-		return uint64(0), errors.New("parameter count is not right")
-	}
-	//new vm
-	newvm, err := NewVM(module)
-	if err != nil {
-		return uint64(0), err
-	}
-	newvm.Services = vm.Services
-
-	vm.Engine.vm = newvm
-	newvm.Engine = vm.Engine
-
-	res, err := newvm.ExecCode(true, int64(index), args...)
-
-	//2 copy memory if need!!!
-	vm.Engine.vm = vm
-
-	return res.(uint64), nil
 }
 
 func (vm *VM) loadModule(module *wasm.Module) error {

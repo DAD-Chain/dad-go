@@ -41,6 +41,10 @@ const (
 	PUnkown
 )
 
+const (
+	VM_NIL_POINTER = math.MaxInt64
+)
+
 type TypeLength struct {
 	Ptype  PType
 	Length int
@@ -54,15 +58,16 @@ type VMmemory struct {
 	MemPoints       map[uint64]*TypeLength
 }
 
+//Alloc memory for base types, return the address in memory
 func (vm *VMmemory) Malloc(size int) (int, error) {
 	if vm.Memory == nil || len(vm.Memory) == 0 {
 		return 0, errors.New("memory is not initialized")
 	}
-	if vm.AllocedMemIdex+size > len(vm.Memory) {
+	if vm.AllocedMemIdex+size+1 > len(vm.Memory) {
 		return 0, errors.New("memory out of bound")
 	}
 
-	if vm.AllocedMemIdex+size > vm.PointedMemIndex {
+	if vm.AllocedMemIdex+size+1 > vm.PointedMemIndex {
 		return 0, errors.New("memory out of bound")
 	}
 
@@ -72,6 +77,7 @@ func (vm *VMmemory) Malloc(size int) (int, error) {
 	return offset, nil
 }
 
+//Alloc memory for pointer types, return the address in memory
 func (vm *VMmemory) MallocPointer(size int, p_type PType) (int, error) {
 	if vm.Memory == nil || len(vm.Memory) == 0 {
 		return 0, errors.New("memory is not initialized")
@@ -97,9 +103,10 @@ func (vm *VMmemory) copyMemAndGetIdx(b []byte, p_type PType) (int, error) {
 	return idx, nil
 }
 
+//return pointed memory size
 func (vm *VMmemory) GetPointerMemSize(addr uint64) int {
 	//nil case
-	if addr == uint64(math.MaxInt64) {
+	if addr == uint64(VM_NIL_POINTER) {
 		return 0
 	}
 
@@ -111,14 +118,19 @@ func (vm *VMmemory) GetPointerMemSize(addr uint64) int {
 	}
 }
 
+//return pointed memory
 //when wasm returns a pointer, call this function to get the pointed memory
 func (vm *VMmemory) GetPointerMemory(addr uint64) ([]byte, error) {
 	//nil case
-	if addr == uint64(math.MaxInt64) {
+	if addr == uint64(VM_NIL_POINTER) {
 		return nil, nil
 	}
 
 	length := vm.GetPointerMemSize(addr)
+	if length == 0 {
+		return nil,nil
+	}
+
 	if int(addr)+length > len(vm.Memory) {
 		return nil, errors.New("memory out of bound")
 	} else {
@@ -126,11 +138,12 @@ func (vm *VMmemory) GetPointerMemory(addr uint64) ([]byte, error) {
 	}
 }
 
+//set pointer types into memory, return address of memory
 func (vm *VMmemory) SetPointerMemory(val interface{}) (int, error) {
 
 	////nil case
 	if val == nil {
-		return math.MaxInt64, nil
+		return VM_NIL_POINTER, nil
 	}
 
 	switch reflect.TypeOf(val).Kind() {
@@ -138,7 +151,6 @@ func (vm *VMmemory) SetPointerMemory(val interface{}) (int, error) {
 		b := []byte(val.(string))
 		return vm.copyMemAndGetIdx(b, PString)
 	case reflect.Array, reflect.Struct, reflect.Ptr:
-
 		//todo  implement
 		return 0, nil
 	case reflect.Slice:
@@ -155,11 +167,11 @@ func (vm *VMmemory) SetPointerMemory(val interface{}) (int, error) {
 			}
 			return vm.copyMemAndGetIdx(intBytes, PInt32)
 		case []int64:
-			intBytes := make([]byte, len(val.([]int))*8)
-			for i, v := range val.([]int) {
+			intBytes := make([]byte, len(val.([]int64))*8)
+			for i, v := range val.([]int64) {
 				tmp := make([]byte, 8)
 				binary.LittleEndian.PutUint64(tmp, uint64(v))
-				copy(intBytes[i*8:(i+1)*4], tmp)
+				copy(intBytes[i*8:(i+1)*8], tmp)
 			}
 			return vm.copyMemAndGetIdx(intBytes, PInt64)
 
@@ -189,6 +201,7 @@ func (vm *VMmemory) SetPointerMemory(val interface{}) (int, error) {
 
 }
 
+//set struct into memory , return address of memory
 func (vm *VMmemory) SetStructMemory(val interface{}) (int, error) {
 
 	if reflect.TypeOf(val).Kind() != reflect.Struct {
@@ -258,6 +271,7 @@ func (vm *VMmemory) SetStructMemory(val interface{}) (int, error) {
 
 }
 
+//set base types into memory, return address of memory
 func (vm *VMmemory) SetMemory(val interface{}) (int, error) {
 
 	switch val.(type) {
