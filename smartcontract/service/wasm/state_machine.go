@@ -21,35 +21,33 @@ package wasm
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io/ioutil"
+	"fmt"
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/store"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/smartcontract/storage"
-	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
 	"github.com/ontio/dad-go/vm/wasmvm/util"
 	"github.com/ontio/dad-go/vm/wasmvm/wasm"
+
 )
 
 type WasmStateMachine struct {
 	*WasmStateReader
 	ldgerStore store.LedgerStore
 	CloneCache *storage.CloneCache
-	trigger    vmtypes.TriggerType
 	time       uint32
 }
 
-func NewWasmStateMachine(ldgerStore store.LedgerStore, dbCache scommon.StateStore, trigger vmtypes.TriggerType, time uint32) *WasmStateMachine {
+func NewWasmStateMachine(ldgerStore store.LedgerStore, dbCache scommon.StateStore, time uint32) *WasmStateMachine {
 
 	var stateMachine WasmStateMachine
 	stateMachine.ldgerStore = ldgerStore
 	stateMachine.CloneCache = storage.NewCloneCache(dbCache)
-	stateMachine.WasmStateReader = NewWasmStateReader(ldgerStore, trigger)
-	stateMachine.trigger = trigger
+	stateMachine.WasmStateReader = NewWasmStateReader(ldgerStore)
 	stateMachine.time = time
 
 	stateMachine.Register("PutStorage", stateMachine.putstore)
@@ -111,19 +109,17 @@ func (s *WasmStateMachine) getstore(engine *exec.ExecutionEngine) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-
 	k, err := serializeStorageKey(vm.CodeHash, key)
 	if err != nil {
 		return false, err
 	}
+
 	item, err := s.CloneCache.Get(scommon.ST_STORAGE, k)
 	if err != nil {
 		return false, err
 	}
 
-	// idx = int64.max value if item is nil
-	//todo need more  test about the nil case
-	idx, err := vm.SetPointerMemory(item)
+	idx, err := vm.SetPointerMemory(item.(*states.StorageItem).Value)
 	if err != nil {
 		return false, err
 	}
@@ -159,6 +155,17 @@ func (s *WasmStateMachine) deletestore(engine *exec.ExecutionEngine) (bool, erro
 	vm.RestoreCtx()
 
 	return true, nil
+}
+
+func (s *WasmStateMachine) GetContractCodeFromAddress(address common.Address) ([]byte, error) {
+
+	dcode, err := s.ldgerStore.GetContractState(address)
+	if err != nil {
+		return nil, err
+	}
+
+	return dcode.Code.Code, nil
+
 }
 
 //call other contract

@@ -21,8 +21,12 @@ package common
 import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/vm/neovm/types"
+	"github.com/ontio/dad-go/common/log"
 )
 
+// When you execute finish neovm, you can get stack element
+// According item types convert to hex string value
+// Now neovm support type contain: ByteArray/Integer/Boolean/Array/Struct/Interop/StackItems
 func ConvertReturnTypes(item types.StackItems) interface{} {
 	if item == nil {
 		return nil
@@ -48,12 +52,19 @@ func ConvertReturnTypes(item types.StackItems) interface{} {
 			arr = append(arr, ConvertReturnTypes(val))
 		}
 		return arr
+	case *types.Struct:
+		var arr []interface{}
+		for _, val := range v.GetStruct() {
+			arr = append(arr, ConvertReturnTypes(val))
+		}
+		return arr
 	case *types.Interop:
 		return common.ToHexString(v.GetInterface().ToArray())
 	case types.StackItems:
-		ConvertReturnTypes(v)
+		return ConvertReturnTypes(v)
 	default:
-		panic("[ConvertTypes] Invalid Types!")
+		log.Error("[ConvertTypes] Invalid Types!")
+		return nil
 	}
-	return nil
 }
+
