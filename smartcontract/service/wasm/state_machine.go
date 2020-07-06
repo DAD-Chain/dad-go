@@ -33,7 +33,7 @@ import (
 	"github.com/ontio/dad-go/vm/wasmvm/util"
 	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/vm/types"
+	"github.com/ontio/dad-go/smartcontract/types"
 )
 
 type LogLevel byte
