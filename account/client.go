@@ -39,7 +39,6 @@ import (
 	"github.com/ontio/dad-go/common/password"
 	"github.com/ontio/dad-go/core/contract"
 	ct "github.com/ontio/dad-go/core/contract"
-	sig "github.com/ontio/dad-go/core/signature"
 	ontErrors "github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/net/protocol"
 )
@@ -50,7 +49,6 @@ const (
 )
 
 type Client interface {
-	Sign(context *ct.ContractContext) bool
 	ContainsAccount(pubKey keypair.PublicKey) bool
 	GetAccount(pubKey keypair.PublicKey) (*Account, error)
 	GetDefaultAccount() (*Account, error)
@@ -317,36 +315,6 @@ func (cl *ClientImpl) CreateAccountByPrivateKey(privateKey []byte) (*Account, er
 		return nil, err
 	}
 	return ac, nil
-}
-
-func (cl *ClientImpl) Sign(context *ct.ContractContext) bool {
-	log.Debug()
-	fSuccess := false
-	for i, hash := range context.ProgramHashes {
-		contract := cl.GetContract(hash)
-		if contract == nil {
-			continue
-		}
-		account := cl.GetAccountByProgramHash(hash)
-		if account == nil {
-			continue
-		}
-
-		signature, err := sig.SignBySigner(context.Data, account)
-		if err != nil {
-			return fSuccess
-		}
-		err = context.AddContract(contract, account.PublicKey, signature)
-
-		if err != nil {
-			fSuccess = false
-		} else {
-			if i == 0 {
-				fSuccess = true
-			}
-		}
-	}
-	return fSuccess
 }
 
 func (cl *ClientImpl) verifyPasswordKey(passwordKey []byte) bool {

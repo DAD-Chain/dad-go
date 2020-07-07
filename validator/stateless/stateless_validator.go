@@ -27,9 +27,13 @@ import (
 	"github.com/ontio/dad-go-eventbus/actor"
 )
 
+// Validator wraps validator actor's pid
 type Validator interface {
+	// Register send a register message to poolId
 	Register(poolId *actor.PID)
+	// UnRegister send an unregister message to poolId
 	UnRegister(poolId *actor.PID)
+	// VerifyType returns the type of validator
 	VerifyType() vatypes.VerifyType
 }
 
@@ -38,6 +42,7 @@ type validator struct {
 	id  string
 }
 
+// NewValidator spawns a validator actor and return its pid wraped in Validator
 func NewValidator(id string) (Validator, error) {
 	validator := &validator{id: id}
 	props := actor.FromProducer(func() actor.Actor {
@@ -52,15 +57,15 @@ func NewValidator(id string) (Validator, error) {
 func (self *validator) Receive(context actor.Context) {
 	switch msg := context.Message().(type) {
 	case *actor.Started:
-		log.Info("Validator started and be ready to receive txn")
+		log.Info("stateless-validator: started and be ready to receive txn")
 	case *actor.Stopping:
-		log.Info("Validator stopping")
+		log.Info("stateless-validator: stopping")
 	case *actor.Restarting:
-		log.Info("Validator Restarting")
+		log.Info("stateless-validator: restarting")
 	case *actor.Stopped:
-		log.Info("Validator Stopped")
+		log.Info("stateless-validator: stopped")
 	case *vatypes.CheckTx:
-		log.Info("Validator receive tx")
+		log.Debugf("stateless-validator receive tx %x", msg.Tx.Hash())
 		sender := context.Sender()
 		errCode := validation.VerifyTransaction(&msg.Tx)
 
@@ -76,7 +81,7 @@ func (self *validator) Receive(context actor.Context) {
 	case *vatypes.UnRegisterAck:
 		context.Self().Stop()
 	default:
-		log.Info("stateless-validator:Unknown msg ", msg, "type", reflect.TypeOf(msg))
+		log.Info("stateless-validator: unknown msg ", msg, "type", reflect.TypeOf(msg))
 	}
 
 }
