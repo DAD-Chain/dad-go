@@ -23,12 +23,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	cliCommon "github.com/ontio/dad-go/cli/common"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/password"
 	"github.com/ontio/dad-go/http/base/rpc"
-	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/urfave/cli"
 )
 
@@ -88,7 +88,11 @@ func walletAction(c *cli.Context) error {
 		fmt.Println("password changed")
 		return nil
 	}
-	account, _ := wallet.GetDefaultAccount()
+	account := wallet.GetDefaultAccount()
+	if account == nil {
+		fmt.Println(" can not get default account")
+		os.Exit(1)
+	}
 	pubKey := account.PubKey()
 	address := account.Address
 
