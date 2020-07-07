@@ -1,99 +1,141 @@
-/*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
- *
- * The dad-go is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The dad-go is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright 2017 The dad-go Authors
+// This file is part of the dad-go library.
+//
+// The dad-go library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The dad-go library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the dad-go library. If not, see <http://www.gnu.org/licenses/>.
 
 package neovm
 
 import (
 	"testing"
+
+	"bytes"
 	"math/big"
 
-	"github.com/dad-go/vm/neovm/types"
+	vtypes "github.com/ontio/dad-go/vm/neovm/types"
 )
 
 func TestOpArraySize(t *testing.T) {
-	engine.opCode = ARRAYSIZE
+	var e ExecutionEngine
+	stack := NewRandAccessStack()
+	stack.Push(NewStackItem(vtypes.NewByteArray([]byte("aaaaa"))))
+	e.EvaluationStack = stack
 
-	bs := []byte{0x51, 0x52}
-	i := big.NewInt(1)
-
-	is := []types.StackItemInterface{types.NewByteArray(bs), types.NewInteger(i)}
-	PushData(engine, is);
-
-	_, err := opArraySize(engine)
-
-	if err != nil {
-		t.Fatal(err)
+	opArraySize(&e)
+	if PeekInt(&e) != 5 {
+		t.Fatalf("NeoVM OpArraySize test failed, expect 5, got %d.", PeekInt(&e))
 	}
-
-	t.Log("op array size result 2, execute result:", engine.GetEvaluationStack().Peek(0).GetStackItem().GetBigInteger())
 }
 
 func TestOpPack(t *testing.T) {
-	engine.opCode = PACK
+	var e ExecutionEngine
+	stack := NewRandAccessStack()
+	stack.Push(NewStackItem(vtypes.NewByteArray([]byte("aaa"))))
+	stack.Push(NewStackItem(vtypes.NewByteArray([]byte("bbb"))))
+	stack.Push(NewStackItem(vtypes.NewByteArray([]byte("ccc"))))
+	stack.Push(NewStackItem(vtypes.NewInteger(big.NewInt(3))))
+	e.EvaluationStack = stack
 
-	bs := []byte{0x51, 0x52}
-	i := big.NewInt(1)
-	n := 2
-
-	PushData(engine, bs)
-
-	PushData(engine, i)
-
-	PushData(engine, n)
-
-	if _, err := opPack(engine); err != nil {
-		t.Fatal(err)
+	opPack(&e)
+	if stack.Count() != 1 {
+		t.Fatalf("NeoVM OpPack test failed, expect 3, got %d.", stack.Count())
 	}
-	array := engine.GetEvaluationStack().Peek(0).GetStackItem().GetArray()
 
-	for _, v := range array {
-		t.Log("value:", v.GetByteArray())
+	items := make([]vtypes.StackItems, 0)
+	items = append(items, vtypes.NewByteArray([]byte("ccc")))
+	items = append(items, vtypes.NewByteArray([]byte("bbb")))
+	items = append(items, vtypes.NewByteArray([]byte("aaa")))
+
+	arr := PeekArray(&e)
+	if len(arr) != 3 {
+		t.Fatalf("NeoVM OpPack test failed, expect 3, got %d.", len(arr))
+	}
+
+	for i := 0; i < 3; i++ {
+		if !bytes.Equal(arr[i].GetByteArray(), items[i].GetByteArray()) {
+			t.Fatal("NeoVM OpPack test failed")
+		}
 	}
 }
 
-func TestOpUnPack(t *testing.T) {
-	engine.opCode = UNPACK
+func TestOpUnpack(t *testing.T) {
+	var e ExecutionEngine
+	stack := NewRandAccessStack()
+	e.EvaluationStack = stack
 
-	if _, err := opUnpack(engine); err != nil {
-		t.Fatal(err)
+	items := make([]vtypes.StackItems, 0)
+	items = append(items, vtypes.NewByteArray([]byte("aaa")))
+	items = append(items, vtypes.NewByteArray([]byte("bbb")))
+	items = append(items, vtypes.NewByteArray([]byte("ccc")))
+	PushData(&e, items)
+
+	opUnpack(&e)
+	if stack.Count() != 4 || PopInt(&e) != 3 {
+		t.Fatalf("NeoVM OpUnpack test failed, expect 3, got %d.", stack.Count())
 	}
-	t.Log(engine.GetEvaluationStack().Pop().GetStackItem().GetBigInteger())
-	t.Log(engine.GetEvaluationStack().Pop().GetStackItem().GetBigInteger())
-	t.Log(engine.GetEvaluationStack().Pop().GetStackItem().GetByteArray())
 
+	for i := 0; i < 3; i++ {
+		if !bytes.Equal(PopStackItem(&e).GetByteArray(), items[i].GetByteArray()) {
+			t.Fatal("NeoVM OpUnpack test failed")
+		}
+	}
 }
 
 func TestOpPickItem(t *testing.T) {
-	engine.opCode = PICKITEM
+	var e ExecutionEngine
+	stack := NewRandAccessStack()
+	e.EvaluationStack = stack
 
-	bs := []byte{0x51, 0x52}
-	i := big.NewInt(1)
+	items := make([]vtypes.StackItems, 0)
+	items = append(items, vtypes.NewByteArray([]byte("aaa")))
+	items = append(items, vtypes.NewByteArray([]byte("bbb")))
+	items = append(items, vtypes.NewByteArray([]byte("ccc")))
+	PushData(&e, items)
+	stack.Push(NewStackItem(vtypes.NewInteger(big.NewInt(0))))
 
-	is := []types.StackItemInterface{types.NewByteArray(bs), types.NewInteger(i)}
-	PushData(engine, is)
-
-	PushData(engine, 0)
-
-	if _, err := opPickItem(engine); err != nil {
-		t.Fatal(err)
+	opPickItem(&e)
+	if stack.Count() != 1 || !bytes.Equal(PeekStackItem(&e).GetByteArray(), []byte("aaa")) {
+		t.Fatal("NeoVM OpPickItem test failed.")
 	}
-	t.Log(engine.GetEvaluationStack().Pop().GetStackItem().GetByteArray())
-
 }
 
+func TestOpReverse(t *testing.T) {
+	var e1 ExecutionEngine
+	var e2 ExecutionEngine
+	e1.EvaluationStack = NewRandAccessStack()
+	e2.EvaluationStack = NewRandAccessStack()
 
+	items := make([]vtypes.StackItems, 0)
+	items = append(items, vtypes.NewByteArray([]byte("aaa")))
+	items = append(items, vtypes.NewByteArray([]byte("bbb")))
+	items = append(items, vtypes.NewByteArray([]byte("ccc")))
+	PushData(&e1, items)
+	PushData(&e2, items)
+
+	t.Log("=======Before===========")
+
+	t.Log(string(PeekArray(&e2)[0].GetByteArray()))
+	t.Log(string(PeekArray(&e2)[1].GetByteArray()))
+	t.Log(string(PeekArray(&e2)[2].GetByteArray()))
+
+	opReverse(&e1)
+
+	t.Log("=======After===========")
+	t.Log(string(PeekArray(&e2)[0].GetByteArray()))
+	t.Log(string(PeekArray(&e2)[1].GetByteArray()))
+	t.Log(string(PeekArray(&e2)[2].GetByteArray()))
+
+	if string(PeekArray(&e2)[0].GetByteArray()) != "ccc" {
+		t.Fatalf("NeoVM OpReverse test failed, expect ccc, get %s.", string(PeekArray(&e2)[0].GetByteArray()))
+	}
+}

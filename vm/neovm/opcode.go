@@ -69,11 +69,11 @@ const (
 	DEPTH           OpCode = 0x74 // Puts the number of stack items onto the stack.
 	DROP            OpCode = 0x75 // Removes the top stack item.
 	DUP             OpCode = 0x76 // Duplicates the top stack item.
-	NIP             OpCode = 0x77 // Removes the second-to-top stack item.
-	OVER            OpCode = 0x78 // Copies the second-to-top stack item to the top.
+	NIP             OpCode = 0x77 // Removes the second top stack item.
+	OVER            OpCode = 0x78 // Copies the second top stack item to the top.
 	PICK            OpCode = 0x79 // The item n back in the stack is copied to the top.
 	ROLL            OpCode = 0x7A // The item n back in the stack is moved to the top.
-	ROT             OpCode = 0x7B // The top three items on the stack are rotated to the left.
+	ROT             OpCode = 0x7B // Move third top item on the top of stack.
 	SWAP            OpCode = 0x7C // The top two items on the stack are swapped.
 	TUCK            OpCode = 0x7D // The item at the top of the stack is copied and inserted before the second-to-top item.
 
@@ -90,9 +90,9 @@ const (
 	OR     OpCode = 0x85 // Boolean or between each bit in the inputs.
 	XOR    OpCode = 0x86 // Boolean exclusive or between each bit in the inputs.
 	EQUAL  OpCode = 0x87 // Returns 1 if the inputs are exactly equal, 0 otherwise.
-	//EQUALVERIFY = 0x88 // Same as EQUAL, but runs VERIFY afterward.
-	//RESERVED1 = 0x89 // Transaction is invalid unless occuring in an unexecuted IF branch
-	//RESERVED2 = 0x8A // Transaction is invalid unless occuring in an unexecuted IF branch
+	// EQUALVERIFY = 0x88 // Same as EQUAL, but runs VERIFY afterward.
+	// RESERVED1 = 0x89 // Transaction is invalid unless occurring in an unexecuted IF branch
+	// RESERVED2 = 0x8A // Transaction is invalid unless occurring in an unexecuted IF branch
 
 	// Arithmetic
 	// Note: Arithmetic inputs are limited to signed 32-bit integers, but may overflow their output.
