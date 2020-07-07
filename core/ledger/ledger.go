@@ -21,7 +21,9 @@ package ledger
 import (
 	"fmt"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/states"
@@ -29,7 +31,6 @@ import (
 	"github.com/ontio/dad-go/core/store/ledgerstore"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 var DefLedger *Ledger
@@ -69,7 +70,11 @@ func (self *Ledger) AddHeaders(headers []*types.Header) error {
 }
 
 func (self *Ledger) AddBlock(block *types.Block) error {
-	return self.ldgStore.AddBlock(block)
+	err := self.ldgStore.AddBlock(block)
+	if err != nil {
+		log.Errorf("Ledger AddBlock BlockHeight:%d BlockHash:%x error:%s", block.Header.Height, block.Hash(), err)
+	}
+	return err
 }
 
 func (self *Ledger) GetBlockRootWithNewTxRoot(txRoot common.Uint256) common.Uint256 {
