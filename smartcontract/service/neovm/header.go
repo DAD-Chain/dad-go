@@ -6,13 +6,9 @@ import (
 	"github.com/ontio/dad-go/core/types"
 )
 
+// get hash from header
 func HeaderGetHash(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetHash] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetHash] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -26,13 +22,9 @@ func HeaderGetHash(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return nil
 }
 
+// get version from header
 func HeaderGetVersion(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetVersion] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetVersion] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -45,13 +37,9 @@ func HeaderGetVersion(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return nil
 }
 
+// get prevhash from header
 func HeaderGetPrevHash(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetPrevHash] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetPrevHash] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -64,13 +52,9 @@ func HeaderGetPrevHash(service *NeoVmService, engine *vm.ExecutionEngine) error 
 	return nil
 }
 
+// get merkle root from header
 func HeaderGetMerkleRoot(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetMerkleRoot] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetMerkleRoot] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -83,13 +67,9 @@ func HeaderGetMerkleRoot(service *NeoVmService, engine *vm.ExecutionEngine) erro
 	return nil
 }
 
+// get height from header
 func HeaderGetIndex(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetIndex] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetIndex] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -102,13 +82,9 @@ func HeaderGetIndex(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return nil
 }
 
+// get timestamp from header
 func HeaderGetTimestamp(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetTimestamp] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetTimestamp] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -121,13 +97,9 @@ func HeaderGetTimestamp(service *NeoVmService, engine *vm.ExecutionEngine) error
 	return nil
 }
 
+// get consensus data from header
 func HeaderGetConsensusData(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetConsensusData] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetConsensusData] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header
@@ -140,13 +112,9 @@ func HeaderGetConsensusData(service *NeoVmService, engine *vm.ExecutionEngine) e
 	return nil
 }
 
+// get next consensus address from header
 func HeaderGetNextConsensus(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[HeaderGetNextConsensus] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[HeaderGetNextConsensus] Pop blockdata nil!")
-	}
+	d := vm.PopInteropInterface(engine)
 	var data *types.Header
 	if b, ok := d.(*types.Block); ok {
 		data = b.Header

@@ -19,6 +19,7 @@ package smartcontract
 import (
 	"fmt"
 	"bytes"
+	"encoding/binary"
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/store"
@@ -36,22 +37,27 @@ import (
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/smartcontract/states"
 	vm "github.com/ontio/dad-go/vm/neovm"
-	"encoding/binary"
+)
+
+var (
+	CONTRACT_NOT_EXIST = errors.NewErr("[AppCall] Get contract context nil")
+	DEPLOYCODE_TYPE_ERROR = errors.NewErr("[AppCall] DeployCode type error!")
+	INVOKE_CODE_EXIST = errors.NewErr("[AppCall] Invoke codes exist!")
 )
 
 type SmartContract struct {
-	Contexts      []*context.Context // all execute smart contract context
+	Contexts      []*context.Context       // all execute smart contract context
 	Config        *Config
 	Engine        Engine
 	Notifications []*event.NotifyEventInfo // all execute smart contract event notify info
 }
 
 type Config struct {
-	Time    uint32	// now block timestamp
-	Height  uint32  // now block height
+	Time    uint32              // current block timestamp
+	Height  uint32              // current block height
 	Tx      *ctypes.Transaction // current transaction
-	DBCache scommon.StateStore // db states cache
-	Store   store.LedgerStore // ledger store
+	DBCache scommon.StateStore  // db states cache
+	Store   store.LedgerStore   // ledger store
 }
 
 type Engine interface {
@@ -156,20 +162,38 @@ func (this *SmartContract) Execute() error {
 	return nil
 }
 
-// When you want to call a contract use this function, if contract exist in blockchain, you should set isLoad true,
+// When you want to call a contract use this function, if contract exist in block chain, you should set isLoad true,
 // Otherwise, you can set execute code, and set isLoad false.
 // param address: smart contract address
 // param method: invoke smart contract method name
 // param codes: invoke smart contract whether need to load code
 // param args: invoke smart contract args
-// param idLoad: if true, you can get contract code from block chain, else, you need to load code from param codes
-func (this *SmartContract) AppCall(address common.Address, method string, codes, args []byte, isLoad bool) error {
-	var code []byte
+func (this *SmartContract) AppCall(address common.Address, method string, codes, args []byte) error {
+	var (
+		code []byte
+		isLoad bool = false
+	)
+
+	if len(codes) == 0 {
+		isLoad = true
+	}
+
+	item, err := this.getContract(address[:]); if err != nil {
+		return err
+	}
+
 	if isLoad {
-		c, err := this.getContract(address[:]); if err != nil {
-			return err
+		if item == nil {
+			return CONTRACT_NOT_EXIST
 		}
-		code = c.Code.Code
+		contract, ok := item.Value.(*payload.DeployCode); if !ok {
+			return DEPLOYCODE_TYPE_ERROR
+		}
+		code = contract.Code.Code
+	} else {
+		if item != nil {
+			return INVOKE_CODE_EXIST
+		}
 	}
 
 	vmType := stypes.VmType(address[0])
@@ -238,13 +262,10 @@ func (this *SmartContract) CheckWitness(address common.Address) bool {
 	return false
 }
 
-func (this *SmartContract) getContract(address []byte) (*payload.DeployCode, error) {
+func (this *SmartContract) getContract(address []byte) (*scommon.StateItem, error) {
 	item, err := this.Config.DBCache.TryGet(scommon.ST_CONTRACT, address[:]);
-	if err != nil || item == nil || item.Value == nil {
-		return nil, errors.NewErr("[getContract] Get context doesn't exist!")
+	if err != nil {
+		return nil, errors.NewErr("[getContract] Get contract context error!")
 	}
-	contract, ok := item.Value.(*payload.DeployCode); if !ok {
-		return nil, errors.NewErr("[getContract] Type error!")
-	}
-	return contract, nil
+	return item, nil
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/ontio/dad-go/common"
 )
 
+// create a new contract
 func ContractCreate(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	contract, err := isContractParamValid(engine); if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[ContractCreate] contract parameters invalid!")
@@ -25,6 +26,7 @@ func ContractCreate(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return nil
 }
 
+// migrate older contract to new contract
 func ContractMigrate(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	contract, err := isContractParamValid(engine); if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[ContractMigrate] contract parameters invalid!")
@@ -43,6 +45,7 @@ func ContractMigrate(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return ContractDestory(service, engine)
 }
 
+// destory a contract
 func ContractDestory(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	context := service.ContextRef.CurrentContext(); if context == nil {
 		return errors.NewErr("[ContractDestory] current contract context invalid!")
@@ -63,6 +66,7 @@ func ContractDestory(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return nil
 }
 
+// get contract storage context
 func ContractGetStorageContext(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	if vm.EvaluationStackCount(engine) < 1 {
 		return errors.NewErr("[GetStorageContext] Too few input parameter!")
@@ -85,17 +89,9 @@ func ContractGetStorageContext(service *NeoVmService, engine *vm.ExecutionEngine
 	return nil
 }
 
+// get contract code
 func ContractGetCode(service *NeoVmService, engine *vm.ExecutionEngine) error {
-	if vm.EvaluationStackCount(engine) < 1 {
-		return errors.NewErr("[ContractGetCode] Too few input parameters ")
-	}
-	d := vm.PopInteropInterface(engine); if d == nil {
-		return errors.NewErr("[ContractGetCode] Pop contractState nil!")
-	}
-	contractState, ok := d.(*payload.DeployCode); if ok == false {
-		return errors.NewErr("[ContractGetCode] Wrong type!")
-	}
-	vm.PushData(engine, contractState.Code)
+	vm.PushData(engine, vm.PopInteropInterface(engine).(*payload.DeployCode).Code)
 	return nil
 }
 
