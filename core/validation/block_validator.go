@@ -28,6 +28,7 @@ import (
 	ontErrors "github.com/ontio/dad-go/errors"
 )
 
+// VerifyBlock checks whether the block is valid
 func VerifyBlock(block *types.Block, ld *ledger.Ledger, completely bool) error {
 	header := block.Header
 	if header.Height == 0 {
@@ -43,7 +44,7 @@ func VerifyBlock(block *types.Block, ld *ledger.Ledger, completely bool) error {
 
 	prevHeader, err := ld.GetHeaderByHash(block.Header.PrevBlockHash)
 	if err != nil {
-		return fmt.Errorf("[BlockValidator], Cannnot find prevHeader: %s", err)
+		return fmt.Errorf("[BlockValidator], can not find prevHeader: %s", err)
 	}
 
 	err = VerifyHeader(block.Header, prevHeader)
@@ -97,7 +98,7 @@ func VerifyHeader(header, prevHeader *types.Header) error {
 	}
 
 	if prevHeader == nil {
-		return errors.New("[BlockValidator], Cannnot find previous block.")
+		return errors.New("[BlockValidator], can not find previous block.")
 	}
 
 	if prevHeader.Height+1 != header.Height {
