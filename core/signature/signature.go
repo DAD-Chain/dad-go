@@ -20,29 +20,9 @@ package signature
 
 import (
 	"errors"
-	"io"
-
 	"github.com/ontio/dad-go-crypto/keypair"
 	s "github.com/ontio/dad-go-crypto/signature"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/core/contract/program"
-	"github.com/ontio/dad-go/vm/neovm/interfaces"
 )
-
-// SignableData describe the data need be signed.
-type SignableData interface {
-	interfaces.CodeContainer
-
-	// Get the the SignableData's program hashes
-	GetProgramHashes() ([]common.Address, error)
-
-	SetPrograms([]*program.Program)
-
-	GetPrograms() []*program.Program
-
-	// TODO: add SerializeUnsigned
-	SerializeUnsigned(io.Writer) error
-}
 
 // Sign returns the signature of data using privKey
 func Sign(signer Signer, data []byte) ([]byte, error) {
