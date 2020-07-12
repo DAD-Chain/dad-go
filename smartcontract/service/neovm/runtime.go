@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 The dad-go Authors
+ * This file is part of The dad-go library.
+ *
+ * The dad-go is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The dad-go is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package neovm
 
 import (
@@ -11,14 +29,14 @@ import (
 	"github.com/ontio/dad-go/core/signature"
 )
 
-// get current time
+// HeaderGetNextConsensus put current block time to vm stack
 func RuntimeGetTime(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	vm.PushData(engine, int(service.Time))
 	return nil
 }
 
-// check permissions
-// if param address isn't exist in authorization list, check fail
+// RuntimeCheckWitness provide check permissions service
+// If param address isn't exist in authorization list, check fail
 func RuntimeCheckWitness(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	data := vm.PopByteArray(engine)
 	var result bool
@@ -39,7 +57,7 @@ func RuntimeCheckWitness(service *NeoVmService, engine *vm.ExecutionEngine) erro
 	return nil
 }
 
-// smart contract execute event notify
+// RuntimeNotify put smart contract execute event notify to notifications
 func RuntimeNotify(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	item := vm.PopStackItem(engine)
 	context := service.ContextRef.CurrentContext()
@@ -47,15 +65,16 @@ func RuntimeNotify(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	return nil
 }
 
-// smart contract execute log
+// RuntimeLog push smart contract execute event log to client
 func RuntimeLog(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	item := vm.PopByteArray(engine)
 	context := service.ContextRef.CurrentContext()
 	txHash := service.Tx.Hash()
-	event.PushSmartCodeEvent(txHash, 0, "InvokeTransaction", &event.LogEventArgs{TxHash:txHash, ContractAddress: context.ContractAddress, Message: string(item)})
+	event.PushSmartCodeEvent(txHash, 0, event.EVENT_LOG, &event.LogEventArgs{TxHash:txHash, ContractAddress: context.ContractAddress, Message: string(item)})
 	return nil
 }
 
+// RuntimeCheckSig verify whether authorization legal
 func RuntimeCheckSig(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	pubKey := vm.PopByteArray(engine)
 	data := vm.PopByteArray(engine)

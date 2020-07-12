@@ -27,6 +27,7 @@ import (
 	"github.com/ontio/dad-go/errors"
 )
 
+// Transfers
 type Transfers struct {
 	Version byte
 	States  []*State
