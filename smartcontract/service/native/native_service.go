@@ -29,9 +29,8 @@ import (
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/service/native/states"
 	"github.com/ontio/dad-go/smartcontract/storage"
-	vmtypes "github.com/ontio/dad-go/vm/types"
+	sstates "github.com/ontio/dad-go/smartcontract/states"
 )
 
 type (
@@ -46,6 +45,8 @@ var (
 	}
 )
 
+// Native service struct
+// Invoke a native smart contract, new a native service
 type NativeService struct {
 	CloneCache    *storage.CloneCache
 	ServiceMap    map[string]Handler
@@ -56,6 +57,7 @@ type NativeService struct {
 	ContextRef    context.ContextRef
 }
 
+// New native service
 func NewNativeService(dbCache scommon.StateStore, height uint32, tx *types.Transaction, ctxRef context.ContextRef) *NativeService {
 	var nativeService NativeService
 	nativeService.CloneCache = storage.NewCloneCache(dbCache)
@@ -66,17 +68,17 @@ func NewNativeService(dbCache scommon.StateStore, height uint32, tx *types.Trans
 	return &nativeService
 }
 
-func (native *NativeService) Register(methodad-gome string, handler Handler) {
-	native.ServiceMap[methodad-gome] = handler
+func (this *NativeService) Register(methodad-gome string, handler Handler) {
+	this.ServiceMap[methodad-gome] = handler
 }
 
-func (native *NativeService) Invoke() error {
-	ctx := native.ContextRef.CurrentContext()
+func (this *NativeService) Invoke() error {
+	ctx := this.ContextRef.CurrentContext()
 	if ctx == nil {
 		return errors.NewErr("[Invoke] Native service current context doesn't exist!")
 	}
 	bf := bytes.NewBuffer(ctx.Code.Code)
-	contract := new(states.Contract)
+	contract := new(sstates.Contract)
 	if err := contract.Deserialize(bf); err != nil {
 		return err
 	}
@@ -84,45 +86,19 @@ func (native *NativeService) Invoke() error {
 	if !ok {
 		return fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
 	}
-	services(native)
-	service, ok := native.ServiceMap[contract.Method]
+	services(this)
+	service, ok := this.ServiceMap[contract.Method]
 	if !ok {
 		return fmt.Errorf("Native contract %x doesn't support this function %s.", contract.Address, contract.Method)
 	}
-	native.ContextRef.PushContext(&context.Context{ContractAddress: contract.Address})
-	native.Input = contract.Args
-	if err := service(native); err != nil {
+	this.ContextRef.PushContext(&context.Context{ContractAddress: contract.Address})
+	this.Input = contract.Args
+	if err := service(this); err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[Invoke] Native serivce function execute error!")
 	}
-	native.ContextRef.PopContext()
-	native.ContextRef.PushNotifications(native.Notifications)
-	native.CloneCache.Commit()
-	return nil
-}
-
-func (native *NativeService) AppCall(address common.Address, method string, args []byte) error {
-	bf := new(bytes.Buffer)
-	contract := &states.Contract{
-		Address: address,
-		Method:  method,
-		Args:    args,
-	}
-
-	if err := contract.Serialize(bf); err != nil {
-		return err
-	}
-	code := vmtypes.VmCode{
-		VmType: vmtypes.Native,
-		Code:   bf.Bytes(),
-	}
-	native.ContextRef.PushContext(&context.Context{
-		Code:            code,
-		ContractAddress: code.AddressFromVmCode(),
-	})
-	if err := native.ContextRef.Execute(); err != nil {
-		return err
-	}
-	native.ContextRef.PopContext()
+	this.ContextRef.PopContext()
+	this.ContextRef.PushNotifications(this.Notifications)
+	this.CloneCache.Commit()
 	return nil
 }
 
