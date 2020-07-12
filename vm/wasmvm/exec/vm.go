@@ -13,11 +13,11 @@ import (
 	"math"
 
 	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/vm/wasmvm/disasm"
 	"github.com/ontio/dad-go/vm/wasmvm/exec/internal/compile"
 	"github.com/ontio/dad-go/vm/wasmvm/memory"
 	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 	ops "github.com/ontio/dad-go/vm/wasmvm/wasm/operators"
+	"github.com/ontio/dad-go/vm/wasmvm/disasm"
 )
 
 var (
@@ -464,6 +464,7 @@ func (vm *VM) CallContract(caller common.Address, contractAddress common.Address
 
 	newvm.Caller = caller
 	newvm.ContractAddress = contractAddress
+
 	newvm.Services = vm.Services
 
 	engine := vm.Engine
