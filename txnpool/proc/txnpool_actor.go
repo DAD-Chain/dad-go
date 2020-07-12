@@ -73,12 +73,8 @@ func (ta *TxActor) handleTransaction(sender tc.SenderType, self *actor.PID,
 
 		ta.server.increaseStats(tc.FailureStats)
 	} else {
-		for {
-			if ta.server.getPendingListSize() < tc.MAX_LIMITATION {
-				ta.server.assignTxToWorker(txn, sender)
-				break
-			}
-		}
+		<-ta.server.slots
+		ta.server.assignTxToWorker(txn, sender)
 	}
 }
 
@@ -176,7 +172,7 @@ func (tpa *TxPoolActor) Receive(context actor.Context) {
 
 		log.Debug("txpool actor Receives getting tx pool req from ", sender)
 
-		res := tpa.server.getTxPool(msg.ByCount)
+		res := tpa.server.getTxPool(msg.ByCount, msg.Height)
 		if sender != nil {
 			sender.Request(&tc.GetTxnPoolRsp{TxnPool: res}, context.Self())
 		}

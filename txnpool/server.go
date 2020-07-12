@@ -16,6 +16,8 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Package txnpool privides a function to start micro service txPool for
+// external process
 package txnpool
 
 import (
