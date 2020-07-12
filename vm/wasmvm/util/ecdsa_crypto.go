@@ -21,20 +21,24 @@ package util
 import (
 	"crypto/sha256"
 	"errors"
+	"io"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/log"
-	ontErrors "github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go-crypto/keypair"
 	s "github.com/ontio/dad-go-crypto/signature"
+	"github.com/ontio/dad-go/common/log"
+	ontErrors "github.com/ontio/dad-go/errors"
+	"golang.org/x/crypto/ripemd160"
 )
 
 type ECDsaCrypto struct {
 }
 
 func (c *ECDsaCrypto) Hash160(message []byte) []byte {
-	temp := common.ToCodeHash(message)
-	return temp[:]
+	temp := sha256.Sum256(message)
+	md := ripemd160.New()
+	io.WriteString(md, string(temp[:]))
+	hash := md.Sum(nil)
+	return hash
 }
 
 func (c *ECDsaCrypto) Hash256(message []byte) []byte {
