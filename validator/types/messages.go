@@ -19,10 +19,10 @@
 package types
 
 import (
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 // message
@@ -55,6 +55,7 @@ type CheckResponse struct {
 	ErrCode  errors.ErrCode
 }
 
+// VerifyType of validator
 type VerifyType uint8
 
 const (
