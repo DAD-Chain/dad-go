@@ -15,27 +15,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package payload
 
 import (
-	"io"
+	"testing"
 
-	"github.com/ontio/dad-go/common/serialization"
+	"bytes"
+	"github.com/ontio/dad-go/smartcontract/types"
+	"github.com/stretchr/testify/assert"
 )
 
-// Bookkeeping is an implementation of transaction payload for bookkeeper rewards
-type Bookkeeping struct {
-	Nonce uint64
-}
+func TestDeployCode_Serialize(t *testing.T) {
+	deploy := DeployCode{
+		Code: types.VmCode{
+			VmType: types.NEOVM,
+			Code:   []byte{1, 2, 3},
+		},
+	}
 
-func (a *Bookkeeping) Serialize(w io.Writer) error {
-	err := serialization.WriteUint64(w, a.Nonce)
-	return err
-}
+	buf := bytes.NewBuffer(nil)
+	deploy.Serialize(buf)
+	bs := buf.Bytes()
+	var deploy2 DeployCode
+	deploy2.Deserialize(buf)
+	assert.Equal(t, deploy2, deploy)
 
-func (a *Bookkeeping) Deserialize(r io.Reader) error {
-	var err error
-	a.Nonce, err = serialization.ReadUint64(r)
-	return err
+	buf = bytes.NewBuffer(bs[:len(bs)-1])
+	err := deploy2.Deserialize(buf)
+	assert.NotNil(t, err)
 }
