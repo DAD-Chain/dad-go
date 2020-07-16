@@ -21,15 +21,16 @@ package statefull
 import (
 	"reflect"
 
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/validator/db"
 	vatypes "github.com/ontio/dad-go/validator/types"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
+// Validator is an interface for tx validation actor
 type Validator interface {
 	Register(poolId *actor.PID)
 	UnRegister(poolId *actor.PID)
@@ -42,6 +43,7 @@ type validator struct {
 	bestBlock db.BestBlock
 }
 
+// NewValidator returns Validator for stateful check of tx
 func NewValidator(id string) (Validator, error) {
 
 	validator := &validator{id: id}
@@ -57,13 +59,13 @@ func NewValidator(id string) (Validator, error) {
 func (self *validator) Receive(context actor.Context) {
 	switch msg := context.Message().(type) {
 	case *actor.Started:
-		log.Info("Validator started and be ready to receive txn")
+		log.Info("statefull-validator: started and be ready to receive txn")
 	case *actor.Stopping:
-		log.Info("Validator stopping")
+		log.Info("statefull-validator: stopping")
 	case *actor.Restarting:
-		log.Info("Validator Restarting")
+		log.Info("statefull-validator: restarting")
 	case *vatypes.CheckTx:
-		log.Info("Validator receive tx")
+		log.Debugf("statefull-validator: receive tx %x", msg.Tx.Hash())
 		sender := context.Sender()
 		height := ledger.DefLedger.GetCurrentBlockHeight()
 
@@ -99,7 +101,7 @@ func (self *validator) Receive(context actor.Context) {
 		//}
 
 	default:
-		log.Info("statefull-validator:Unknown msg ", msg, "type", reflect.TypeOf(msg))
+		log.Info("statefull-validator: unknown msg ", msg, "type", reflect.TypeOf(msg))
 	}
 
 }
