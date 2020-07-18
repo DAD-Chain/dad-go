@@ -9,12 +9,13 @@ import (
 	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/core/types"
-	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
 	"github.com/ontio/dad-go/vm/wasmvm/util"
+	vmtype "github.com/ontio/dad-go/smartcontract/types"
+	sccommon "github.com/ontio/dad-go/smartcontract/common"
 )
 
 type WasmVmService struct {
@@ -26,24 +27,21 @@ type WasmVmService struct {
 	Time          uint32
 }
 
-func NewWasmVmService(store store.LedgerStore,
-						dbCache scommon.StateStore,
-						tx *types.Transaction,
-						time uint32,
-						ctxRef context.ContextRef) *WasmVmService {
+func NewWasmVmService(store store.LedgerStore, cache *storage.CloneCache, tx *types.Transaction,
+time uint32, ctxRef context.ContextRef) *WasmVmService {
 	var service WasmVmService
 	service.Store = store
-	service.CloneCache = storage.NewCloneCache(dbCache)
+	service.CloneCache = cache
 	service.Time = time
 	service.Tx = tx
 	service.ContextRef = ctxRef
 	return &service
 }
 
-func (this *WasmVmService)Invoke() ([]byte,error){
-	stateMachine := NewWasmStateMachine(this.Store, this.CloneCache,  this.Time)
+func (this *WasmVmService) Invoke() (interface{}, error) {
+	stateMachine := NewWasmStateMachine(this.Store, this.CloneCache, this.Time)
 	//register the "CallContract" function
-	stateMachine.Register("CallContract",this.callContract)
+	stateMachine.Register("CallContract", this.callContract)
 
 	ctx := this.ContextRef.CurrentContext()
 	engine := exec.NewExecutionEngine(
@@ -56,10 +54,10 @@ func (this *WasmVmService)Invoke() ([]byte,error){
 	contract.Deserialize(bytes.NewBuffer(ctx.Code.Code))
 	addr := contract.Address
 
-	if contract.Code == nil{
+	if contract.Code == nil {
 		dpcode, err := this.GetContractCodeFromAddress(addr)
 		if err != nil {
-			return nil,errors.NewErr("get contract  error")
+			return nil, errors.NewErr("get contract  error")
 		}
 		contract.Code = dpcode
 	}
@@ -73,21 +71,20 @@ func (this *WasmVmService)Invoke() ([]byte,error){
 	res, err := engine.Call(caller, contract.Code, contract.Method, contract.Args, contract.Version)
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	//get the return message
 	result, err := engine.GetVM().GetPointerMemory(uint64(binary.LittleEndian.Uint32(res)))
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
-	this.CloneCache.Commit()
 	this.ContextRef.PushNotifications(stateMachine.Notifications)
-	return result,nil
+	return result, nil
 }
 
-func(this *WasmVmService)callContract(engine *exec.ExecutionEngine)(bool,error){
+func (this *WasmVmService) callContract(engine *exec.ExecutionEngine) (bool, error) {
 
 	vm := engine.GetVM()
 	envCall := vm.GetEnvCall()
@@ -100,11 +97,6 @@ func(this *WasmVmService)callContract(engine *exec.ExecutionEngine)(bool,error){
 	if err != nil {
 		return false, errors.NewErr("[callContract]get Contract address failed:" + err.Error())
 	}
-	//the contract codes
-	//contractBytes, err := this.getContractFromAddr(addr)
-	//if err != nil {
-	//	return false, err
-	//}
 
 	addrbytes, err := common.HexToBytes(util.TrimBuffToString(addr))
 	if err != nil {
@@ -114,9 +106,6 @@ func(this *WasmVmService)callContract(engine *exec.ExecutionEngine)(bool,error){
 	if err != nil {
 		return false, errors.NewErr("[callContract]get contract address error:" + err.Error())
 	}
-
-	//vmcode := stype.VmCode{VmType:stype.WASMVM,Code:contractBytes}
-	//contractAddress := vmcode.AddressFromVmCode()
 
 	methodad-gome, err := vm.GetPointerMemory(params[1])
 	if err != nil {
@@ -128,22 +117,24 @@ func(this *WasmVmService)callContract(engine *exec.ExecutionEngine)(bool,error){
 		return false, errors.NewErr("[callContract]get Contract arg failed:" + err.Error())
 	}
 	//todo get result from AppCall
-	//res := 0
-	result ,err := this.ContextRef.AppCall(contractAddress,util.TrimBuffToString(methodad-gome),nil,arg)
+	result, err := this.ContextRef.AppCall(contractAddress, util.TrimBuffToString(methodad-gome), nil, arg)
 	if err != nil {
 		return false, errors.NewErr("[callContract]AppCall failed:" + err.Error())
 	}
 
 	vm.RestoreCtx()
 	if envCall.GetReturns() {
-		idx,err := vm.SetPointerMemory(result)
+		if contractAddress[0] == byte(vmtype.NEOVM) {
+			result = sccommon.ConvertNeoVmReturnTypes(result)
+		}
+		idx, err := vm.SetPointerMemory(result)
 		if err != nil {
 			return false, errors.NewErr("[callContract]SetPointerMemory failed:" + err.Error())
 		}
 		vm.PushResult(uint64(idx))
 	}
 
-	return true ,nil
+	return true, nil
 }
 
 func (this *WasmVmService) GetContractCodeFromAddress(address common.Address) ([]byte, error) {

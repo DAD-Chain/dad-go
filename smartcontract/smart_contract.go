@@ -18,6 +18,7 @@ package smartcontract
 
 import (
 	"bytes"
+
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/store"
 	scommon "github.com/ontio/dad-go/core/store/common"
@@ -32,17 +33,21 @@ import (
 	"github.com/ontio/dad-go/smartcontract/states"
 	vm "github.com/ontio/dad-go/vm/neovm"
 	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
+	"github.com/ontio/dad-go/smartcontract/storage"
 )
 
 var (
 	CONTRACT_NOT_EXIST = errors.NewErr("[AppCall] Get contract context nil")
 	DEPLOYCODE_TYPE_ERROR = errors.NewErr("[AppCall] DeployCode type error!")
 	INVOKE_CODE_EXIST = errors.NewErr("[AppCall] Invoke codes exist!")
+	ENGINE_NOT_SUPPORT = errors.NewErr("[Execute] Engine doesn't support!")
 )
 
 // SmartContract describe smart contract execute engine
 type SmartContract struct {
 	Contexts      []*context.Context       // all execute smart contract context
+	CloneCache    *storage.CloneCache      // state cache
+	Store         store.LedgerStore        // ledger store
 	Config        *Config
 	Engine        Engine
 	Notifications []*event.NotifyEventInfo // all execute smart contract event notify info
@@ -50,15 +55,13 @@ type SmartContract struct {
 
 // Config describe smart contract need parameters configuration
 type Config struct {
-	Time    uint32              // current block timestamp
-	Height  uint32              // current block height
-	Tx      *ctypes.Transaction // current transaction
-	DBCache scommon.StateStore  // db states cache
-	Store   store.LedgerStore   // ledger store
+	Time   uint32              // current block timestamp
+	Height uint32              // current block height
+	Tx     *ctypes.Transaction // current transaction
 }
 
 type Engine interface {
-	Invoke()
+	Invoke() (interface{}, error)
 }
 
 // PushContext push current context to smart contract
@@ -104,29 +107,20 @@ func (this *SmartContract) PushNotifications(notifications []*event.NotifyEventI
 
 // Execute is smart contract execute manager
 // According different vm type to launch different service
-func (this *SmartContract) Execute() ([]byte, error) {
+func (this *SmartContract) Execute() (interface{}, error) {
 	ctx := this.CurrentContext()
+	var engine Engine
 	switch ctx.Code.VmType {
 	case stypes.Native:
-		service := native.NewNativeService(this.Config.DBCache, this.Config.Height, this.Config.Tx, this)
-		if err := service.Invoke(); err != nil {
-			return nil, err
-		}
+		engine = native.NewNativeService(this.CloneCache, this.Config.Height, this.Config.Tx, this)
 	case stypes.NEOVM:
-		service := neovm.NewNeoVmService(this.Config.Store, this.Config.DBCache, this.Config.Tx, this.Config.Time, this)
-		if err := service.Invoke(); err != nil {
-			//fmt.Println("execute neovm error:", err)
-			return nil, err
-		}
+		engine = neovm.NewNeoVmService(this.Store, this.CloneCache, this.Config.Tx, this.Config.Time, this)
 	case stypes.WASMVM:
-		service := wasmvm.NewWasmVmService(this.Config.Store, this.Config.DBCache, this.Config.Tx, this.Config.Time, this)
-		result, err := service.Invoke()
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
+		engine = wasmvm.NewWasmVmService(this.Store, this.CloneCache, this.Config.Tx, this.Config.Time, this)
+	default:
+		return nil, ENGINE_NOT_SUPPORT
 	}
-	return nil, nil
+	return engine.Invoke()
 }
 
 // AppCall a smart contract, if contract exist on blockchain, you should set the address
@@ -134,7 +128,7 @@ func (this *SmartContract) Execute() ([]byte, error) {
 // Param method: invoke smart contract method name
 // Param codes: invoke smart contract off blockchain
 // Param args: invoke smart contract args
-func (this *SmartContract) AppCall(address common.Address, method string, codes, args []byte) ([]byte, error) {
+func (this *SmartContract) AppCall(address common.Address, method string, codes, args []byte) (interface{}, error) {
 	var code []byte
 
 	vmType := stypes.VmType(address[0])
@@ -164,15 +158,19 @@ func (this *SmartContract) AppCall(address common.Address, method string, codes,
 		temp = append(args, build.ToArray()...)
 		code = append(temp, c...)
 	case stypes.WASMVM:
+		c, err := this.loadCode(address, codes)
+		if err != nil {
+			return nil, err
+		}
 		bf := new(bytes.Buffer)
-		c := states.Contract{
-			Version:1, //fix to > 0
+		contract := states.Contract{
+			Version: 1, //fix to > 0
 			Address: address,
 			Method: method,
 			Args: args,
-			Code:codes,
+			Code: c,
 		}
-		if err := c.Serialize(bf); err != nil {
+		if err := contract.Serialize(bf); err != nil {
 			return nil, err
 		}
 		code = bf.Bytes()
@@ -244,7 +242,7 @@ func (this *SmartContract) loadCode(address common.Address, codes []byte) ([]byt
 }
 
 func (this *SmartContract) getContract(address []byte) (*scommon.StateItem, error) {
-	item, err := this.Config.DBCache.TryGet(scommon.ST_CONTRACT, address[:]);
+	item, err := this.CloneCache.Store.TryGet(scommon.ST_CONTRACT, address[:]);
 	if err != nil {
 		return nil, errors.NewErr("[getContract] Get contract context error!")
 	}

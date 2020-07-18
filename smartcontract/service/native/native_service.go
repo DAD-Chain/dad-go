@@ -24,7 +24,6 @@ import (
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/genesis"
-	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/context"
@@ -58,9 +57,9 @@ type NativeService struct {
 }
 
 // New native service
-func NewNativeService(dbCache scommon.StateStore, height uint32, tx *types.Transaction, ctxRef context.ContextRef) *NativeService {
+func NewNativeService(cache *storage.CloneCache, height uint32, tx *types.Transaction, ctxRef context.ContextRef) *NativeService {
 	var nativeService NativeService
-	nativeService.CloneCache = storage.NewCloneCache(dbCache)
+	nativeService.CloneCache = cache
 	nativeService.Tx = tx
 	nativeService.Height = height
 	nativeService.ContextRef = ctxRef
@@ -72,34 +71,33 @@ func (this *NativeService) Register(methodad-gome string, handler Handler) {
 	this.ServiceMap[methodad-gome] = handler
 }
 
-func (this *NativeService) Invoke() error {
+func (this *NativeService) Invoke() (interface{}, error) {
 	ctx := this.ContextRef.CurrentContext()
 	if ctx == nil {
-		return errors.NewErr("[Invoke] Native service current context doesn't exist!")
+		return false, errors.NewErr("[Invoke] Native service current context doesn't exist!")
 	}
 	bf := bytes.NewBuffer(ctx.Code.Code)
 	contract := new(sstates.Contract)
 	if err := contract.Deserialize(bf); err != nil {
-		return err
+		return false, err
 	}
 	services, ok := Contracts[contract.Address]
 	if !ok {
-		return fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
+		return false, fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
 	}
 	services(this)
 	service, ok := this.ServiceMap[contract.Method]
 	if !ok {
-		return fmt.Errorf("Native contract %x doesn't support this function %s.", contract.Address, contract.Method)
+		return false, fmt.Errorf("Native contract %x doesn't support this function %s.", contract.Address, contract.Method)
 	}
 	this.ContextRef.PushContext(&context.Context{ContractAddress: contract.Address})
 	this.Input = contract.Args
 	if err := service(this); err != nil {
-		return errors.NewDetailErr(err, errors.ErrNoCode, "[Invoke] Native serivce function execute error!")
+		return false, errors.NewDetailErr(err, errors.ErrNoCode, "[Invoke] Native serivce function execute error!")
 	}
 	this.ContextRef.PopContext()
 	this.ContextRef.PushNotifications(this.Notifications)
-	this.CloneCache.Commit()
-	return nil
+	return true, nil
 }
 
 func RegisterOntContract(native *NativeService) {
