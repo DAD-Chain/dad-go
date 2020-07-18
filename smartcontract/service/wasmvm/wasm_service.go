@@ -9,7 +9,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/core/types"
-	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/errors"
@@ -28,14 +27,11 @@ type WasmVmService struct {
 	Time          uint32
 }
 
-func NewWasmVmService(store store.LedgerStore,
-dbCache scommon.StateStore,
-tx *types.Transaction,
-time uint32,
-ctxRef context.ContextRef) *WasmVmService {
+func NewWasmVmService(store store.LedgerStore, cache *storage.CloneCache, tx *types.Transaction,
+time uint32, ctxRef context.ContextRef) *WasmVmService {
 	var service WasmVmService
 	service.Store = store
-	service.CloneCache = storage.NewCloneCache(dbCache)
+	service.CloneCache = cache
 	service.Time = time
 	service.Tx = tx
 	service.ContextRef = ctxRef
@@ -84,7 +80,6 @@ func (this *WasmVmService) Invoke() (interface{}, error) {
 		return nil, err
 	}
 
-	this.CloneCache.Commit()
 	this.ContextRef.PushNotifications(stateMachine.Notifications)
 	return result, nil
 }
