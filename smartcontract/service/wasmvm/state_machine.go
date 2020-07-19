@@ -16,13 +16,9 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package wasm
+package wasmvm
 
 import (
-	"bytes"
-	"fmt"
-
-	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/store"
 	scommon "github.com/ontio/dad-go/core/store/common"
@@ -30,10 +26,11 @@ import (
 	"github.com/ontio/dad-go/smartcontract/storage"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
 	"github.com/ontio/dad-go/vm/wasmvm/memory"
+	"fmt"
 	"github.com/ontio/dad-go/vm/wasmvm/util"
-	"github.com/ontio/dad-go/vm/wasmvm/wasm"
 	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/smartcontract/types"
+	"github.com/ontio/dad-go/common"
+	"bytes"
 )
 
 type LogLevel byte
@@ -56,21 +53,22 @@ type WasmStateMachine struct {
 	time       uint32
 }
 
-func NewWasmStateMachine(ldgerStore store.LedgerStore, dbCache scommon.StateStore, time uint32) *WasmStateMachine {
+func NewWasmStateMachine(ldgerStore store.LedgerStore, cloneCache *storage.CloneCache, time uint32) *WasmStateMachine {
 
 	var stateMachine WasmStateMachine
 	stateMachine.ldgerStore = ldgerStore
-	stateMachine.CloneCache = storage.NewCloneCache(dbCache)
+	stateMachine.CloneCache = cloneCache
 	stateMachine.WasmStateReader = NewWasmStateReader(ldgerStore)
 	stateMachine.time = time
 
 	stateMachine.Register("PutStorage", stateMachine.putstore)
 	stateMachine.Register("GetStorage", stateMachine.getstore)
 	stateMachine.Register("DeleteStorage", stateMachine.deletestore)
-	stateMachine.Register("CallContract", stateMachine.callContract)
+	//stateMachine.Register("CallContract", stateMachine.callContract)
 	stateMachine.Register("ContractLogDebug", stateMachine.contractLogDebug)
 	stateMachine.Register("ContractLogInfo", stateMachine.contractLogInfo)
 	stateMachine.Register("ContractLogError", stateMachine.contractLogError)
+
 
 	return &stateMachine
 }
@@ -81,7 +79,6 @@ func (s *WasmStateMachine) putstore(engine *exec.ExecutionEngine) (bool, error) 
 	vm := engine.GetVM()
 	envCall := vm.GetEnvCall()
 	params := envCall.GetParams()
-
 	if len(params) != 2 {
 		return false, errors.NewErr("[putstore] parameter count error")
 	}
@@ -98,7 +95,7 @@ func (s *WasmStateMachine) putstore(engine *exec.ExecutionEngine) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-	k, err := serializeStorageKey(vm.ContractAddress, key)
+	k, err := serializeStorageKey(vm.ContractAddress, []byte(util.TrimBuffToString(key)))
 	if err != nil {
 		return false, err
 	}
@@ -124,7 +121,7 @@ func (s *WasmStateMachine) getstore(engine *exec.ExecutionEngine) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-	k, err := serializeStorageKey(vm.ContractAddress, key)
+	k, err := serializeStorageKey(vm.ContractAddress, []byte(util.TrimBuffToString(key)))
 	if err != nil {
 		return false, err
 	}
@@ -140,7 +137,6 @@ func (s *WasmStateMachine) getstore(engine *exec.ExecutionEngine) (bool, error) 
 		}
 		return true, nil
 	}
-
 	idx, err := vm.SetPointerMemory(item.(*states.StorageItem).Value)
 	if err != nil {
 		return false, err
@@ -168,7 +164,7 @@ func (s *WasmStateMachine) deletestore(engine *exec.ExecutionEngine) (bool, erro
 		return false, err
 	}
 
-	k, err := serializeStorageKey(vm.ContractAddress, key)
+	k, err := serializeStorageKey(vm.ContractAddress, []byte(util.TrimBuffToString(key)))
 	if err != nil {
 		return false, err
 	}
@@ -176,64 +172,6 @@ func (s *WasmStateMachine) deletestore(engine *exec.ExecutionEngine) (bool, erro
 	s.CloneCache.Delete(scommon.ST_STORAGE, k)
 	vm.RestoreCtx()
 
-	return true, nil
-}
-
-func (s *WasmStateMachine) GetContractCodeFromAddress(address common.Address) ([]byte, error) {
-
-	dcode, err := s.ldgerStore.GetContractState(address)
-	if err != nil {
-		return nil, err
-	}
-
-	return dcode.Code.Code, nil
-
-}
-
-//call other contract
-func (s *WasmStateMachine) callContract(engine *exec.ExecutionEngine) (bool, error) {
-	vm := engine.GetVM()
-	envCall := vm.GetEnvCall()
-	params := envCall.GetParams()
-	if len(params) != 3 {
-		return false, errors.NewErr("parameter count error while call readMessage")
-	}
-	contractAddressIdx := params[0]
-	addr, err := vm.GetPointerMemory(contractAddressIdx)
-	if err != nil {
-		return false, errors.NewErr("get Contract address failed")
-	}
-	//the contract codes
-	contractBytes, err := s.getContractFromAddr(addr)
-	if err != nil {
-		return false, err
-	}
-	vmcode := types.VmCode{VmType:types.WASMVM,Code:contractBytes}
-	contractAddress := vmcode.AddressFromVmCode()
-	bf := bytes.NewBuffer(contractBytes)
-
-	module, err := wasm.ReadModule(bf, emptyImporter)
-	if err != nil {
-		return false, errors.NewErr("load Module failed")
-	}
-
-	methodad-gome, err := vm.GetPointerMemory(params[1])
-	if err != nil {
-		return false, errors.NewErr("[callContract]get Contract methodad-gome failed")
-	}
-
-	arg, err := vm.GetPointerMemory(params[2])
-	if err != nil {
-		return false, errors.NewErr("[callContract]get Contract arg failed")
-	}
-	res, err := vm.CallContract(vm.ContractAddress, contractAddress, module, methodad-gome, arg)
-	if err != nil {
-		return false, errors.NewErr("[callContract]CallProductContract failed")
-	}
-	vm.RestoreCtx()
-	if envCall.GetReturns() {
-		vm.PushResult(uint64(res))
-	}
 	return true, nil
 }
 
@@ -248,11 +186,11 @@ func (s *WasmStateMachine) contractLogDebug(engine *exec.ExecutionEngine) (bool,
 }
 
 func (s *WasmStateMachine) contractLogInfo(engine *exec.ExecutionEngine) (bool, error) {
-	_ ,err := contractLog(Info,engine)
-	if err!= nil{
-		return false,err
-	}
+	_, err := contractLog(Info, engine)
+	if err != nil {
+		return false, err
 
+	}
 	engine.GetVM().RestoreCtx()
 	return true, nil
 }
@@ -306,32 +244,3 @@ func serializeStorageKey(contractAddress common.Address, key []byte) ([]byte, er
 	return bf.Bytes(), nil
 }
 
-func (s *WasmStateMachine) getContractFromAddr(addr []byte) ([]byte, error) {
-
-	//just for test
-	/*	contract := util.TrimBuffToString(addr)
-		code, err := ioutil.ReadFile(fmt.Sprintf("./testdata2/%s.wasm", contract))
-		if err != nil {
-			return nil, err
-		}
-
-		return code, nil*/
-	//Fixme get the contract code from ledger
-	addrbytes, err := common.HexToBytes(util.TrimBuffToString(addr))
-	if err != nil {
-		return nil, errors.NewErr("get contract address error")
-	}
-	contactaddress, err := common.AddressParseFromBytes(addrbytes)
-	if err != nil {
-		return nil, errors.NewErr("get contract address error")
-	}
-	dpcode, err := s.GetContractCodeFromAddress(contactaddress)
-	if err != nil {
-		return nil, errors.NewErr("get contract  error")
-	}
-	return dpcode, nil
-}
-
-func emptyImporter(name string) (*wasm.Module, error) {
-	return nil, nil
-}
