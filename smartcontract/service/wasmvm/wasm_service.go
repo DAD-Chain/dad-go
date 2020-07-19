@@ -8,6 +8,7 @@ import (
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/store"
+
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/context"
@@ -19,6 +20,7 @@ import (
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
 	"github.com/ontio/dad-go/vm/wasmvm/util"
 	sccommon "github.com/ontio/dad-go/smartcontract/common"
+
 )
 
 type WasmVmService struct {
@@ -30,6 +32,7 @@ type WasmVmService struct {
 	Time          uint32
 }
 
+
 func NewWasmVmService(store store.LedgerStore, cache *storage.CloneCache, tx *types.Transaction,
 time uint32, ctxRef context.ContextRef) *WasmVmService {
 	var service WasmVmService
@@ -40,6 +43,7 @@ time uint32, ctxRef context.ContextRef) *WasmVmService {
 	service.ContextRef = ctxRef
 	return &service
 }
+
 
 func (this *WasmVmService) Invoke() (interface{}, error) {
 	stateMachine := NewWasmStateMachine(this.Store, this.CloneCache, this.Time)
@@ -150,12 +154,12 @@ func (this *WasmVmService) marshalNativeParams(engine *exec.ExecutionEngine) (bo
 		if err != nil {
 			return false, err
 		}
+
 		toAddress, err := common.AddressFromBase58(util.TrimBuffToString(toAddressBytes))
 		state.To = toAddress
 		//tmpbytes[12:16] is padding
 		amount := binary.LittleEndian.Uint64(tmpbytes[16:])
 		state.Value = big.NewInt(int64(amount))
-
 		states[i] = state
 	}
 
