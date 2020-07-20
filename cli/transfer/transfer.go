@@ -29,6 +29,7 @@ import (
 
 	"github.com/urfave/cli"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	clicommon "github.com/ontio/dad-go/cli/common"
 	"github.com/ontio/dad-go/common"
@@ -36,10 +37,9 @@ import (
 	ctypes "github.com/ontio/dad-go/core/types"
 	cutils "github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/http/base/rpc"
-	"github.com/ontio/dad-go/smartcontract/states"
 	nstates "github.com/ontio/dad-go/smartcontract/service/native/states"
+	"github.com/ontio/dad-go/smartcontract/states"
 	vmtypes "github.com/ontio/dad-go/smartcontract/types"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 func transferAction(c *cli.Context) error {
