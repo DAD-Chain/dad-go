@@ -23,7 +23,6 @@ import (
 	"fmt"
 
 	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/context"
@@ -38,10 +37,7 @@ type (
 )
 
 var (
-	Contracts = map[common.Address]RegisterService{
-		genesis.OntContractAddress: RegisterOntContract,
-		genesis.OngContractAddress: RegisterOngContract,
-	}
+	Contracts = make(map[common.Address]RegisterService)
 )
 
 // Native service struct
@@ -100,16 +96,3 @@ func (this *NativeService) Invoke() (interface{}, error) {
 	return true, nil
 }
 
-func RegisterOntContract(native *NativeService) {
-	native.Register("init", OntInit)
-	native.Register("transfer", OntTransfer)
-	native.Register("approve", OntApprove)
-	native.Register("transferFrom", OntTransferFrom)
-}
-
-func RegisterOngContract(native *NativeService) {
-	native.Register("init", OngInit)
-	native.Register("transfer", OngTransfer)
-	native.Register("approve", OngApprove)
-	native.Register("transferFrom", OngTransferFrom)
-}
