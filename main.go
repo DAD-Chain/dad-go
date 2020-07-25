@@ -35,6 +35,7 @@ import (
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/common/password"
 	"github.com/ontio/dad-go/consensus"
 	"github.com/ontio/dad-go/core/ledger"
 	ldgactor "github.com/ontio/dad-go/core/ledger/actor"
@@ -77,7 +78,7 @@ func setupAPP() *cli.App {
 	app := cli.NewApp()
 	app.Usage = "dad-go CLI"
 	app.Action = ontMain
-	app.Version = "0.6.0"
+	app.Version = "0.7.0"
 	app.Copyright = "Copyright in 2018 The dad-go Authors"
 	app.Commands = []cli.Command{
 		cmd.AccountCommand,
@@ -124,8 +125,19 @@ func ontMain(ctx *cli.Context) {
 	}
 
 	log.Info("0. Open the account")
+	var pwd []byte = nil
+	if ctx.IsSet("password") {
+		pwd = []byte(ctx.String("password"))
+	} else {
+		pwd, err = password.GetAccountPassword()
+		if err != nil {
+			log.Fatal("Password error")
+			os.Exit(1)
+		}
+	}
+
 	wallet := ctx.GlobalString(utils.WalletNameFlag.Name)
-	client := account.Open(wallet, nil)
+	client := account.Open(wallet, pwd)
 	if client == nil {
 		log.Fatal("Can't get local account.")
 		os.Exit(1)
