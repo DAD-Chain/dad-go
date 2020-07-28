@@ -66,7 +66,7 @@ func restfulAddr() string {
 func init() {
 	ontSdk = sdk.Newdad-goSdk()
 	ontSdk.Rpc.SetAddress(rpcAddress())
-	cli.AppHelpTemplate = AppHelpTemplate
+	//cli.AppHelpTemplate = AppHelpTemplate
 }
 
 // flagGroup is a collection of flags belonging to a single topic.
@@ -77,27 +77,6 @@ type flagGroup struct {
 
 // AppHelpFlagGroups is the application flags, grouped by functionality.
 var AppHelpFlagGroups = []flagGroup{
-	{
-		Name: "dad-go WALLET CREATE",
-		Flags: []cli.Flag{
-			utils.WalletNameFlag,
-		},
-	},
-
-	{
-		Name: "dad-go WALLET SHOW",
-		Flags: []cli.Flag{
-			utils.NonOptionFlag,
-		},
-	},
-
-	{
-		Name: "dad-go WALLET BALANCE",
-		Flags: []cli.Flag{
-			utils.WalletAddrFlag,
-		},
-	},
-
 	{
 		Name: "dad-go INFO BLOCK",
 		Flags: []cli.Flag{
@@ -134,7 +113,7 @@ var AppHelpFlagGroups = []flagGroup{
 			utils.TransactionToFlag,
 			utils.TransactionValueFlag,
 			utils.ContractAddrFlag,
-			utils.UserPasswordFlag,
+			utils.AccountPassFlag,
 		},
 	},
 
