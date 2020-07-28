@@ -203,17 +203,21 @@ func transferAsset(ctx *cli.Context) error {
 		}
 	}
 
-	var filename string = account.WALLET_FILENAME
-	if ctx.IsSet(utils.AccountFileFlag.Name) {
-		filename = ctx.String(utils.AccountFileFlag.Name)
+	acct := account.Open(account.WALLET_FILENAME, passwd)
+	if nil == acct {
+		fmt.Println("Open account failed, please check your input password and make sure your wallet.dat exist")
+		return errors.New("Get Account Error")
 	}
-	acct := account.Open(filename, passwd)
-	if acct != nil {
-		return errors.New("open wallet error")
+
+	addr, err := common.AddressFromBase58(from)
+	if nil != err {
+		fmt.Println("Parse address from base58 error")
+		return err
 	}
-	acc := acct.GetDefaultAccount()
-	if acc == nil {
-		return errors.New("cannot get the default account")
+	acc := acct.GetAccountByAddress(addr)
+	if nil == acc {
+		fmt.Println("Get account by address error")
+		return errors.New("Get Account Error")
 	}
 
 	if err := signTransaction(acc, tx); err != nil {
