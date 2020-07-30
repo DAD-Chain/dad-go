@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) 2018 The dad-go Authors
+ * This file is part of The dad-go library.
+ *
+ * The dad-go is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The dad-go is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package vbft
+
+import (
+	"bytes"
+	"encoding/json"
+
+	"github.com/dad-go/common"
+	vconfig "github.com/dad-go/consensus/vbft/config"
+	"github.com/dad-go/core/types"
+)
+
+type VbftBlockInfo struct {
+	Proposer           uint32               `json:"leader"`
+	LastConfigBlockNum uint64               `json:"last_config_block_num"`
+	NewChainConfig     *vconfig.ChainConfig `json:"new_chain_config"`
+}
+
+type Block struct {
+	Block *types.Block   `json:"block"`
+	Info  *VbftBlockInfo `json:"info"`
+}
+
+func (blk *Block) getProposer() uint32 {
+	return blk.Info.Proposer
+}
+
+func (blk *Block) getBlockNum() uint64 {
+	return uint64(blk.Block.Header.Height)
+}
+
+func (blk *Block) getPrevBlockHash() common.Uint256 {
+	return blk.Block.Header.PrevBlockHash
+}
+
+func (blk *Block) getLastConfigBlockNum() uint64 {
+	return blk.Info.LastConfigBlockNum
+}
+
+func (blk *Block) getNewChainConfig() *vconfig.ChainConfig {
+	return blk.Info.NewChainConfig
+}
+
+func (blk *Block) isEmpty() bool {
+	return blk.Block.Transactions == nil || len(blk.Block.Transactions) == 0
+}
+
+func (blk *Block) Serialize() ([]byte, error) {
+	infoData, err := json.Marshal(blk.Info)
+	if err != nil {
+		return nil, err
+	}
+
+	blk.Block.Header.ConsensusPayload = infoData
+
+	buf := bytes.NewBuffer([]byte{})
+	if err := blk.Block.Serialize(buf); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func initVbftBlock(block *types.Block) (*Block, error) {
+	blkInfo := &VbftBlockInfo{}
+	if err := json.Unmarshal(block.Header.ConsensusPayload, blkInfo); err != nil {
+		return nil, err
+	}
+
+	return &Block{
+		Block: block,
+		Info:  blkInfo,
+	}, nil
+}
