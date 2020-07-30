@@ -23,9 +23,11 @@ import (
 	"time"
 
 	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/crypto"
 	ontErrors "github.com/ontio/dad-go/errors"
+	"github.com/ontio/dad-go/eventbus/actor"
+	netActor "github.com/ontio/dad-go/net/actor"
 	txpool "github.com/ontio/dad-go/txnpool/common"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type TxPoolActor struct {
@@ -33,7 +35,7 @@ type TxPoolActor struct {
 }
 
 func (self *TxPoolActor) GetTxnPool(byCount bool, height uint32) []*txpool.TXEntry {
-	poolmsg := &txpool.GetTxnPoolReq{ByCount: byCount}
+	poolmsg := &txpool.GetTxnPoolReq{ByCount: byCount, Height: height}
 	future := self.Pool.RequestFuture(poolmsg, time.Second*10)
 	entry, err := future.Result()
 	if err != nil {
@@ -66,8 +68,15 @@ type P2PActor struct {
 	P2P *actor.PID
 }
 
-func (self *P2PActor) Xmit(msg interface{}) {
+func (self *P2PActor) Broadcast(msg interface{}) {
 	self.P2P.Tell(msg)
+}
+
+func (self *P2PActor) Transmit(target *crypto.PubKey, msg []byte) {
+	self.P2P.Tell(&netActor.TransmitConsensusMsgReq{
+		Target: target,
+		Msg:    msg,
+	})
 }
 
 type LedgerActor struct {
