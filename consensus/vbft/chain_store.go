@@ -21,7 +21,7 @@ package vbft
 import (
 	"fmt"
 
-	. "github.com/dad-go/common"
+	common "github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 	"github.com/dad-go/consensus/actor"
 	"github.com/dad-go/core/ledger"
@@ -49,7 +49,7 @@ func (self *ChainStore) GetChainedBlockNum() uint64 {
 	return self.chainedBlockNum
 }
 
-func (self *ChainStore) AddBlock(block *Block, blockHash Uint256) error {
+func (self *ChainStore) AddBlock(block *Block, blockHash common.Uint256) error {
 	if block == nil {
 		return fmt.Errorf("try add nil block")
 	}
@@ -86,7 +86,7 @@ func (self *ChainStore) AddBlock(block *Block, blockHash Uint256) error {
 //
 // SetBlock is used when recovering from fork-chain
 //
-func (self *ChainStore) SetBlock(block *Block, blockHash Uint256) error {
+func (self *ChainStore) SetBlock(block *Block, blockHash common.Uint256) error {
 
 	err := ledger.DefLedger.AddBlock(block.Block)
 	self.chainedBlockNum = uint64(ledger.DefLedger.GetCurrentBlockHeight())
