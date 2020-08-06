@@ -20,8 +20,9 @@ package vbft
 
 import (
 	"fmt"
-	vconfig "github.com/dad-go/consensus/vbft/config"
 	"math"
+
+	vconfig "github.com/dad-go/consensus/vbft/config"
 	p2pmsg "github.com/dad-go/net/message"
 )
 
