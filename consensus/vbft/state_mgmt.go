@@ -20,12 +20,14 @@ package vbft
 
 import (
 	"time"
+
+	"github.com/dad-go/common/log"
 )
 
 const (
 	// TODO: move to config file
-	maxPeerConnections    = 100
-	maxSyncingCheckBlkNum = 10
+	MAX_PEER_CONNECTIONS      = 100
+	MAX_SYNCING_CHECK_BLK_NUM = 10
 )
 
 type ServerState int
@@ -130,11 +132,11 @@ func (self *StateMgr) run() {
 				if self.currentState >= LocalConfigured {
 					v := self.getSyncedChainConfigView()
 					if v == self.server.config.View && self.currentState < Syncing {
-						self.server.log.Infof("server %d, start syncing", self.server.Index)
+						log.Infof("server %d, start syncing", self.server.Index)
 						self.currentState = Syncing
 					} else if v > self.server.config.View {
 						// update ChainConfig
-						self.server.log.Errorf("todo: chain config changed, need update chain config from peers")
+						log.Errorf("todo: chain config changed, need update chain config from peers")
 						// TODO: fetch config from neighbours, update chain config
 						self.currentState = LocalConfigured
 					}
@@ -142,21 +144,21 @@ func (self *StateMgr) run() {
 			case UpdatePeerState:
 				if evt.peerState.connected {
 					if err := self.onPeerUpdate(evt.peerState); err != nil {
-						self.server.log.Errorf("statemgr process peer (%d) err: %s", evt.peerState.peerIdx, err)
+						log.Errorf("statemgr process peer (%d) err: %s", evt.peerState.peerIdx, err)
 					}
 				} else {
 					if err := self.onPeerDisconnected(evt.peerState.peerIdx); err != nil {
-						self.server.log.Errorf("statmgr process peer (%d) disconn err: %s", evt.peerState.peerIdx, err)
+						log.Errorf("statmgr process peer (%d) disconn err: %s", evt.peerState.peerIdx, err)
 					}
 				}
 
 			case SyncDone:
-				self.server.log.Infof("server %d sync done, curr blkNum: %d", self.server.Index, self.server.GetCurrentBlockNo())
+				log.Infof("server %d sync done, curr blkNum: %d", self.server.Index, self.server.GetCurrentBlockNo())
 				self.setSyncedReady()
 
 			case LiveTick:
 				if err := self.onLiveTick(evt); err != nil {
-					self.server.log.Errorf("server %d, live ticker: %s", self.server.Index, err)
+					log.Errorf("server %d, live ticker: %s", self.server.Index, err)
 				}
 			}
 		}
@@ -170,18 +172,18 @@ func (self *StateMgr) onPeerUpdate(peerState *PeerState) error {
 		newPeer = true
 	}
 
-	self.server.log.Infof("server %d peer update, current blk %d, state %d, from peer %d, committed %d",
+	log.Infof("server %d peer update, current blk %d, state %d, from peer %d, committed %d",
 		self.server.Index, self.server.GetCurrentBlockNo(), self.currentState, peerState.peerIdx, peerState.committedBlockNum)
 
 	// update peer state
 	self.peers[peerIdx] = peerState
 
 	if !newPeer {
-		if isActive(self.currentState) && peerState.committedBlockNum > self.server.GetCurrentBlockNo()+maxSyncingCheckBlkNum {
-			self.server.log.Warnf("server %d seems lost sync: %d(%d) vs %d", self.server.Index,
+		if isActive(self.currentState) && peerState.committedBlockNum > self.server.GetCurrentBlockNo()+MAX_SYNCING_CHECK_BLK_NUM {
+			log.Warnf("server %d seems lost sync: %d(%d) vs %d", self.server.Index,
 				peerState.committedBlockNum, peerState.peerIdx, self.server.GetCurrentBlockNo())
-			if err := self.checkStartSyncing(self.server.GetCommittedBlockNo() + maxSyncingCheckBlkNum); err != nil {
-				self.server.log.Errorf("server %d start syncing check failed", self.server.Index)
+			if err := self.checkStartSyncing(self.server.GetCommittedBlockNo() + MAX_SYNCING_CHECK_BLK_NUM); err != nil {
+				log.Errorf("server %d start syncing check failed", self.server.Index)
 			}
 			return nil
 		}
@@ -190,7 +192,7 @@ func (self *StateMgr) onPeerUpdate(peerState *PeerState) error {
 	switch self.currentState {
 	case LocalConfigured:
 		v := self.getSyncedChainConfigView()
-		self.server.log.Infof("server %d statemgr update, current state: %d, from peer: %d, peercnt: %d, v1: %d, v2: %d",
+		log.Infof("server %d statemgr update, current state: %d, from peer: %d, peercnt: %d, v1: %d, v2: %d",
 			self.server.Index, self.currentState, peerIdx, len(self.peers), v, self.server.config.View)
 
 		if v == self.server.config.View {
@@ -203,7 +205,7 @@ func (self *StateMgr) onPeerUpdate(peerState *PeerState) error {
 			committedBlkNum, ok := self.getConsensusedCommittedBlockNum()
 			if ok && committedBlkNum > self.server.GetCommittedBlockNo() {
 				fastforward := self.canFastForward(committedBlkNum)
-				self.server.log.Infof("server %d, syncing %d, target %d, fastforward %t",
+				log.Infof("server %d, syncing %d, target %d, fastforward %t",
 					self.server.Index, self.server.GetCommittedBlockNo(), committedBlkNum, fastforward)
 				if fastforward {
 					self.server.makeFastForward()
@@ -213,12 +215,12 @@ func (self *StateMgr) onPeerUpdate(peerState *PeerState) error {
 			}
 		}
 		if self.isSyncedReady() {
-			self.server.log.Infof("server %d synced from syncing", self.server.Index)
+			log.Infof("server %d synced from syncing", self.server.Index)
 			self.setSyncedReady()
 		}
 	case WaitNetworkReady:
 		if self.isSyncedReady() {
-			self.server.log.Infof("server %d synced from sync-ready", self.server.Index)
+			log.Infof("server %d synced from sync-ready", self.server.Index)
 			self.setSyncedReady()
 		}
 	case SyncReady:
@@ -226,14 +228,14 @@ func (self *StateMgr) onPeerUpdate(peerState *PeerState) error {
 		committedBlkNum, ok := self.getConsensusedCommittedBlockNum()
 		if ok && committedBlkNum > self.server.GetCommittedBlockNo()+1 {
 			self.server.makeFastForward()
-			self.server.log.Infof("server %d synced try fastforward from %d",
+			log.Infof("server %d synced try fastforward from %d",
 				self.server.Index, self.server.GetCommittedBlockNo())
 		}
 	case SyncingCheck:
 		if self.isSyncedReady() {
 			self.setSyncedReady()
 		} else {
-			self.checkStartSyncing(self.server.GetCommittedBlockNo() + maxSyncingCheckBlkNum)
+			self.checkStartSyncing(self.server.GetCommittedBlockNo() + MAX_SYNCING_CHECK_BLK_NUM)
 		}
 	}
 
@@ -272,7 +274,7 @@ func (self *StateMgr) onLiveTick(evt *StateEvent) error {
 		return nil
 	}
 
-	self.server.log.Infof("server %d detected consensus halt %d",
+	log.Infof("server %d detected consensus halt %d",
 		self.server.Index, self.server.GetCurrentBlockNo())
 
 	return self.server.reBroadcastCurrentRoundMsgs()
@@ -280,9 +282,9 @@ func (self *StateMgr) onLiveTick(evt *StateEvent) error {
 
 func (self *StateMgr) getMinActivePeerCount() int {
 	n := int(self.server.config.F) * 2 // plus self
-	if n > maxPeerConnections {
+	if n > MAX_PEER_CONNECTIONS {
 		// FIXME: F vs. maxConnections
-		return maxPeerConnections
+		return MAX_PEER_CONNECTIONS
 	}
 	return n
 }
@@ -328,7 +330,7 @@ func (self *StateMgr) setSyncedReady() error {
 	prevState := self.currentState
 	self.currentState = SyncReady
 	if prevState <= SyncReady {
-		self.server.log.Infof("server %d start sync ready", self.server.Index)
+		log.Infof("server %d start sync ready", self.server.Index)
 		blkNum := self.server.GetCurrentBlockNo()
 		time.AfterFunc(self.syncReadyTimeout, func() {
 			self.StateEventC <- &StateEvent{
@@ -366,14 +368,14 @@ func (self *StateMgr) checkStartSyncing(startBlkNum uint64) error {
 	if maxCommitted > startBlkNum {
 		self.currentState = Syncing
 		startBlkNum = self.server.GetCommittedBlockNo() + 1
-		self.server.log.Infof("server %d, start syncing %d - %d, with %v", self.server.Index, startBlkNum, maxCommitted, peers)
+		log.Infof("server %d, start syncing %d - %d, with %v", self.server.Index, startBlkNum, maxCommitted, peers)
 		self.server.syncer.blockSyncReqC <- &BlockSyncReq{
 			targetPeers:    peers[maxCommitted],
 			startBlockNum:  startBlkNum,
 			targetBlockNum: maxCommitted,
 		}
 	} else if self.currentState == Synced {
-		self.server.log.Infof("server %d, start syncing check %v, %d", self.server.Index, peers, self.server.GetCurrentBlockNo())
+		log.Infof("server %d, start syncing check %v, %d", self.server.Index, peers, self.server.GetCurrentBlockNo())
 		self.currentState = SyncingCheck
 	}
 
@@ -385,7 +387,7 @@ func (self *Server) restartSyncing() {
 	// send sync request to self.sync, go syncing-state immediately
 	// stop all bft timers
 
-	self.log.Errorf("todo: server %d restart syncing", self.Index)
+	log.Errorf("todo: server %d restart syncing", self.Index)
 
 }
 
@@ -424,7 +426,7 @@ func (self *StateMgr) canFastForward(targetBlkNum uint64) bool {
 		return false
 	}
 
-	if targetBlkNum > self.server.GetCommittedBlockNo()+maxSyncingCheckBlkNum*8 {
+	if targetBlkNum > self.server.GetCommittedBlockNo()+MAX_SYNCING_CHECK_BLK_NUM*8 {
 		return false
 	}
 
@@ -432,12 +434,12 @@ func (self *StateMgr) canFastForward(targetBlkNum uint64) bool {
 	// one block less than targetBlkNum is also acceptable for fastforward
 	for blkNum := self.server.GetCurrentBlockNo(); blkNum < targetBlkNum; blkNum++ {
 		if len(self.server.msgPool.GetProposalMsgs(blkNum)) == 0 {
-			self.server.log.Info("server %d check fastforward false, no proposal for block %d",
+			log.Info("server %d check fastforward false, no proposal for block %d",
 				self.server.Index, blkNum)
 			return false
 		}
 		if len(self.server.msgPool.GetCommitMsgs(blkNum)) <= F {
-			self.server.log.Info("server %d check fastforward false, no commit msg for block %d",
+			log.Info("server %d check fastforward false, no commit msg for block %d",
 				self.server.Index, blkNum)
 			return false
 		}

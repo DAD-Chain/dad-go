@@ -24,6 +24,8 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+
+	"github.com/dad-go/common/log"
 )
 
 type TimerEventType int
@@ -48,8 +50,8 @@ var (
 	endorseBlockTimeout    = 100 * time.Millisecond
 	commitBlockTimeout     = 200 * time.Millisecond
 	peerHandshakeTimeout   = 10 * time.Second
-	txPooltimeout		   = 1 *  time.Second
-	zeroTxBlockTimeout 	   = 10 * time.Second
+	txPooltimeout          = 1 * time.Second
+	zeroTxBlockTimeout     = 10 * time.Second
 )
 
 type SendMsgEvent struct {
@@ -129,7 +131,7 @@ func (self *EventTimer) StartTimer(Idx uint64, timeout time.Duration) error {
 
 	if t, present := self.normalTimers[Idx]; present {
 		t.Stop()
-		self.server.log.Infof("timer for %d got reset", Idx)
+		log.Infof("timer for %d got reset", Idx)
 	}
 
 	self.normalTimers[Idx] = time.AfterFunc(timeout, func() {
@@ -195,7 +197,7 @@ func (self *EventTimer) startEventTimer(evtType TimerEventType, blockNum uint64)
 	if t, present := timers[blockNum]; present {
 		t.Stop()
 		delete(timers, blockNum)
-		self.server.log.Infof("timer (type: %d) for %d got reset", evtType, blockNum)
+		log.Infof("timer (type: %d) for %d got reset", evtType, blockNum)
 	}
 
 	timeout := self.getEventTimeout(evtType)
@@ -230,7 +232,7 @@ func (self *EventTimer) StartProposalTimer(blockNum uint64) error {
 	self.lock.Lock()
 	defer self.lock.Unlock()
 
-	self.server.log.Infof("server %d started proposal timer for blk %d", self.server.Index, blockNum)
+	log.Infof("server %d started proposal timer for blk %d", self.server.Index, blockNum)
 	return self.startEventTimer(EventProposeBlockTimeout, blockNum)
 }
 
@@ -245,7 +247,7 @@ func (self *EventTimer) StartEndorsingTimer(blockNum uint64) error {
 	self.lock.Lock()
 	defer self.lock.Unlock()
 
-	self.server.log.Infof("server %d started endorsing timer for blk %d", self.server.Index, blockNum)
+	log.Infof("server %d started endorsing timer for blk %d", self.server.Index, blockNum)
 	return self.startEventTimer(EventEndorseBlockTimeout, blockNum)
 }
 
@@ -260,7 +262,7 @@ func (self *EventTimer) StartEndorseEmptyBlockTimer(blockNum uint64) error {
 	self.lock.Lock()
 	defer self.lock.Unlock()
 
-	self.server.log.Infof("server %d started empty endorsing timer for blk %d", self.server.Index, blockNum)
+	log.Infof("server %d started empty endorsing timer for blk %d", self.server.Index, blockNum)
 	return self.startEventTimer(EventEndorseEmptyBlockTimeout, blockNum)
 }
 
@@ -275,7 +277,7 @@ func (self *EventTimer) StartCommitTimer(blockNum uint64) error {
 	self.lock.Lock()
 	defer self.lock.Unlock()
 
-	self.server.log.Infof("server %d started commit timer for blk %d", self.server.Index, blockNum)
+	log.Infof("server %d started commit timer for blk %d", self.server.Index, blockNum)
 	return self.startEventTimer(EventCommitBlockTimeout, blockNum)
 }
 
@@ -335,7 +337,7 @@ func (self *EventTimer) onBlockSealed(blockNum uint64) {
 	// clear event timers
 	for i := 0; i < int(EventMax); i++ {
 		if err := self.cancelEventTimer(TimerEventType(i), blockNum); err != nil {
-			self.server.log.Errorf("server %d, failed to stop timer %d on sealing",
+			log.Errorf("server %d, failed to stop timer %d on sealing",
 				self.server.Index, i)
 		}
 	}
@@ -345,7 +347,7 @@ func (self *EventTimer) StartTxBlockTimeout(blockNum uint64) error {
 	self.lock.Lock()
 	defer self.lock.Unlock()
 
-	return self.startEventTimer(EventTxBlockTimeout,blockNum)
+	return self.startEventTimer(EventTxBlockTimeout, blockNum)
 }
 
 func (self *EventTimer) CancelTxBlockTimeout(blockNum uint64) error {
@@ -361,7 +363,7 @@ func (self *EventTimer) startPeerTicker(peerIdx uint32) error {
 
 	if p, present := self.peerTickers[peerIdx]; present {
 		p.Stop()
-		self.server.log.Infof("ticker for %d got reset", peerIdx)
+		log.Infof("ticker for %d got reset", peerIdx)
 	}
 
 	timeout := self.getEventTimeout(EventPeerHeartbeat)
@@ -386,7 +388,6 @@ func (self *EventTimer) stopPeerTicker(peerIdx uint32) error {
 	}
 	return nil
 }
-
 
 func (self *EventTimer) startTxTicker(blockNum uint64) error {
 	self.lock.Lock()

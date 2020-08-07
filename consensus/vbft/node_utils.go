@@ -24,6 +24,7 @@ import (
 
 	vconfig "github.com/dad-go/consensus/vbft/config"
 	p2pmsg "github.com/dad-go/net/message"
+	"github.com/dad-go/common/log"
 )
 
 func (self *Server) GetCurrentBlockNo() uint64 {
@@ -52,7 +53,7 @@ func (self *Server) isPeerActive(peerIdx uint32, blockNum uint64) bool {
 		}
 
 		if p.LatestInfo != nil {
-			return p.LatestInfo.CommittedBlockNumber+maxSyncingCheckBlkNum*4 > self.GetCommittedBlockNo()
+			return p.LatestInfo.CommittedBlockNumber+MAX_SYNCING_CHECK_BLK_NUM*4 > self.GetCommittedBlockNo()
 		}
 		return true
 	}
@@ -154,7 +155,7 @@ func (self *Server) getProposerRankLocked(blockNum uint64, peerIdx uint32) int {
 			}
 		}
 	} else {
-		self.log.Errorf("todo: get proposer config for non-current blocknum:%d, current.BlockNum%d,peerIdx:",blockNum, self.currentParticipantConfig.BlockNum,peerIdx)
+		log.Errorf("todo: get proposer config for non-current blocknum:%d, current.BlockNum%d,peerIdx:", blockNum, self.currentParticipantConfig.BlockNum, peerIdx)
 	}
 	return -1
 }
@@ -167,7 +168,7 @@ func (self *Server) getHighestRankProposal(blockNum uint64, proposals []*blockPr
 	var proposal *blockProposalMsg
 	for _, p := range proposals {
 		if p.GetBlockNum() != blockNum {
-			self.log.Errorf("server %d, diff blockNum found when get highest rank proposal,blockNum:%d", self.Index,blockNum)
+			log.Errorf("server %d, diff blockNum found when get highest rank proposal,blockNum:%d", self.Index, blockNum)
 			continue
 		}
 
@@ -216,13 +217,13 @@ func (self *Server) buildParticipantConfig(blkNum uint64, chainCfg *vconfig.Chai
 	}
 
 	s := 0
-	cfg.Proposers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MaxProposerCount)
-	s += vconfig.MaxProposerCount
-	cfg.Endorsers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MaxEndorserCount)
-	s += vconfig.MaxEndorserCount
-	cfg.Committers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MaxCommitterCount)
+	cfg.Proposers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MAX_PROPOSER_COUNT)
+	s += vconfig.MAX_PROPOSER_COUNT
+	cfg.Endorsers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MAX_ENDORSER_COUNT)
+	s += vconfig.MAX_ENDORSER_COUNT
+	cfg.Committers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MAX_COMMITTER_COUNT)
 
-	self.log.Infof("server %d, blkNum: %d, state: %d, participants config: %v, %v, %v", self.Index, blkNum,
+	log.Infof("server %d, blkNum: %d, state: %d, participants config: %v, %v, %v", self.Index, blkNum,
 		self.getState(), cfg.Proposers, cfg.Endorsers, cfg.Committers)
 
 	return cfg, nil
@@ -311,12 +312,12 @@ func (self *Server) sendToPeer(peerIdx uint32, data []byte) error {
 		return fmt.Errorf("send peer failed: failed to get peer %d", peerIdx)
 	}
 	msg := &p2pmsg.ConsensusPayload{
-		Data:data,
-		Owner:self.account.PublicKey,
+		Data:  data,
+		Owner: self.account.PublicKey,
 	}
 	buffer, err := p2pmsg.NewConsensus(msg)
 	if err != nil {
-		self.log.Error("Error NewConsensus: ", err)
+		log.Error("Error NewConsensus: ", err)
 		return err
 	}
 	self.p2p.Transmit(peer.PubKey, buffer)
@@ -333,8 +334,8 @@ func (self *Server) broadcast(msg ConsensusMsg) error {
 
 func (self *Server) broadcastToAll(data []byte) error {
 	msg := &p2pmsg.ConsensusPayload{
-		Data:data,
-		Owner:self.account.PublicKey,
+		Data:  data,
+		Owner: self.account.PublicKey,
 	}
 	self.p2p.Broadcast(msg)
 	return nil
