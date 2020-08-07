@@ -20,6 +20,7 @@ package vbft
 
 import (
 	"time"
+
 	"github.com/dad-go/common/log"
 )
 
