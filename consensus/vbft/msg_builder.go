@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"time"
 
-	common "github.com/dad-go/common"
+	"github.com/dad-go/common"
 	vconfig "github.com/dad-go/consensus/vbft/config"
 	"github.com/dad-go/core/ledger"
 	"github.com/dad-go/core/types"

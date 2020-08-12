@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"sync"
 
-	common "github.com/dad-go/common"
+	"github.com/dad-go/common"
 	"github.com/dad-go/common/log"
 )
 
