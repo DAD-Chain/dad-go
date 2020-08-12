@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common/log"
 )
 
 type SyncCheckReq struct {

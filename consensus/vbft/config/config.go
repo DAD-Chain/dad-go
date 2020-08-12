@@ -25,7 +25,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/dad-go/common/serialization"
+	"github.com/ontio/dad-go/common/serialization"
 )
 
 var (

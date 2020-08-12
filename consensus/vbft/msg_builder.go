@@ -23,11 +23,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dad-go/common"
-	vconfig "github.com/dad-go/consensus/vbft/config"
-	"github.com/dad-go/core/ledger"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
+	"github.com/ontio/dad-go/common"
+	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/crypto"
 )
 
 type ConsensusMsgPayload struct {

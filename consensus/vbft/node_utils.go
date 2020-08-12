@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/dad-go/common/log"
-	vconfig "github.com/dad-go/consensus/vbft/config"
-	p2pmsg "github.com/dad-go/net/message"
+	"github.com/ontio/dad-go/common/log"
+	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
+	p2pmsg "github.com/ontio/dad-go/net/message"
 )
 
 func (self *Server) GetCurrentBlockNo() uint64 {

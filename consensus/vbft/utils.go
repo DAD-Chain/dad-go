@@ -24,9 +24,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/consensus/vbft/config"
-	"github.com/dad-go/crypto"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/core/signature"
+	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 func SignMsg(sk []byte, msg ConsensusMsg) ([]byte, error) {

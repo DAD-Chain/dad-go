@@ -25,8 +25,8 @@ import (
 	"math"
 	"sync"
 
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
 )
 
 type BlockList []*Block

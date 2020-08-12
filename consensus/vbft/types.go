@@ -23,9 +23,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/dad-go/common"
-	vconfig "github.com/dad-go/consensus/vbft/config"
-	"github.com/dad-go/core/types"
+	"github.com/ontio/dad-go/common"
+	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/core/types"
 )
 
 type Block struct {
