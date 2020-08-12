@@ -25,7 +25,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/dad-go/common/serialization"
+	"github.com/ontio/dad-go/common/serialization"
 )
 
 var (
@@ -96,7 +96,7 @@ func (cc *ChainConfig) Serialize(w io.Writer) error {
 	return nil
 }
 
-func (cc *ChainConfig) Deserialize(r io.Reader,length int) error {
+func (cc *ChainConfig) Deserialize(r io.Reader, length int) error {
 	buf := make([]byte, length)
 	if _, err := r.Read(buf[:]); err != nil {
 		return err

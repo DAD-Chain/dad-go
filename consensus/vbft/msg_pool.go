@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"sync"
 
-	common "github.com/dad-go/common"
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
 )
 
 type ConsensusRoundMsgs map[MsgType][]ConsensusMsg // indexed by MsgType (proposal, endorsement, ...)

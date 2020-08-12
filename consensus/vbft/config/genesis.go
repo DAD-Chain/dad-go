@@ -29,8 +29,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dad-go/common/config"
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
 )
 
 type PeerStakeInfo struct {

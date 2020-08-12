@@ -26,20 +26,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dad-go/account"
-	"github.com/dad-go/common"
-	"github.com/dad-go/common/log"
-	actorTypes "github.com/dad-go/consensus/actor"
-	vconfig "github.com/dad-go/consensus/vbft/config"
-	"github.com/dad-go/core/payload"
-	"github.com/dad-go/core/types"
-	"github.com/dad-go/crypto"
-	"github.com/dad-go/eventbus/actor"
-	"github.com/dad-go/events/message"
-	p2pmsg "github.com/dad-go/net/message"
-	"reflect"
-	"github.com/dad-go/events"
-	"github.com/dad-go/validator/increment"
+	"github.com/ontio/dad-go/account"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	actorTypes "github.com/ontio/dad-go/consensus/actor"
+	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/core/payload"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/events"
+	"github.com/ontio/dad-go/events/message"
+	p2pmsg "github.com/ontio/dad-go/net/message"
+	"github.com/ontio/dad-go/validator/increment"
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type BftActionType uint8
@@ -375,12 +374,8 @@ func (self *Server) start() error {
 func (self *Server) stop() error {
 
 	// TODO
-<<<<<<< HEAD
-	self.sub.Unsubscribe(message.TopicSaveBlockComplete)
-=======
 	self.incrValidator.Clean()
 	self.sub.Unsubscribe(message.TOPIC_SAVE_BLOCK_COMPLETE)
->>>>>>> 44663ad... add tx validator
 	return nil
 }
 

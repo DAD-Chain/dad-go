@@ -21,7 +21,7 @@ package vconfig
 import (
 	"testing"
 
-	"github.com/dad-go/common/log"
+	"github.com/ontio/dad-go/common/log"
 )
 
 const (

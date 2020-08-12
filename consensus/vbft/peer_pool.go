@@ -22,9 +22,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/dad-go/common/log"
 )
 
 type Peer struct {
