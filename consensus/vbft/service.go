@@ -26,6 +26,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
@@ -37,8 +39,6 @@ import (
 	"github.com/ontio/dad-go/events/message"
 	p2pmsg "github.com/ontio/dad-go/net/message"
 	"github.com/ontio/dad-go/validator/increment"
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type BftActionType uint8
@@ -551,14 +551,15 @@ func (self *Server) startNewRound() error {
 
 	txpool := self.poolActor.GetTxnPool(true, uint32(blkNum-1))
 	if len(txpool) != 0 {
-		self.packProposal(blkNum)
+		self.startNewProposal(blkNum)
 	} else {
 		self.timer.startTxTicker(blkNum)
+		self.timer.StartTxBlockTimeout(blkNum)
 	}
 	return nil
 }
 
-func (self *Server) packProposal(blkNum uint64) error {
+func (self *Server) startNewProposal(blkNum uint64) error {
 	// make proposal
 	if self.isProposer(blkNum, self.Index) {
 		log.Infof("server %d, proposer for block %d", self.Index, blkNum)
@@ -792,6 +793,8 @@ func (self *Server) onConsensusMsg(peerIdx uint32, msg ConsensusMsg) {
 			}
 		}
 		if pmsg != nil {
+			log.Infof("server %d, handle proposal fetch %d from %d: %s",
+				self.Index, pMsg.BlockNum, peerIdx)
 			self.msgSendC <- &SendMsgEvent{
 				ToPeer: peerIdx,
 				Msg:    pmsg,
@@ -814,6 +817,8 @@ func (self *Server) onConsensusMsg(peerIdx uint32, msg ConsensusMsg) {
 			log.Errorf("server %d, failed to handle blockfetch %d from %d: %s",
 				self.Index, pMsg.BlockNum, peerIdx, err)
 		} else {
+			log.Infof("server %d, handle blockfetch %d from %d",
+				self.Index, pMsg.BlockNum, peerIdx)
 			self.msgSendC <- &SendMsgEvent{
 				ToPeer: peerIdx,
 				Msg:    msg,
@@ -1466,15 +1471,14 @@ func (self *Server) processTimerEvent(evt *TimerEvent) error {
 		blockNum := self.GetCurrentBlockNo()
 		txpool := self.poolActor.GetTxnPool(true, uint32(blockNum-1))
 		if len(txpool) != 0 {
-			self.packProposal(blockNum)
 			self.timer.stopTxTicker()
-		} else {
-			self.timer.stopTxTicker()
-			self.timer.StartTxBlockTimeout(blockNum)
+			self.timer.CancelTxBlockTimeout(blockNum)
+			self.startNewProposal(blockNum)
 		}
 	case EventTxBlockTimeout:
-		self.packProposal(evt.blockNum)
-		if err := self.timer.CancelTxBlockTimeout(evt.blockNum); err != nil {
+		self.timer.stopTxTicker()
+		self.timer.CancelTxBlockTimeout(evt.blockNum)
+		if err := self.startNewProposal(evt.blockNum); err != nil {
 			log.Errorf("failed to cancel txBlockTimeout timer, blockNum %d, err: %s", evt.blockNum, err)
 		}
 	}
