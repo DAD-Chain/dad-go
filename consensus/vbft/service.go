@@ -26,6 +26,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
@@ -37,8 +39,6 @@ import (
 	"github.com/ontio/dad-go/events/message"
 	p2pmsg "github.com/ontio/dad-go/net/message"
 	"github.com/ontio/dad-go/validator/increment"
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type BftActionType uint8
@@ -793,6 +793,8 @@ func (self *Server) onConsensusMsg(peerIdx uint32, msg ConsensusMsg) {
 			}
 		}
 		if pmsg != nil {
+			log.Infof("server %d, handle proposal fetch %d from %d: %s",
+				self.Index, pMsg.BlockNum, peerIdx)
 			self.msgSendC <- &SendMsgEvent{
 				ToPeer: peerIdx,
 				Msg:    pmsg,
@@ -815,6 +817,8 @@ func (self *Server) onConsensusMsg(peerIdx uint32, msg ConsensusMsg) {
 			log.Errorf("server %d, failed to handle blockfetch %d from %d: %s",
 				self.Index, pMsg.BlockNum, peerIdx, err)
 		} else {
+			log.Infof("server %d, handle blockfetch %d from %d",
+				self.Index, pMsg.BlockNum, peerIdx)
 			self.msgSendC <- &SendMsgEvent{
 				ToPeer: peerIdx,
 				Msg:    msg,
