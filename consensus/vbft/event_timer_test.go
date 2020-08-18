@@ -1,164 +1,54 @@
+/*
+ * Copyright (C) 2018 The dad-go Authors
+ * This file is part of The dad-go library.
+ *
+ * The dad-go is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The dad-go is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package vbft
 
-import (
-	"fmt"
-	"testing"
-	"time"
+import "testing"
 
-	"github.com/dad-go/common/log"
-)
-
-func TestEventTimer_StartProposalTimer(t *testing.T) {
-	log.Init(log.Stdout)
-	log.Log.SetDebugLevel(1)
-
-	s := &Server{
-		log: log.Log,
-	}
-
-	timer := NewEventTimer(s)
-	if timer == nil {
-		t.FailNow()
-	}
-
-	receivedCnt := 0
-	go func() {
-		for {
-			select {
-			case evt := <-timer.C:
-				fmt.Printf("timer received: evt: %d, blkNum: %d \n", evt.evtType, evt.blockNum)
-				receivedCnt++
-			case <-timer.stopC:
-				break
-			}
-		}
-	}()
-
-	timer.StartProposalTimer(1)
-	timer.StartEndorsingTimer(2)
-	timer.StartCommitTimer(3)
-
-	time.Sleep(time.Second)
-
-	timer.Stop()
-	if receivedCnt != 3 {
-		t.FailNow()
-	}
+func constructEventTimer() *EventTimer {
+	server := constructServer()
+	return NewEventTimer(server)
 }
 
-func TestEventTimer_CancelProposalTimer(t *testing.T) {
-	log.Init(log.Stdout)
-	log.Log.SetDebugLevel(1)
-
-	s := &Server{
-		log: log.Log,
-	}
-
-	timer := NewEventTimer(s)
-	if timer == nil {
-		t.FailNow()
-	}
-
-	receivedCnt := 0
-	go func() {
-		for {
-			select {
-			case evt := <-timer.C:
-				fmt.Printf("timer received: evt: %d, blkNum: %d \n", evt.evtType, evt.blockNum)
-				receivedCnt++
-			case <-timer.stopC:
-				break
-			}
-		}
-	}()
-
-	timer.StartTimer(1, time.Millisecond*500)
-	timer.StartTimer(2, time.Millisecond*600)
-	timer.StartTimer(3, time.Millisecond*700)
-
-	timer.CancelTimer(2)
-
-	time.Sleep(time.Second)
-
-	timer.Stop()
-	if receivedCnt != 2 {
-		t.FailNow()
-	}
+func TestStartTimer(t *testing.T) {
+	eventtimer := constructEventTimer()
+	err := eventtimer.StartTimer(uint64(1), 10)
+	t.Logf("TestStartTimer: %v", err)
 }
 
-func TestEventTimer_Stop(t *testing.T) {
-	log.Init(log.Stdout)
-	log.Log.SetDebugLevel(1)
-
-	s := &Server{
-		log: log.Log,
-	}
-
-	timer := NewEventTimer(s)
-	if timer == nil {
-		t.FailNow()
-	}
-
-	go func() {
-		for {
-			select {
-			case <-timer.C:
-				t.FailNow()
-			case <-timer.stopC:
-				break
-			}
-		}
-	}()
-
-	timer.StartTimer(1, time.Millisecond*500)
-	timer.StartTimer(2, time.Millisecond*100)
-	timer.StartProposalTimer(3)
-	timer.StartEndorsingTimer(4)
-	timer.StartCommitTimer(5)
-
-	// all timer should be cleared by stop()
-	timer.Stop()
-
-	time.Sleep(time.Second)
+func TestCancelTimer(t *testing.T) {
+	eventtimer := constructEventTimer()
+	err := eventtimer.StartTimer(uint64(1), 10)
+	t.Logf("TestStartTimer: %v", err)
+	err = eventtimer.CancelTimer(uint64(1))
+	t.Logf("TestCancelTimer: %v", err)
 }
 
-func TestEventTimer_DoubleStartTimer(t *testing.T) {
-	log.Init(log.Stdout)
-	log.Log.SetDebugLevel(1)
+func TestStartEventTimer(t *testing.T) {
+	eventtimer := constructEventTimer()
+	err := eventtimer.startEventTimer(EventProposeBlockTimeout, uint64(1))
+	t.Logf("TestStartEventTimer: %v", err)
+}
 
-	s := &Server{
-		log: log.Log,
-	}
-
-	timer := NewEventTimer(s)
-	if timer == nil {
-		t.FailNow()
-	}
-
-	var receivedTime time.Time
-	go func() {
-		for {
-			select {
-			case evt := <-timer.C:
-				fmt.Printf("timer received: evt: %d, blkNum: %d \n", evt.evtType, evt.blockNum)
-				receivedTime = time.Now()
-			case <-timer.stopC:
-				break
-			}
-		}
-	}()
-
-	timer.StartTimer(1, time.Millisecond*500)
-
-	time.Sleep(time.Millisecond * 10)
-	// double start timer, should overwrite the first one
-	startTime := time.Now()
-	timer.StartTimer(1, time.Millisecond*100)
-
-	time.Sleep(time.Second)
-	timer.Stop()
-
-	if receivedTime.Sub(startTime) > time.Millisecond*150 {
-		t.FailNow()
-	}
+func TestCancelEventTimer(t *testing.T) {
+	eventtimer := constructEventTimer()
+	err := eventtimer.startEventTimer(EventProposeBlockTimeout, uint64(1))
+	t.Logf("startEventTimer: %v", err)
+	err = eventtimer.cancelEventTimer(EventProposeBlockTimeout, uint64(1))
+	t.Logf("cancelEventTimer: %v", err)
 }

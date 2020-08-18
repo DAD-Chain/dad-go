@@ -1,42 +1,149 @@
+/*
+ * Copyright (C) 2018 The dad-go Authors
+ * This file is part of The dad-go library.
+ *
+ * The dad-go is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The dad-go is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package vbft
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/log"
+	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
 )
 
-func Test_calcParticipantPeers(t *testing.T) {
-	dposTable := []uint32{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4}
-	chain := &ChainConfig{
-		F:         2,
-		DposTable: dposTable,
+func peerPool() *PeerPool {
+	nodeId, _ := vconfig.StringID("206520e7475798520164487f7e4586bb55790097ceb786aab6d5bc889d12991a5a204c6298bef1bf43c20680a3979a213392b99c97042ebae27d2a7af6442aa7c008")
+	peerconfig := &vconfig.PeerConfig{
+		Index: uint32(1),
+		ID:    nodeId,
 	}
+	peerpool := constructPeerPool(false)
+	peerpool.addPeer(peerconfig)
+	return peerpool
+}
 
-	vrf := VRFValue{}
-	for i := range vrf.Bytes() {
-		vrf[i] = byte(i + 1)
+func constructServer() *Server {
+	statemgr := &StateMgr{
+		currentState: Syncing,
 	}
-	participantCfg := &BlockParticipantConfig{
-		Vrf:         vrf,
-		ChainConfig: chain,
+	blockparticipantconfig := &BlockParticipantConfig{
+		BlockNum:   uint64(1),
+		L:          uint32(2),
+		Proposers:  []uint32{1, 2, 3},
+		Endorsers:  []uint32{1, 2, 3},
+		Committers: []uint32{1, 2, 3},
 	}
+	server := &Server{
+		Index:                    uint32(1),
+		stateMgr:                 statemgr,
+		currentParticipantConfig: blockparticipantconfig,
+	}
+	return server
+}
+func TestIsPeerAlive(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	res := server.isPeerAlive(uint32(2), uint64(1))
+	t.Logf("TestIsPeerAlive: %v", res)
+}
 
-	id := calcParticipant(vrf, dposTable, 0)
-	if id != dposTable[1] {
-		t.FailNow()
-	}
-	fmt.Printf("id: %d \n", id)
+func TestIsPeerActive(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	res := server.isPeerActive(uint32(1), uint64(1))
+	t.Logf("TestIsPeerActive: %v", res)
+}
 
-	ids := calcParticipantPeers(participantCfg, chain, 0, 2)
-	if len(ids) != 2 || ids[0] != id || ids[1] != 1 {
-		t.FailNow()
-	}
-	fmt.Printf("ids: %v \n", ids)
+func TestIsProposer(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	res := server.isProposer(uint64(1), uint32(1))
+	t.Logf("TestIsProposer: %v", res)
+}
 
-	ids2 := calcParticipantPeers(participantCfg, chain, 0, 100)
-	if len(ids2) != 4 {
-		// all peers should be selected
-		t.FailNow()
+func TestIs2ndProposer(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	res := server.is2ndProposer(uint64(1), uint32(1))
+	t.Logf("TestIs2ndProposer %v", res)
+}
+
+func TestIsEndorser(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	res := server.isEndorser(uint64(1), uint32(1))
+	t.Logf("TestIsEndorser %v", res)
+}
+
+func TestIsCommitter(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	res := server.isCommitter(uint64(1), uint32(1))
+	t.Logf("TestIsCommitter %v", res)
+}
+
+func TestGetProposerRankLocked(t *testing.T) {
+	server := constructServer()
+	server.peerPool = peerPool()
+	rank := server.getProposerRankLocked(uint64(1), uint32(1))
+	t.Logf("TestGetProposerRankLocked %v", rank)
+}
+
+func TestGetHighestRankProposal(t *testing.T) {
+	log.Init(log.PATH, log.Stdout)
+	server := constructServer()
+	server.peerPool = peerPool()
+	block, err := constructBlock()
+	if err != nil {
+		t.Errorf("constructBlock failed :%v", err)
+		return
 	}
-	fmt.Printf("ids: %v \n", ids2)
+	blockproposalmsg := &blockProposalMsg{
+		Block: block,
+	}
+	var proposals []*blockProposalMsg
+	proposals = append(proposals, blockproposalmsg)
+	msg := server.getHighestRankProposal(uint64(1), proposals)
+	t.Logf("TestGetHighestRankProposal %v", msg)
+}
+
+func TestIsEmptyProposal(t *testing.T) {
+	block, err := constructBlock()
+	if err != nil {
+		t.Errorf("constructBlock failed :%v", err)
+		return
+	}
+	blockproposalmsg := &blockProposalMsg{
+		Block: block,
+	}
+	res := isEmptyProposal(blockproposalmsg)
+	t.Logf("TestIsEmptyProposal %v", res)
+}
+func TestGetCommitConsensus(t *testing.T) {
+	blockcommitmsg := &blockCommitMsg{
+		Committer:       uint32(1),
+		BlockProposer:   uint32(1),
+		BlockNum:        uint64(1),
+		CommitBlockHash: common.Uint256{},
+		CommitForEmpty:  true,
+	}
+	var commitMsgs []*blockCommitMsg
+	commitMsgs = append(commitMsgs, blockcommitmsg)
+	blockproposer, flag := getCommitConsensus(commitMsgs, 2)
+	t.Logf("TestGetCommitConsensus %d ,%v", blockproposer, flag)
 }
