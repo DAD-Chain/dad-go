@@ -24,20 +24,20 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
-func SignMsg(sk []byte, msg ConsensusMsg) ([]byte, error) {
+func SignMsg(account *account.Account, msg ConsensusMsg) ([]byte, error) {
 
 	data, err := msg.Serialize()
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal msg when signing: %s", err)
 	}
 
-	return crypto.Sign(sk, data)
+	return signature.Sign(account, data)
 }
 
 func HashBlock(blk *Block) (common.Uint256, error) {
