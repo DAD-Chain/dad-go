@@ -26,21 +26,15 @@ import (
 
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	actorTypes "github.com/ontio/dad-go/consensus/actor"
 	"github.com/ontio/dad-go/core/ledger"
 	ldgactor "github.com/ontio/dad-go/core/ledger/actor"
-	"github.com/ontio/dad-go/core/signature"
 )
 
 func newChainStore() *ChainStore {
 	log.Init(log.PATH, log.Stdout)
 	var err error
-	err = signature.SetDefaultScheme(config.Parameters.SignatureScheme)
-	if err != nil {
-		log.Warn("Config error: ", err)
-	}
 	passwd := string("passwordtest")
 	acct := account.Open(account.WALLET_FILENAME, []byte(passwd))
 
