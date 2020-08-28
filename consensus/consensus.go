@@ -21,12 +21,12 @@ package consensus
 import (
 	"strings"
 
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/consensus/dbft"
 	"github.com/ontio/dad-go/consensus/solo"
-	"github.com/ontio/dad-go/eventbus/actor"
 	"github.com/ontio/dad-go/consensus/vbft"
 )
 

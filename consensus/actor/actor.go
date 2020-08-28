@@ -22,10 +22,10 @@ import (
 	"errors"
 	"time"
 
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/crypto"
 	ontErrors "github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/eventbus/actor"
 	netActor "github.com/ontio/dad-go/net/actor"
 	txpool "github.com/ontio/dad-go/txnpool/common"
 )
@@ -72,7 +72,7 @@ func (self *P2PActor) Broadcast(msg interface{}) {
 	self.P2P.Tell(msg)
 }
 
-func (self *P2PActor) Transmit(target *crypto.PubKey, msg []byte) {
+func (self *P2PActor) Transmit(target *keypair.PublicKey, msg []byte) {
 	self.P2P.Tell(&netActor.TransmitConsensusMsgReq{
 		Target: target,
 		Msg:    msg,
