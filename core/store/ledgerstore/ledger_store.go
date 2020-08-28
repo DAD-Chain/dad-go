@@ -26,6 +26,7 @@ import (
 
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/signature"
@@ -380,26 +381,28 @@ func (this *LedgerStoreImp) verifyHeader(header *types.Header) error {
 	if prevHeader.Height+1 != header.Height {
 		return fmt.Errorf("block height is incorrect")
 	}
+	consensusType := strings.ToLower(config.Parameters.ConsensusType)
+	if consensusType != "vbft" {
 
-	if prevHeader.Timestamp >= header.Timestamp {
-		return fmt.Errorf("block timestamp is incorrect")
-	}
+		if prevHeader.Timestamp >= header.Timestamp {
+			return fmt.Errorf("block timestamp is incorrect")
+		}
 
-	address, err := types.AddressFromBookkeepers(header.Bookkeepers)
-	if err != nil {
-		return err
-	}
-	if prevHeader.NextBookkeeper != address {
-		return fmt.Errorf("bookkeeper address error")
-	}
+		address, err := types.AddressFromBookkeepers(header.Bookkeepers)
+		if err != nil {
+			return err
+		}
+		if prevHeader.NextBookkeeper != address {
+			return fmt.Errorf("bookkeeper address error")
+		}
 
-	m := len(header.Bookkeepers) - (len(header.Bookkeepers)-1)/3
-	hash := header.Hash()
-	err = signature.VerifyMultiSignature(hash[:], header.Bookkeepers, m, header.SigData)
-	if err != nil {
-		return err
+		m := len(header.Bookkeepers) - (len(header.Bookkeepers)-1)/3
+		hash := header.Hash()
+		err = signature.VerifyMultiSignature(hash[:], header.Bookkeepers, m, header.SigData)
+		if err != nil {
+			return err
+		}
 	}
-
 	return nil
 }
 
