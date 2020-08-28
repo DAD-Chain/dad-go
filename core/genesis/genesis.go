@@ -27,7 +27,7 @@ import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
-	vconfig "github.com/dad-go/consensus/vbft/config"
+	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/smartcontract/states"
