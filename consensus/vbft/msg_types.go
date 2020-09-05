@@ -23,12 +23,12 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go-crypto/signature"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
 	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-crypto/signature"
 )
 
 type MsgType uint8
