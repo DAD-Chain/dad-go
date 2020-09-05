@@ -16,33 +16,26 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodeinfo
+package types
 
-import "strings"
+import (
+	"testing"
+)
 
-type NgbNodeInfo struct {
-	NgbId         string //neighbor node id
-	NgbType       string
-	NgbAddr       string
-	HttpInfoAddr  string
-	HttpInfoPort  uint16
-	HttpInfoStart bool
-}
+func TestAddrReqSerializationDeserialization(t *testing.T) {
+	var msg AddrReq
+	var sum []byte
+	sum = []byte{0x5d, 0xf6, 0xe0, 0xe2}
+	msg.Hdr.Init("getaddr", sum, 0)
 
-type NgbNodeInfoSlice []NgbNodeInfo
+	buf, err := msg.Serialization()
 
-func (n NgbNodeInfoSlice) Len() int {
-	return len(n)
-}
-
-func (n NgbNodeInfoSlice) Swap(i, j int) {
-	n[i], n[j] = n[j], n[i]
-}
-
-func (n NgbNodeInfoSlice) Less(i, j int) bool {
-	if 0 <= strings.Compare(n[i].HttpInfoAddr, n[j].HttpInfoAddr) {
-		return false
+	var demsg AddrReq
+	err = demsg.Deserialization(buf)
+	if err != nil {
+		t.Error(err)
+		return
 	} else {
-		return true
+		t.Log("getaddr Test_Deserialization sucessful")
 	}
 }

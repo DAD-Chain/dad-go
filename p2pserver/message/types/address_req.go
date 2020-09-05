@@ -16,33 +16,40 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodeinfo
+package types
 
-import "strings"
+import (
+	"bytes"
+	"encoding/binary"
+)
 
-type NgbNodeInfo struct {
-	NgbId         string //neighbor node id
-	NgbType       string
-	NgbAddr       string
-	HttpInfoAddr  string
-	HttpInfoPort  uint16
-	HttpInfoStart bool
+type AddrReq struct {
+	Hdr MsgHdr
 }
 
-type NgbNodeInfoSlice []NgbNodeInfo
-
-func (n NgbNodeInfoSlice) Len() int {
-	return len(n)
+//Check whether header is correct
+func (msg AddrReq) Verify(buf []byte) error {
+	err := msg.Hdr.Verify(buf)
+	return err
 }
 
-func (n NgbNodeInfoSlice) Swap(i, j int) {
-	n[i], n[j] = n[j], n[i]
-}
+//Serialize message payload
+func (msg AddrReq) Serialization() ([]byte, error) {
+	var buf bytes.Buffer
+	var sum []byte
+	sum = []byte{0x5d, 0xf6, 0xe0, 0xe2}
+	msg.Hdr.Init("getaddr", sum, 0)
 
-func (n NgbNodeInfoSlice) Less(i, j int) bool {
-	if 0 <= strings.Compare(n[i].HttpInfoAddr, n[j].HttpInfoAddr) {
-		return false
-	} else {
-		return true
+	err := binary.Write(&buf, binary.LittleEndian, msg)
+	if err != nil {
+		return nil, err
 	}
+	return buf.Bytes(), err
+}
+
+//Deserialize message payload
+func (msg *AddrReq) Deserialization(p []byte) error {
+	buf := bytes.NewBuffer(p)
+	err := binary.Read(buf, binary.LittleEndian, msg)
+	return err
 }

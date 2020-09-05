@@ -16,14 +16,14 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net
+package p2pserver
 
 import (
-	ns "github.com/ontio/dad-go/net/actor"
-	"github.com/ontio/dad-go/net/node"
-	"github.com/ontio/dad-go/net/protocol"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
+	ns "github.com/ontio/dad-go/p2pserver/actor/req"
+	"github.com/ontio/dad-go/p2pserver/node"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 func SetTxnPoolPid(txnPid *actor.PID) {
@@ -39,8 +39,8 @@ func SetLedgerPid(conPid *actor.PID) {
 }
 
 func InitNetServerActor(noder protocol.Noder) (*actor.PID, error) {
-	netServerPid, err := ns.InitNetServer(noder)
-	return netServerPid, err
+	//netServerPid, err := ns.InitNetServer(noder)
+	return nil, nil
 }
 
 func StartProtocol(pubKey keypair.PublicKey) protocol.Noder {

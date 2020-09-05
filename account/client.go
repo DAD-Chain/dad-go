@@ -38,7 +38,7 @@ import (
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/net/protocol"
+	p2pcommon "github.com/ontio/dad-go/p2pserver/common"
 )
 
 const (
@@ -255,9 +255,9 @@ func clientIsDefaultBookkeeper(publicKey string) bool {
 
 func nodeType(typeName string) int {
 	if "service" == config.Parameters.NodeType {
-		return protocol.SERVICE_NODE
+		return p2pcommon.SERVICE_NODE
 	} else {
-		return protocol.VERIFY_NODE
+		return p2pcommon.VERIFY_NODE
 	}
 }
 

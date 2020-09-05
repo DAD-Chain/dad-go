@@ -46,8 +46,10 @@ import (
 	"github.com/ontio/dad-go/http/nodeinfo"
 	"github.com/ontio/dad-go/http/restful"
 	"github.com/ontio/dad-go/http/websocket"
-	"github.com/ontio/dad-go/net"
-	"github.com/ontio/dad-go/net/protocol"
+	"github.com/ontio/dad-go/p2pserver"
+	netreqactor "github.com/ontio/dad-go/p2pserver/actor/req"
+	p2pactor "github.com/ontio/dad-go/p2pserver/actor/server"
+	nettypes "github.com/ontio/dad-go/p2pserver/common"
 	"github.com/ontio/dad-go/txnpool"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go/validator/statefull"
@@ -185,36 +187,42 @@ func ontMain(ctx *cli.Context) {
 
 	log.Info("4. Start the P2P networks")
 
-	net.SetLedgerPid(ledgerPID)
-	net.SetTxnPoolPid(txPoolServer.GetPID(tc.TxActor))
-	noder = net.StartProtocol(acct.PublicKey)
+	p2p, err := p2pserver.NewServer(acct)
 	if err != nil {
-		log.Fatalf("Net StartProtocol error %s", err)
+		log.Fatalf("p2pserver NewServer error %s", err)
 		os.Exit(1)
 	}
-	p2pActor, err := net.InitNetServerActor(noder)
+	err = p2p.Start(true)
 	if err != nil {
-		log.Fatalf("Net InitNetServerActor error %s", err)
+		log.Fatalf("p2p sevice start error %s", err)
 		os.Exit(1)
 	}
+	p2pActor := p2pactor.NewP2PActor(p2p)
+	p2pPID, err := p2pActor.Start()
+	if err != nil {
+		log.Fatalf("p2pActor init error %s", err)
+		os.Exit(1)
+	}
+	netreqactor.SetLedgerPid(ledgerPID)
+	netreqactor.SetTxnPoolPid(txPoolServer.GetPID(tc.TxPoolActor))
 
-	txPoolServer.RegisterActor(tc.NetActor, p2pActor)
-
-	hserver.SetNetServerPid(p2pActor)
+	txPoolServer.RegisterActor(tc.NetActor, p2pPID)
+	hserver.SetNetServerPID(p2pPID)
 	hserver.SetLedgerPid(ledgerPID)
 	hserver.SetTxnPoolPid(txPoolServer.GetPID(tc.TxPoolActor))
 	hserver.SetTxPid(txPoolServer.GetPID(tc.TxActor))
 	go restful.StartServer()
 
 	if consensusType != "vbft" {
-		noder.WaitForPeersStart()
-		noder.WaitForSyncBlkFinish()
-    }
-	if protocol.SERVICE_NODE_NAME != config.Parameters.NodeType {
+		p2p.WaitForPeersStart()
+		p2p.WaitForSyncBlkFinish()
+	}
+
+	if nettypes.SERVICE_NODE_NAME != config.Parameters.NodeType {
 		log.Info("5. Start Consensus Services")
 		pool := txPoolServer.GetPID(tc.TxPoolActor)
-		consensusService, _ := consensus.NewConsensusService(acct, pool, ledgerPID, p2pActor)
-		net.SetConsensusPid(consensusService.GetPID())
+		consensusService, _ := consensus.NewConsensusService(acct, pool, nil, p2pPID)
+		netreqactor.SetConsensusPid(consensusService.GetPID())
 		go consensusService.Start()
 		time.Sleep(5 * time.Second)
 		hserver.SetConsensusPid(consensusService.GetPID())
@@ -225,7 +233,7 @@ func ontMain(ctx *cli.Context) {
 	go jsonrpc.StartRPCServer()
 	go websocket.StartServer()
 	if config.Parameters.HttpInfoPort > 0 {
-		go nodeinfo.StartServer(noder)
+		go nodeinfo.StartServer(p2p.GetNetWork())
 	}
 
 	go logCurrBlockHeight()

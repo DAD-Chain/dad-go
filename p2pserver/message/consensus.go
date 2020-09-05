@@ -25,13 +25,13 @@ import (
 	"errors"
 	"io"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go/net/actor"
-	"github.com/ontio/dad-go/net/protocol"
-	"github.com/ontio/dad-go-crypto/keypair"
+	actor "github.com/ontio/dad-go/p2pserver/actor/req"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 type PeerStateUpdate struct {
