@@ -38,7 +38,7 @@ import (
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/net/protocol"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 const (

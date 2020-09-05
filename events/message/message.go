@@ -21,7 +21,7 @@ package message
 import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/net/protocol"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 const (

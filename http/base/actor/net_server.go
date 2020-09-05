@@ -22,10 +22,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ontio/dad-go/common/log"
-	ac "github.com/ontio/dad-go/net/actor"
-	"github.com/ontio/dad-go/net/protocol"
 	"github.com/ontio/dad-go-eventbus/actor"
+	"github.com/ontio/dad-go/common/log"
+	ac "github.com/ontio/dad-go/p2pserver/actor"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 var netServerPid *actor.PID

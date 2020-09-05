@@ -21,6 +21,7 @@ package dbft
 import (
 	"fmt"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
@@ -28,8 +29,7 @@ import (
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/vote"
-	msg "github.com/ontio/dad-go/net/message"
-	"github.com/ontio/dad-go-crypto/keypair"
+	msg "github.com/ontio/dad-go/p2pserver/message"
 )
 
 const ContextVersion uint32 = 0

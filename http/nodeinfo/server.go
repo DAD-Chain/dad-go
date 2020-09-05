@@ -25,10 +25,10 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/net/protocol"
-	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 type Info struct {
