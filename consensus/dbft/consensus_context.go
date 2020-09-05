@@ -29,7 +29,7 @@ import (
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/vote"
-	msg "github.com/ontio/dad-go/p2pserver/message"
+	msg "github.com/ontio/dad-go/p2pserver/message/types"
 )
 
 const ContextVersion uint32 = 0

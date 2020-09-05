@@ -27,8 +27,8 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/net/actor"
-	"github.com/ontio/dad-go/net/protocol"
+	actor "github.com/ontio/dad-go/p2pserver/actor/req"
+	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
 type blockReq struct {

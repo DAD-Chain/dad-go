@@ -39,7 +39,7 @@ import (
 	"github.com/ontio/dad-go/core/vote"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
-	p2pmsg "github.com/ontio/dad-go/p2pserver/message"
+	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
 	"github.com/ontio/dad-go/validator/increment"
 )
 

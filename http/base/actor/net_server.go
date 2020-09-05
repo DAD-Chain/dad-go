@@ -24,7 +24,7 @@ import (
 
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common/log"
-	ac "github.com/ontio/dad-go/p2pserver/actor"
+	ac "github.com/ontio/dad-go/p2pserver/actor/server"
 	"github.com/ontio/dad-go/p2pserver/protocol"
 )
 
