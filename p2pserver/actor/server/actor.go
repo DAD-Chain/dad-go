@@ -24,6 +24,7 @@ import (
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/p2pserver"
+	"github.com/ontio/dad-go/p2pserver/common"
 )
 
 type P2PActor struct {
@@ -87,6 +88,8 @@ func (this *P2PActor) Receive(ctx actor.Context) {
 		this.handleGetRelayStateReq(ctx, msg)
 	case *GetNodeTypeReq:
 		this.handleGetNodeTypeReq(ctx, msg)
+	case *common.RemoveFlightHeight:
+		this.server.RemoveFlightHeight(msg.Id, msg.Height)
 	default:
 		err := this.server.Xmit(ctx.Message())
 		if nil != err {
