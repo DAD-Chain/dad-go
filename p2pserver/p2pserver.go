@@ -55,6 +55,7 @@ type P2PServer struct {
 	quitOnline    chan bool
 	quitHeartBeat chan bool
 	quitSyncBlk   chan bool
+	flightlock    sync.RWMutex
 	isSync        bool
 }
 
@@ -369,20 +370,24 @@ func (this *P2PServer) retryInactivePeer() {
 		this.ReconnectAddrs.Lock()
 
 		list := make(map[string]int)
-		for addr := range this.RetryAddrs {
-			this.RetryAddrs[addr] = this.RetryAddrs[addr] + 1
-			rand.Seed(time.Now().UnixNano())
-			log.Trace("Try to reconnect peer, peer addr is ", addr)
-			<-time.After(time.Duration(rand.Intn(common.CONN_MAX_BACK)) *
-				time.Millisecond)
-			log.Trace("Back off time`s up, start connect node")
-			this.network.Connect(addr, false)
-			if this.RetryAddrs[addr] < common.MAX_RETRY_COUNT {
-				list[addr] = this.RetryAddrs[addr]
+		addrs := make([]string, 0, len(this.RetryAddrs))
+		for addr, v := range this.RetryAddrs {
+			v += 1
+			addrs = append(addrs, addr)
+			if v < common.MAX_RETRY_COUNT {
+				list[addr] = v
 			}
 		}
 		this.RetryAddrs = list
 		this.ReconnectAddrs.Unlock()
+		for _, addr := range addrs {
+			rand.Seed(time.Now().UnixNano())
+			log.Info("Try to reconnect peer, peer addr is ", addr)
+			<-time.After(time.Duration(rand.Intn(common.CONN_MAX_BACK)) * time.Millisecond)
+			log.Info("Back off time`s up, start connect node")
+			this.network.Connect(addr, false)
+		}
+
 	}
 }
 
@@ -553,6 +558,7 @@ func (this *P2PServer) syncBlock() {
 		flights := this.flightHeights[p.GetID()]
 		count := common.MAX_REQ_BLK_ONCE - uint32(len(flights))
 		dValue = int32(currentHdrHeight - currentBlkHeight - reqCnt)
+		this.flightlock.Lock()
 		if count == 0 {
 			for _, f := range flights {
 				hash, _ := actor.GetBlockHashByHeight(f)
@@ -593,12 +599,15 @@ func (this *P2PServer) syncBlock() {
 			}
 		}
 		this.flightHeights[p.GetID()] = flights
+		this.flightlock.Unlock()
 	}
 
 }
 
 //removeFlightHeightLessThan remove peer`s flightheight less than given height
 func (this *P2PServer) removeFlightHeightLessThan(p *peer.Peer, h uint32) {
+	this.flightlock.Lock()
+	defer this.flightlock.Unlock()
 	heights := this.flightHeights[p.GetID()]
 	nCnt := len(heights)
 	i := 0
@@ -616,6 +625,8 @@ func (this *P2PServer) removeFlightHeightLessThan(p *peer.Peer, h uint32) {
 
 //RemoveFlightHeight remove given height in flights
 func (this *P2PServer) RemoveFlightHeight(id uint64, height uint32) {
+	this.flightlock.Lock()
+	defer this.flightlock.Unlock()
 	for id, heights := range this.flightHeights {
 		for i, v := range heights {
 			if v == height {
