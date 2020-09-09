@@ -19,6 +19,9 @@
 package p2pserver
 
 import (
+	"sync"
+	"time"
+
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/types"
@@ -26,8 +29,6 @@ import (
 	p2pComm "github.com/ontio/dad-go/p2pserver/common"
 	"github.com/ontio/dad-go/p2pserver/message/msg_pack"
 	"github.com/ontio/dad-go/p2pserver/peer"
-	"sync"
-	"time"
 )
 
 const (
