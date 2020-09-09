@@ -26,7 +26,7 @@ import (
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
-	netActor "github.com/ontio/dad-go/net/actor"
+	netActor "github.com/ontio/dad-go/p2pserver/actor/server"
 	txpool "github.com/ontio/dad-go/txnpool/common"
 )
 

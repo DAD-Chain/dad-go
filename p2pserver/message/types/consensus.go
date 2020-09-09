@@ -22,12 +22,18 @@ import (
 	"bytes"
 	"encoding/binary"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common/log"
 )
 
 type Consensus struct {
 	MsgHdr
 	Cons ConsensusPayload
+}
+
+type PeerStateUpdate struct {
+	PeerPubKey *keypair.PublicKey
+	Connected  bool
 }
 
 //Serialize message payload

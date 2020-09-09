@@ -38,7 +38,7 @@ import (
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
-	p2pmsg "github.com/ontio/dad-go/net/message"
+	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
 	"github.com/ontio/dad-go/validator/increment"
 )
 
