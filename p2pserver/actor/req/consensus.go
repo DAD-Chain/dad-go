@@ -16,14 +16,26 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package actor
+package req
 
 import (
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
+	msgTypes "github.com/ontio/dad-go/p2pserver/message/types"
 )
 
 var ConsensusPid *actor.PID
 
 func SetConsensusPid(conPid *actor.PID) {
 	ConsensusPid = conPid
+}
+
+func NotifyPeerState(peer keypair.PublicKey, connected bool) error {
+	if ConsensusPid != nil {
+		ConsensusPid.Tell(&msgTypes.PeerStateUpdate{
+			PeerPubKey: &peer,
+			Connected:  connected,
+		})
+	}
+	return nil
 }

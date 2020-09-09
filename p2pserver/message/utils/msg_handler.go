@@ -311,9 +311,7 @@ func VersionHandle(data *msgCommon.MsgPayload, p2p p2p.P2P, pid *evtActor.PID, a
 		if ret == true {
 			log.Info(fmt.Sprintf("Peer reconnect 0x%x", version.P.Nonce))
 			// Close the connection and release the node source
-			n.SetSyncState(msgCommon.INACTIVITY)
 			n.CloseSync()
-			n.SetConsState(msgCommon.INACTIVITY)
 			n.CloseCons()
 			p2p.RemovePeerSyncAddress(n.GetAddr())
 			p2p.RemovePeerConsAddress(n.GetAddr())
@@ -501,7 +499,7 @@ func DataReqHandle(data *msgCommon.MsgPayload, p2p p2p.P2P, pid *evtActor.PID, a
 	switch reqType {
 	case common.BLOCK:
 		block, err := actor.GetBlockByHash(hash)
-		if err != nil || block == nil {
+		if err != nil || block == nil || block.Header == nil {
 			log.Debug("Can't get block by hash: ", hash,
 				" ,send not found message")
 			b, err := msgpack.NewNotFound(hash)

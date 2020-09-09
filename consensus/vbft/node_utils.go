@@ -24,7 +24,8 @@ import (
 
 	"github.com/ontio/dad-go/common/log"
 	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
-	p2pmsg "github.com/ontio/dad-go/net/message"
+	msgpack "github.com/ontio/dad-go/p2pserver/message/msg_pack"
+	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
 )
 
 func (self *Server) GetCurrentBlockNo() uint64 {
@@ -327,7 +328,7 @@ func (self *Server) sendToPeer(peerIdx uint32, data []byte) error {
 		Data:  data,
 		Owner: self.account.PublicKey,
 	}
-	buffer, err := p2pmsg.NewConsensus(msg)
+	buffer, err := msgpack.NewConsensus(msg)
 	if err != nil {
 		log.Error("Error NewConsensus: ", err)
 		return err
