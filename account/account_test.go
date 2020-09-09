@@ -1,26 +1,41 @@
 package account
 
 import (
-	"fmt"
-	"github.com/dad-go/crypto"
+	"github.com/ontio/dad-go/core/types"
+	"github.com/stretchr/testify/assert"
 	"os"
-	"path"
 	"testing"
 )
 
-func TestClient(t *testing.T) {
-	t.Log("created client start!")
-	crypto.SetAlg(crypto.P256R1)
-	dir := "./data/"
-	err := os.MkdirAll(dir, 0777)
-	if err != nil {
-		t.Log("create dir ", dir, " error: ", err)
-	} else {
-		t.Log("create dir ", dir, " success!")
+func TestNewAccount(t *testing.T) {
+	defer func() {
+		os.RemoveAll("Log/")
+	}()
+
+	names := []string{
+		"",
+		"SHA224withECDSA",
+		"SHA256withECDSA",
+		"SHA384withECDSA",
+		"SHA512withECDSA",
+		"SHA3-224withECDSA",
+		"SHA3-256withECDSA",
+		"SHA3-384withECDSA",
+		"SHA3-512withECDSA",
+		"RIPEMD160withECDSA",
+		"SM3withSM2",
+		"SHA512withEdDSA",
 	}
-	for i := 0; i < 10000; i++ {
-		p := path.Join(dir, fmt.Sprintf("wallet%d.txt", i))
-		fmt.Println("client path", p)
-		CreateClient(p, []byte(DefaultPin))
+	accounts := make([]*Account, len(names))
+	for k, v := range names {
+		accounts[k] = NewAccount(v)
+		assert.NotNil(t, accounts[k])
+		assert.NotNil(t, accounts[k].PrivateKey)
+		assert.NotNil(t, accounts[k].PublicKey)
+		assert.NotNil(t, accounts[k].Address)
+		assert.NotNil(t, accounts[k].PrivKey())
+		assert.NotNil(t, accounts[k].PubKey())
+		assert.NotNil(t, accounts[k].Scheme())
+		assert.Equal(t, accounts[k].Address, types.AddressFromPubKey(accounts[k].PublicKey))
 	}
 }
