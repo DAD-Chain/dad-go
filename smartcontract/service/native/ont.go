@@ -30,6 +30,7 @@ import (
 	ctypes "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
+
 )
 
 var (
@@ -73,10 +74,12 @@ func OntTransfer(native *NativeService) error {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[Transfer] Transfers deserialize error!")
 	}
 	contract := native.ContextRef.CurrentContext().ContractAddress
+
 	for _, v := range transfers.States {
 		if v.Value.Sign() == 0 {
 			continue
 		}
+
 		fromBalance, toBalance, err := transfer(native, contract, v)
 		if err != nil {
 			return err
