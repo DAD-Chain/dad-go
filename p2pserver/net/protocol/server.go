@@ -16,6 +16,7 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Package p2p provides an network interface
 package p2p
 
 import (
