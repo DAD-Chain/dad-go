@@ -33,7 +33,7 @@ import (
 	"github.com/ontio/dad-go/core/types"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	tp "github.com/ontio/dad-go/txnpool/proc"
-	"github.com/ontio/dad-go/validator/statefull"
+	"github.com/ontio/dad-go/validator/stateful"
 	"github.com/ontio/dad-go/validator/stateless"
 )
 
@@ -131,7 +131,7 @@ func Test_RCV(t *testing.T) {
 	}
 	statelessV3.Register(rspPid)
 
-	statefulV, err := statefull.NewValidator("stateful")
+	statefulV, err := stateful.NewValidator("stateful")
 	if err != nil {
 		t.Errorf("failed to new stateful valdiator", err)
 		return

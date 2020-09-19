@@ -52,7 +52,7 @@ import (
 	nettypes "github.com/ontio/dad-go/p2pserver/common"
 	"github.com/ontio/dad-go/txnpool"
 	tc "github.com/ontio/dad-go/txnpool/common"
-	"github.com/ontio/dad-go/validator/statefull"
+	"github.com/ontio/dad-go/validator/stateful"
 	"github.com/ontio/dad-go/validator/stateless"
 	"github.com/urfave/cli"
 )
@@ -181,7 +181,7 @@ func ontMain(ctx *cli.Context) {
 	stlValidator, _ := stateless.NewValidator("stateless_validator")
 	stlValidator.Register(txPoolServer.GetPID(tc.VerifyRspActor))
 
-	stfValidator, _ := statefull.NewValidator("statefull_validator")
+	stfValidator, _ := stateful.NewValidator("stateful_validator")
 	stfValidator.Register(txPoolServer.GetPID(tc.VerifyRspActor))
 
 	log.Info("4. Start the P2P networks")
