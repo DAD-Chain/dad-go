@@ -19,21 +19,16 @@
 package wasmvm
 
 import (
-	"github.com/ontio/dad-go/core/store"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
 )
 
 type WasmStateReader struct {
-	serviceMap    map[string]func(*exec.ExecutionEngine) (bool, error)
-	Notifications []*event.NotifyEventInfo
-	ldgerStore    store.LedgerStore
+	serviceMap map[string]func(*exec.ExecutionEngine) (bool, error)
 }
 
-func NewWasmStateReader(ldgerStore store.LedgerStore) *WasmStateReader {
+func NewWasmStateReader() *WasmStateReader {
 	i := &WasmStateReader{
-		ldgerStore: ldgerStore,
 		serviceMap: make(map[string]func(*exec.ExecutionEngine) (bool, error)),
 	}
 	return i
