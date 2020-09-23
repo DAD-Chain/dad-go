@@ -25,9 +25,7 @@ import (
 
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common/log"
-	actorTypes "github.com/ontio/dad-go/consensus/actor"
 	"github.com/ontio/dad-go/core/ledger"
-	ldgactor "github.com/ontio/dad-go/core/ledger/actor"
 )
 
 func newChainStore() *ChainStore {
@@ -44,11 +42,7 @@ func newChainStore() *ChainStore {
 		log.Fatalf("NewLedger error %s", err)
 		os.Exit(1)
 	}
-	ldgerActor := ldgactor.NewLedgerActor()
-	ledgerPID := ldgerActor.Start()
-	var ledger *actorTypes.LedgerActor
-	ledger = &actorTypes.LedgerActor{Ledger: ledgerPID}
-	store, err := OpenBlockStore(ledger)
+	store, err := OpenBlockStore(ledger.DefLedger)
 	if err != nil {
 		fmt.Printf("openblockstore failed: %v\n", err)
 		return nil
