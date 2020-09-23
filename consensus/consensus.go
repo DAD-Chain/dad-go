@@ -19,11 +19,8 @@
 package consensus
 
 import (
-	"strings"
-
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/consensus/dbft"
 	"github.com/ontio/dad-go/consensus/solo"
@@ -42,12 +39,10 @@ const (
 	CONSENSUS_VBFT = "vbft"
 )
 
-func NewConsensusService(account *account.Account, txpool *actor.PID, ledger *actor.PID, p2p *actor.PID) (ConsensusService, error) {
-	consensusType := strings.ToLower(config.Parameters.ConsensusType)
+func NewConsensusService(consensusType string,  account *account.Account, txpool *actor.PID, ledger *actor.PID, p2p *actor.PID) (ConsensusService, error) {
 	if consensusType == "" {
 		consensusType = CONSENSUS_DBFT
 	}
-
 	var consensus ConsensusService
 	var err error
 	switch consensusType {
