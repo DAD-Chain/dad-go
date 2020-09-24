@@ -21,11 +21,11 @@ package vote
 import (
 	"sort"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 func GetValidators(txs []*types.Transaction) ([]keypair.PublicKey, error) {

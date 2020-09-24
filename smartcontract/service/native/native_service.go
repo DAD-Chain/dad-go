@@ -27,8 +27,8 @@ import (
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/storage"
 	sstates "github.com/ontio/dad-go/smartcontract/states"
+	"github.com/ontio/dad-go/smartcontract/storage"
 )
 
 type (

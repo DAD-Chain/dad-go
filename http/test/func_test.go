@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	"encoding/json"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
@@ -33,10 +34,9 @@ import (
 	ctypes "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/merkle"
-	"github.com/ontio/dad-go/vm/neovm"
 	vmtypes "github.com/ontio/dad-go/smartcontract/types"
+	"github.com/ontio/dad-go/vm/neovm"
 	"github.com/stretchr/testify/assert"
-	"encoding/json"
 )
 
 func TestMerkleVerifier(t *testing.T) {
@@ -92,7 +92,7 @@ func TestCodeHash(t *testing.T) {
 func TestTxDeserialize(t *testing.T) {
 	bys, _ := common.HexToBytes("")
 	var txn types.Transaction
-	err := txn.Deserialize(bytes.NewReader(bys));
+	err := txn.Deserialize(bytes.NewReader(bys))
 	assert.Nil(t, err)
 
 	assert.Contains(t, txn.TxType, 0)
@@ -149,7 +149,7 @@ func TestInvokefunction(t *testing.T) {
 	})
 
 	txbf := new(bytes.Buffer)
-	err = tx.Serialize(txbf);
+	err = tx.Serialize(txbf)
 	assert.Nil(t, err)
 
 	var req = map[string]interface{}{

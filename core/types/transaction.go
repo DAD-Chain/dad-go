@@ -25,11 +25,11 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 type Transaction struct {

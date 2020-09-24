@@ -22,10 +22,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"fmt"
 	cfg "github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/http/base/rpc"
-	"fmt"
 )
 
 const (
@@ -33,7 +33,7 @@ const (
 	LOCAL_DIR  string = "/local"
 )
 
-func StartLocalServer()error {
+func StartLocalServer() error {
 	log.Debug()
 	http.HandleFunc(LOCAL_DIR, rpc.Handle)
 

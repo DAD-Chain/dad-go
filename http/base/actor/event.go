@@ -19,9 +19,9 @@
 package actor
 
 import (
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 type EventActor struct {

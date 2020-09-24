@@ -21,9 +21,9 @@ package states
 import (
 	"io"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 type ValidatorState struct {

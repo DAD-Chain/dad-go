@@ -19,8 +19,8 @@
 package neovm
 
 import (
-	vm "github.com/ontio/dad-go/vm/neovm"
 	"github.com/ontio/dad-go/core/types"
+	vm "github.com/ontio/dad-go/vm/neovm"
 )
 
 // AttributeGetUsage put attribute's usage to vm stack
@@ -34,4 +34,3 @@ func AttributeGetData(service *NeoVmService, engine *vm.ExecutionEngine) error {
 	vm.PushData(engine, vm.PopInteropInterface(engine).(*types.TxAttribute).Data)
 	return nil
 }
-

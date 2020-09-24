@@ -25,9 +25,9 @@ import (
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/store/common"
+	"github.com/ontio/dad-go/errors"
 	"github.com/syndtr/goleveldb/leveldb"
 	"strings"
-	"github.com/ontio/dad-go/errors"
 )
 
 type StateBatch struct {

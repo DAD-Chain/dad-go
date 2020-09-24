@@ -19,17 +19,17 @@
 package common
 
 import (
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
 	bactor "github.com/ontio/dad-go/http/base/actor"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 type BalanceOfRsp struct {
-	Ont string `json:"ont"`
-	Ong string `json:"ong"`
+	Ont       string `json:"ont"`
+	Ong       string `json:"ong"`
 	OngAppove string `json:"ong_appove"`
 }
 

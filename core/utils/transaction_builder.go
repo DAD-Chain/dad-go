@@ -23,6 +23,7 @@ import (
 	"github.com/ontio/dad-go/core/types"
 	stypes "github.com/ontio/dad-go/smartcontract/types"
 )
+
 // NewDeployTransaction returns a deploy Transaction
 func NewDeployTransaction(code stypes.VmCode, name, version, author, email, desp string, needStorage bool) *types.Transaction {
 	//TODO: check arguments

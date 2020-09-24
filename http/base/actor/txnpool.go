@@ -22,12 +22,12 @@ import (
 	"errors"
 	"time"
 
+	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
 	tcomn "github.com/ontio/dad-go/txnpool/common"
-	"github.com/ontio/dad-go-eventbus/actor"
 )
 
 var txnPid *actor.PID

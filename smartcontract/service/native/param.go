@@ -20,16 +20,16 @@ package native
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/genesis"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	ctypes "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
 	"sync"
-	"fmt"
-	"github.com/ontio/dad-go/common/log"
 )
 
 type ParamCache struct {

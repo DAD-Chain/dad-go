@@ -3,10 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-	"io/ioutil"
 	"github.com/ontio/dad-go/common/config"
+	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 //JsonRpc version
