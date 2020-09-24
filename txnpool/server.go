@@ -21,13 +21,13 @@
 package txnpool
 
 import (
+	"fmt"
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	tp "github.com/ontio/dad-go/txnpool/proc"
-	"fmt"
 )
 
 // startActor starts an actor with the proxy and unique id,

@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 const (

@@ -20,15 +20,15 @@ package common
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/password"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/account"
+	"github.com/ontio/dad-go/cmd/utils"
+	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/password"
+	"github.com/urfave/cli"
 )
 
-func OpenWallet(ctx *cli.Context) (*account.ClientImpl, error){
+func OpenWallet(ctx *cli.Context) (*account.ClientImpl, error) {
 	walletFile := ctx.GlobalString(utils.WalletFileFlag.Name)
 	if walletFile == "" {
 		walletFile = config.DEFAULT_WALLET_FILE_NAME
@@ -48,16 +48,16 @@ func OpenWallet(ctx *cli.Context) (*account.ClientImpl, error){
 	}
 	wallet := account.Open(walletFile, passwd)
 	if wallet == nil {
-		return  nil, fmt.Errorf("open wallet:%s failed", walletFile)
+		return nil, fmt.Errorf("open wallet:%s failed", walletFile)
 	}
 	return wallet, nil
 }
 
-func CommonCommandErrorHandler(ctx *cli.Context, err error, isSubcommand bool)error {
+func CommonCommandErrorHandler(ctx *cli.Context, err error, isSubcommand bool) error {
 	fmt.Printf("%s\n", err)
 	if isSubcommand {
 		cli.ShowSubcommandHelp(ctx)
-	}else{
+	} else {
 		cli.ShowCommandCompletions(ctx, ctx.Command.Name)
 	}
 	return nil

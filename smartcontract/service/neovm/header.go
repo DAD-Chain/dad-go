@@ -19,9 +19,9 @@
 package neovm
 
 import (
-	vm "github.com/ontio/dad-go/vm/neovm"
-	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/errors"
+	vm "github.com/ontio/dad-go/vm/neovm"
 )
 
 // HeaderGetHash put header's hash to vm stack
@@ -144,12 +144,3 @@ func HeaderGetNextConsensus(service *NeoVmService, engine *vm.ExecutionEngine) e
 	vm.PushData(engine, data.NextBookkeeper[:])
 	return nil
 }
-
-
-
-
-
-
-
-
-

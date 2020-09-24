@@ -33,13 +33,13 @@ import (
 	"github.com/ontio/dad-go/common/log"
 	actorTypes "github.com/ontio/dad-go/consensus/actor"
 	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
 	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
 	"github.com/ontio/dad-go/validator/increment"
-	"github.com/ontio/dad-go/core/ledger"
 )
 
 type BftActionType uint8

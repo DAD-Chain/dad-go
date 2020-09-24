@@ -24,9 +24,9 @@ import (
 	"errors"
 	"sort"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go-crypto/keypair"
 	"golang.org/x/crypto/ripemd160"
 )
 

@@ -19,8 +19,8 @@
 package actor
 
 import (
-	cactor "github.com/ontio/dad-go/consensus/actor"
 	"github.com/ontio/dad-go-eventbus/actor"
+	cactor "github.com/ontio/dad-go/consensus/actor"
 )
 
 var consensusSrvPid *actor.PID

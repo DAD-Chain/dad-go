@@ -21,8 +21,8 @@ package ledgerstore
 import (
 	"fmt"
 	"sort"
-	"sync"
 	"strings"
+	"sync"
 
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"

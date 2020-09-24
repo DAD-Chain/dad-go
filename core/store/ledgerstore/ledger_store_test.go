@@ -24,10 +24,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go-crypto/keypair"
 )
 
 var testBlockStore *BlockStore
