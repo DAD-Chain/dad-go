@@ -21,14 +21,12 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/smartcontract/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInvokeCode_Serialize(t *testing.T) {
 	code := InvokeCode{
-		GasLimit: common.Fixed64(10),
 		Code: types.VmCode{
 			VmType: types.NEOVM,
 			Code:   []byte{1, 2, 3},

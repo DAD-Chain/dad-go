@@ -16,30 +16,16 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package payload
+package init
 
 import (
-	"fmt"
-	"io"
-
-	stypes "github.com/ontio/dad-go/smartcontract/types"
+	params "github.com/ontio/dad-go/smartcontract/service/native/global_params"
+	"github.com/ontio/dad-go/smartcontract/service/native/ong"
+	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 )
 
-// InvokeCode is an implementation of transaction payload for invoke smartcontract
-type InvokeCode struct {
-	Code stypes.VmCode
-}
-
-func (self *InvokeCode) Serialize(w io.Writer) error {
-	if err := self.Code.Serialize(w); err != nil {
-		return fmt.Errorf("InvokeCode Code Serialize failed: %s", err)
-	}
-	return nil
-}
-
-func (self *InvokeCode) Deserialize(r io.Reader) error {
-	if err := self.Code.Deserialize(r); err != nil {
-		return fmt.Errorf("InvokeCode Code Deserialize failed: %s", err)
-	}
-	return nil
+func init() {
+	ong.InitOng()
+	ont.InitOnt()
+	params.InitGlobalParams()
 }
