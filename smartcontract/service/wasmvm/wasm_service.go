@@ -16,7 +16,7 @@ import (
 	sccommon "github.com/ontio/dad-go/smartcontract/common"
 	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
-	nstates "github.com/ontio/dad-go/smartcontract/service/native/states"
+	nstates "github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/smartcontract/storage"
 	vmtypes "github.com/ontio/dad-go/smartcontract/types"
@@ -251,7 +251,7 @@ func (this *WasmVmService) marshalNativeParams(engine *exec.ExecutionEngine) (bo
 		state.To = toAddress
 		//tmpbytes[12:16] is padding
 		amount := binary.LittleEndian.Uint64(tmpbytes[16:])
-		state.Value = big.NewInt(int64(amount))
+		state.Value = amount
 		states[i] = state
 
 	}
