@@ -24,6 +24,7 @@ import (
 
 	"github.com/ontio/dad-go-eventbus/actor"
 
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	tx "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/events/message"
@@ -73,6 +74,12 @@ func (ta *TxActor) handleTransaction(sender tc.SenderType, self *actor.PID,
 
 		ta.server.increaseStats(tc.FailureStats)
 	} else {
+		if txn.GasLimit < config.DefConfig.Common.GasLimit ||
+			txn.GasPrice < config.DefConfig.Common.GasPrice {
+			log.Debug(fmt.Sprintf("[handleTransaction] invalid gasLimit %v, gasPrice %v",
+				txn.GasLimit, txn.GasPrice))
+			return
+		}
 		<-ta.server.slots
 		ta.server.assignTxToWorker(txn, sender)
 	}
