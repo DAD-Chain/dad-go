@@ -29,7 +29,6 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	tp "github.com/ontio/dad-go/txnpool/proc"
@@ -46,15 +45,9 @@ func init() {
 	log.Init(log.PATH, log.Stdout)
 	topic = "TXN"
 
-	bookKeepingPayload := &payload.Bookkeeping{
-		Nonce: uint64(time.Now().UnixNano()),
-	}
-
 	tx = &types.Transaction{
 		Version:    0,
 		Attributes: []*types.TxAttribute{},
-		TxType:     types.BookKeeping,
-		Payload:    bookKeepingPayload,
 	}
 
 	tempStr := "3369930accc1ddd067245e8edadcd9bea207ba5e1753ac18a51df77a343bfe92"
