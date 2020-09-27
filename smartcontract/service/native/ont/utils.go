@@ -41,7 +41,6 @@ var (
 func AddNotifications(native *native.NativeService, contract common.Address, state *State) {
 	native.Notifications = append(native.Notifications,
 		&event.NotifyEventInfo{
-			TxHash:          native.Tx.Hash(),
 			ContractAddress: contract,
 			States:          []interface{}{TRANSFER_NAME, state.From.ToBase58(), state.To.ToBase58(), state.Value},
 		})
@@ -99,9 +98,9 @@ func Transfer(native *native.NativeService, contract common.Address, state *Stat
 	return fromBalance, toBalance, nil
 }
 
-func GetApproveKey(contract common.Address, state *State) []byte {
-	temp := append(contract[:], state.From[:]...)
-	return append(temp, state.To[:]...)
+func GetApproveKey(contract, from, to common.Address) []byte {
+	temp := append(contract[:], from[:]...)
+	return append(temp, to[:]...)
 }
 
 func TransferedFrom(native *native.NativeService, currentContract common.Address, state *TransferFrom) error {
