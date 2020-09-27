@@ -27,29 +27,11 @@ import (
 	"github.com/ontio/dad-go/account"
 	common "github.com/ontio/dad-go/common"
 	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
-	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 )
 
 func constructProposalMsg(acc *account.Account) (*blockProposalMsg, error) {
-	bookKeepingPayload := &payload.Bookkeeping{
-		Nonce: uint64(time.Now().UnixNano()),
-	}
-	tx := &types.Transaction{
-		TxType:     types.BookKeeping,
-		Payload:    bookKeepingPayload,
-		Attributes: []*types.TxAttribute{},
-	}
-	var txs []*types.Transaction
-	txs = append(txs, tx)
-	txHash := []common.Uint256{}
-	for _, t := range txs {
-		txHash = append(txHash, t.Hash())
-	}
-	txRoot, err := common.ComputeMerkleRoot(txHash)
-	if err != nil {
-		return nil, fmt.Errorf("compute hash root: %s", err)
-	}
+	txRoot := common.ComputeMerkleRoot(nil)
 	vbftBlkInfo := &vconfig.VbftBlockInfo{
 		Proposer:           1,
 		LastConfigBlockNum: uint64(12),
@@ -83,7 +65,7 @@ func constructProposalMsg(acc *account.Account) (*blockProposalMsg, error) {
 		return nil, fmt.Errorf("failed to sign empty proposal: %s", err)
 	}
 
-	blk.Block.Transactions = txs
+	blk.Block.Transactions = nil
 	sig, err := SignMsg(acc, msg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign proposal: %s", err)
@@ -389,24 +371,8 @@ func TestProposalFetchMsg(t *testing.T) {
 }
 
 func constructBlock() (*Block, error) {
-	bookKeepingPayload := &payload.Bookkeeping{
-		Nonce: uint64(time.Now().UnixNano()),
-	}
-	tx := &types.Transaction{
-		TxType:     types.BookKeeping,
-		Payload:    bookKeepingPayload,
-		Attributes: []*types.TxAttribute{},
-	}
 	var txs []*types.Transaction
-	txs = append(txs, tx)
-	txHash := []common.Uint256{}
-	for _, t := range txs {
-		txHash = append(txHash, t.Hash())
-	}
-	txRoot, err := common.ComputeMerkleRoot(txHash)
-	if err != nil {
-		return nil, fmt.Errorf("compute hash root: %s", err)
-	}
+	txRoot := common.ComputeMerkleRoot(nil)
 	vbftBlkInfo := &vconfig.VbftBlockInfo{
 		Proposer:           1,
 		LastConfigBlockNum: uint64(1),
