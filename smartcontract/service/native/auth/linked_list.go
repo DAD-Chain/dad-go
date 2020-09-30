@@ -1,32 +1,19 @@
-package utils
+package auth
 
 import (
 	"bytes"
-
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
 	cstates "github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/service/native"
+	. "github.com/ontio/dad-go/smartcontract/service/native"
 )
 
 type LinkedlistNode struct {
 	next    []byte
 	prev    []byte
 	payload []byte
-}
-
-func (this *LinkedlistNode) GetPrevious() []byte {
-	return this.prev
-}
-
-func (this *LinkedlistNode) GetNext() []byte {
-	return this.next
-}
-
-func (this *LinkedlistNode) GetPayload() []byte {
-	return this.payload
 }
 
 func makeLinkedlistNode(next []byte, prev []byte, payload []byte) ([]byte, error) {
@@ -71,7 +58,7 @@ func (this *LinkedlistNode) Deserialize(r []byte) error {
 	return nil
 }
 
-func getListHead(native *native.NativeService, index []byte) ([]byte, error) {
+func getListHead(native *NativeService, index []byte) ([]byte, error) {
 	head, err := native.CloneCache.Get(scommon.ST_STORAGE, index)
 	if err != nil {
 		return nil, err
@@ -87,7 +74,7 @@ func getListHead(native *native.NativeService, index []byte) ([]byte, error) {
 	return item.Value, nil
 }
 
-func getListNode(native *native.NativeService, index []byte, item []byte) (*LinkedlistNode, error) {
+func getListNode(native *NativeService, index []byte, item []byte) (*LinkedlistNode, error) {
 	node := new(LinkedlistNode)
 	data, err := native.CloneCache.Get(scommon.ST_STORAGE, append(index, item...))
 	if err != nil {
@@ -113,7 +100,7 @@ func getListNode(native *native.NativeService, index []byte, item []byte) (*Link
 	return node, nil
 }
 
-func LinkedlistInsert(native *native.NativeService, index []byte, item []byte, payload []byte) error {
+func linkedlistInsert(native *NativeService, index []byte, item []byte, payload []byte) error {
 	null := []byte{}
 	if item == nil {
 		return errors.NewErr("[linked list] invalid item")
@@ -136,7 +123,7 @@ func LinkedlistInsert(native *native.NativeService, index []byte, item []byte, p
 		if err != nil {
 			return err
 		}
-		PutBytes(native, append(index, item...), node) //update it
+		writeBytes(native, append(index, item...), node) //update it
 		return nil
 	}
 	if head == nil { //doubly-linked list contains zero element
@@ -145,8 +132,8 @@ func LinkedlistInsert(native *native.NativeService, index []byte, item []byte, p
 			//log.Trace(err)
 			return err
 		}
-		PutBytes(native, append(index, item...), node) //item is the only element
-		PutBytes(native, index, item)                  //item becomes head
+		writeBytes(native, append(index, item...), node) //item is the only element
+		writeBytes(native, index, item)                  //item becomes head
 	} else {
 		null := []byte{}
 		node, err := makeLinkedlistNode(head, null, payload)
@@ -154,7 +141,7 @@ func LinkedlistInsert(native *native.NativeService, index []byte, item []byte, p
 			//log.Trace(err)
 			return err
 		}
-		PutBytes(native, append(index, item...), node) //item.next = head, item.prev = null,
+		writeBytes(native, append(index, item...), node) //item.next = head, item.prev = null,
 		// item.payload = payload
 		qhead, err := getListNode(native, index, head)
 		if err != nil {
@@ -167,14 +154,14 @@ func LinkedlistInsert(native *native.NativeService, index []byte, item []byte, p
 			//log.Trace(err)
 			return err
 		}
-		PutBytes(native, append(index, head...), node) //head.next = head.next, head.prev = item,
+		writeBytes(native, append(index, head...), node) //head.next = head.next, head.prev = item,
 		// head.payload = head.payload
-		PutBytes(native, index, item) // item becomes head
+		writeBytes(native, index, item) // item becomes head
 	}
 	return nil
 }
 
-func LinkedlistDelete(native *native.NativeService, index []byte, item []byte) (bool, error) {
+func linkedlistDelete(native *NativeService, index []byte, item []byte) (bool, error) {
 	null := []byte{}
 	if item == nil {
 		return false, errors.NewErr("[linked list] invalid item")
@@ -190,7 +177,7 @@ func LinkedlistDelete(native *native.NativeService, index []byte, item []byte) (
 	prev, next := q.prev, q.next
 	if prev == nil {
 		if next == nil {
-			PutBytes(native, index, null) //clear linked list
+			writeBytes(native, index, null) //clear linked list
 		} else {
 			qnext, err := getListNode(native, index, next)
 			if err != nil {
@@ -200,8 +187,8 @@ func LinkedlistDelete(native *native.NativeService, index []byte, item []byte) (
 			if err != nil {                                                  // qnext.prev = nil
 				return false, err
 			}
-			PutBytes(native, append(index, next...), node)
-			PutBytes(native, index, next) //next becomes head
+			writeBytes(native, append(index, next...), node)
+			writeBytes(native, index, next) //next becomes head
 		}
 	} else {
 		if next == nil {
@@ -213,7 +200,7 @@ func LinkedlistDelete(native *native.NativeService, index []byte, item []byte) (
 			if err != nil {
 				return false, err
 			}
-			PutBytes(native, append(index, prev...), node)
+			writeBytes(native, append(index, prev...), node)
 		} else {
 			qprev, err := getListNode(native, index, prev)
 			if err != nil {
@@ -231,15 +218,15 @@ func LinkedlistDelete(native *native.NativeService, index []byte, item []byte) (
 			if err != nil {
 				return false, err
 			}
-			PutBytes(native, append(index, prev...), node_prev)
-			PutBytes(native, append(index, next...), node_next)
+			writeBytes(native, append(index, prev...), node_prev)
+			writeBytes(native, append(index, next...), node_next)
 		}
 	}
-	native.CloneCache.Delete(scommon.ST_STORAGE, append(index, item...))
+	writeBytes(native, append(index, item...), null)
 	return true, nil
 }
 
-func LinkedlistGetItem(native *native.NativeService, index []byte, item []byte) (*LinkedlistNode, error) {
+func linkedlistGetItem(native *NativeService, index []byte, item []byte) (*LinkedlistNode, error) {
 	if item == nil {
 		return nil, errors.NewErr("[linkedlist getNext] item is nil")
 	}
@@ -250,14 +237,14 @@ func LinkedlistGetItem(native *native.NativeService, index []byte, item []byte) 
 	return q, nil
 }
 
-func LinkedlistGetHead(native *native.NativeService, index []byte) ([]byte, error) {
+func linkedlistGetHead(native *NativeService, index []byte) ([]byte, error) {
 	head, err := getListHead(native, index)
 	if err != nil {
 		return nil, err
 	}
 	return head, nil
 }
-func LinkedlistGetNumOfItems(native *native.NativeService, index []byte) (int, error) {
+func linkedlistGetNumOfItems(native *NativeService, index []byte) (int, error) {
 	n := 0
 	head, err := getListHead(native, index)
 	if err != nil {
@@ -275,14 +262,14 @@ func LinkedlistGetNumOfItems(native *native.NativeService, index []byte) (int, e
 	return n, nil
 }
 
-func linkedlistTest(native *native.NativeService) error {
+func linkedlistTest(native *NativeService) error {
 	contract1 := native.ContextRef.CurrentContext().ContractAddress
 	//contract2 := []byte{ 0x01, 0x02 }
 
 	{
 		log.Trace("'empty linkedlist delete' test")
 		//basic delete
-		s, err := LinkedlistDelete(native, contract1[:], []byte{byte(11)})
+		s, err := linkedlistDelete(native, contract1[:], []byte{byte(11)})
 		if err != nil {
 			return err
 		}
@@ -296,14 +283,14 @@ func linkedlistTest(native *native.NativeService) error {
 		log.Trace("'basic insert' test")
 		//basic insert
 		for i := 0; i < 10; i++ {
-			err := LinkedlistInsert(native, contract1[:], []byte{byte(i)}, []byte{byte(i * i)})
+			err := linkedlistInsert(native, contract1[:], []byte{byte(i)}, []byte{byte(i * i)})
 			if err != nil {
 				//log.Errorf("insertion %d failed: %s\n", i, err)
 				return err
 			}
 
 		}
-		n, err := LinkedlistGetNumOfItems(native, contract1[:])
+		n, err := linkedlistGetNumOfItems(native, contract1[:])
 		if err != nil {
 			return err
 		}
@@ -316,7 +303,7 @@ func linkedlistTest(native *native.NativeService) error {
 	{
 		log.Trace("'basic delete' test")
 		//basic delete
-		s, err := LinkedlistDelete(native, contract1[:], []byte{byte(11)})
+		s, err := linkedlistDelete(native, contract1[:], []byte{byte(11)})
 		if err != nil {
 			return err
 		}
@@ -330,7 +317,7 @@ func linkedlistTest(native *native.NativeService) error {
 		log.Trace("'more delete' test")
 		//insert & delete
 		for i := 0; i < 10; i += 2 {
-			suc, err := LinkedlistDelete(native, contract1[:], []byte{byte(i)})
+			suc, err := linkedlistDelete(native, contract1[:], []byte{byte(i)})
 			if err != nil {
 				//log.Errorf("")
 				return err
@@ -340,7 +327,7 @@ func linkedlistTest(native *native.NativeService) error {
 				return errors.NewDetailErr(err, errors.ErrNoCode, "[linked list insert&delete test] delete failed")
 			}
 		}
-		n, err := LinkedlistGetNumOfItems(native, contract1[:])
+		n, err := linkedlistGetNumOfItems(native, contract1[:])
 		if err != nil {
 			return err
 		}
@@ -357,13 +344,13 @@ func linkedlistTest(native *native.NativeService) error {
 			for j := 0; j < i; j++ {
 				item[j] = byte(j)
 			}
-			err := LinkedlistInsert(native, contract1[:], item, []byte("test"))
+			err := linkedlistInsert(native, contract1[:], item, []byte("test"))
 			if err != nil {
 				return err
 			}
 
 			if i%2 == 0 {
-				suc, err := LinkedlistDelete(native, contract1[:], item)
+				suc, err := linkedlistDelete(native, contract1[:], item)
 				if err != nil {
 					return err
 				}
@@ -372,7 +359,7 @@ func linkedlistTest(native *native.NativeService) error {
 				}
 			}
 		}
-		n, err := LinkedlistGetNumOfItems(native, contract1[:])
+		n, err := linkedlistGetNumOfItems(native, contract1[:])
 		if err != nil {
 			return err
 		}
