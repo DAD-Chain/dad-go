@@ -35,6 +35,8 @@ import (
 	"github.com/ontio/dad-go/smartcontract/storage"
 	stypes "github.com/ontio/dad-go/smartcontract/types"
 	vm "github.com/ontio/dad-go/vm/neovm"
+
+	_ "github.com/ontio/dad-go/smartcontract/service/native/ontid"
 )
 
 var (
