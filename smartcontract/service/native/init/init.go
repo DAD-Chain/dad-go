@@ -22,10 +22,12 @@ import (
 	params "github.com/ontio/dad-go/smartcontract/service/native/global_params"
 	"github.com/ontio/dad-go/smartcontract/service/native/ong"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
+	"github.com/ontio/dad-go/smartcontract/service/native/auth"
 )
 
 func init() {
 	ong.InitOng()
 	ont.InitOnt()
 	params.InitGlobalParams()
+	auth.Init()
 }
