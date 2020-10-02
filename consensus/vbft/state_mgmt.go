@@ -387,9 +387,6 @@ func (self *StateMgr) checkStartSyncing(startBlkNum uint64, forceSync bool) erro
 	if maxCommitted > startBlkNum || forceSync {
 		self.currentState = Syncing
 		startBlkNum = self.server.GetCommittedBlockNo() + 1
-		if maxCommitted <= startBlkNum {
-			maxCommitted = startBlkNum + 1
-		}
 
 		log.Infof("server %d, start syncing %d - %d, with %v", self.server.Index, startBlkNum, maxCommitted, peers)
 		self.server.syncer.blockSyncReqC <- &BlockSyncReq{
@@ -448,13 +445,13 @@ func (self *StateMgr) canFastForward(targetBlkNum uint64) bool {
 	// one block less than targetBlkNum is also acceptable for fastforward
 	for blkNum := self.server.GetCurrentBlockNo(); blkNum < targetBlkNum; blkNum++ {
 		if len(self.server.msgPool.GetProposalMsgs(blkNum)) == 0 {
-			log.Info("server %d check fastforward false, no proposal for block %d",
+			log.Infof("server %d check fastforward false, no proposal for block %d",
 				self.server.Index, blkNum)
 			return false
 		}
 		cMsgs := self.server.msgPool.GetCommitMsgs(blkNum)
 		if len(cMsgs) <= C {
-			log.Info("server %d check fastforward false, only %d commit msg for block %d",
+			log.Infof("server %d check fastforward false, only %d commit msg for block %d",
 				self.server.Index, len(cMsgs), blkNum)
 			return false
 		}
