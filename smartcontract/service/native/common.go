@@ -22,20 +22,21 @@ import (
 	"fmt"
 	"math/big"
 
-	"bytes"
+	"encoding/hex"
+	"encoding/json"
 	"github.com/ontio/dad-go/common"
 	cstates "github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
+	"hash/fnv"
 )
 
 var (
 	ADDRESS_HEIGHT    = []byte("addressHeight")
 	TRANSFER_NAME     = "transfer"
 	TOTAL_SUPPLY_NAME = []byte("totalSupply")
-	SET_PARAM         = "SetGlobalParam"
 )
 
 func getAddressHeightKey(contract, address common.Address) []byte {
@@ -55,18 +56,6 @@ func getToAmountStorageItem(toBalance, value *big.Int) *cstates.StorageItem {
 	return &cstates.StorageItem{Value: new(big.Int).Add(toBalance, value).Bytes()}
 }
 
-func getParamStorageItem(params *states.Params) *cstates.StorageItem {
-	bf := new(bytes.Buffer)
-	params.Serialize(bf)
-	return &cstates.StorageItem{Value: bf.Bytes()}
-}
-
-func getAdminStorageItem(admin *states.Admin) *cstates.StorageItem {
-	bf := new(bytes.Buffer)
-	admin.Serialize(bf)
-	return &cstates.StorageItem{Value: bf.Bytes()}
-}
-
 func getTotalSupplyKey(contract common.Address) []byte {
 	return append(contract[:], TOTAL_SUPPLY_NAME...)
 }
@@ -83,20 +72,6 @@ func getApproveKey(contract common.Address, state *states.State) []byte {
 func getTransferFromKey(contract common.Address, state *states.TransferFrom) []byte {
 	temp := append(contract[:], state.From[:]...)
 	return append(temp, state.Sender[:]...)
-}
-
-func getParamKey(contract common.Address, valueType paramType) []byte {
-	key := append(contract[:], "param"...)
-	key = append(key[:], byte(valueType))
-	return key
-}
-
-func getAdminKey(contract common.Address, isTransferAdmin bool) []byte {
-	if isTransferAdmin {
-		return append(contract[:], "transfer"...)
-	} else {
-		return append(contract[:], "admin"...)
-	}
 }
 
 func isTransferValid(native *NativeService, state *states.State) error {
@@ -233,37 +208,6 @@ func getStorageBigInt(native *NativeService, key []byte) (*big.Int, error) {
 	return new(big.Int).SetBytes(item.Value), nil
 }
 
-func getStorageParam(native *NativeService, key []byte) (*states.Params, error) {
-	params, err := native.CloneCache.Get(scommon.ST_STORAGE, key)
-	tempParams := new(states.Params)
-	*tempParams = make(map[string]string)
-	if err != nil || params == nil {
-		return tempParams, errors.NewDetailErr(err, errors.ErrNoCode, "[Get Param] storage error!")
-	}
-	item, ok := params.(*cstates.StorageItem)
-	if !ok {
-		return tempParams, errors.NewDetailErr(err, errors.ErrNoCode, "[Get Param] storage error!")
-	}
-	bf := bytes.NewBuffer(item.Value)
-	tempParams.Deserialize(bf)
-	return tempParams, nil
-}
-
-func getStorageAdmin(native *NativeService, key []byte) (*states.Admin, error) {
-	admin, err := native.CloneCache.Get(scommon.ST_STORAGE, key)
-	tempAdmin := new(states.Admin)
-	if err != nil || admin == nil {
-		return tempAdmin, errors.NewDetailErr(err, errors.ErrNoCode, "[Get Admin] storage error!")
-	}
-	item, ok := admin.(*cstates.StorageItem)
-	if !ok {
-		return tempAdmin, errors.NewDetailErr(err, errors.ErrNoCode, "[Get Admin] storage error!")
-	}
-	bf := bytes.NewBuffer(item.Value)
-	tempAdmin.Deserialize(bf)
-	return tempAdmin, nil
-}
-
 func addNotifications(native *NativeService, contract common.Address, state *states.State) {
 	native.Notifications = append(native.Notifications,
 		&event.NotifyEventInfo{
@@ -273,11 +217,65 @@ func addNotifications(native *NativeService, contract common.Address, state *sta
 		})
 }
 
-func notifyParamSetSuccess(native *NativeService, contract common.Address, params states.Params) {
+func concatKey(contract common.Address, args ...[]byte) []byte {
+	temp := contract[:]
+	for _, arg := range args {
+		temp = append(temp, arg...)
+	}
+	return temp
+}
+
+func validateOwner(native *NativeService, address string) error {
+	addrBytes, err := hex.DecodeString(address)
+	if err != nil {
+		return errors.NewErr("[validateOwner] Decode address hex string to bytes failed!")
+	}
+	addr, err := common.AddressParseFromBytes(addrBytes)
+	if err != nil {
+		return errors.NewErr("[validateOwner] Decode bytes to address failed!")
+	}
+	if native.ContextRef.CheckWitness(addr) == false {
+		return errors.NewErr("[validateOwner] Authentication failed!")
+	}
+	return nil
+}
+
+func getGovernanceView(native *NativeService, contract common.Address) (*big.Int, error) {
+	viewBytes, err := native.CloneCache.Get(scommon.ST_STORAGE, concatKey(contract, []byte(GOVERNANCE_VIEW)))
+	if err != nil {
+		return new(big.Int), errors.NewDetailErr(err, errors.ErrNoCode, "[getGovernanceView] Get viewBytes error!")
+	}
+	var view *big.Int
+	if viewBytes == nil {
+		view = new(big.Int).SetInt64(1)
+	} else {
+		candidateIndexStore, _ := viewBytes.(*cstates.StorageItem)
+		view = new(big.Int).SetBytes(candidateIndexStore.Value)
+	}
+	return view, nil
+}
+
+func addCommonEvent(native *NativeService, contract common.Address, name string, params interface{}) {
 	native.Notifications = append(native.Notifications,
 		&event.NotifyEventInfo{
 			TxHash:          native.Tx.Hash(),
 			ContractAddress: contract,
-			States:          []interface{}{SET_PARAM, params},
+			States:          []interface{}{name, params},
 		})
+}
+
+func my_hash(txid common.Uint256, ts uint32, id string, idx int) (uint64, error) {
+	data, err := json.Marshal(struct {
+		Txid           common.Uint256 `json:"txid"`
+		BlockTimestamp uint32         `json:"block_timestamp"`
+		NodeID         string         `json:"node_id"`
+		Index          int            `json:"index"`
+	}{txid, ts, id, idx})
+	if err != nil {
+		return 0, err
+	}
+
+	hash := fnv.New64a()
+	hash.Write(data)
+	return hash.Sum64(), nil
 }
