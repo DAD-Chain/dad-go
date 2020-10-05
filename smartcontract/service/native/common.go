@@ -24,13 +24,14 @@ import (
 
 	"encoding/hex"
 	"encoding/json"
+	"hash/fnv"
+
 	"github.com/ontio/dad-go/common"
 	cstates "github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
-	"hash/fnv"
 )
 
 var (
@@ -264,7 +265,7 @@ func addCommonEvent(native *NativeService, contract common.Address, name string,
 		})
 }
 
-func my_hash(txid common.Uint256, ts uint32, id string, idx int) (uint64, error) {
+func Shufflehash(txid common.Uint256, ts uint32, id string, idx int) (uint64, error) {
 	data, err := json.Marshal(struct {
 		Txid           common.Uint256 `json:"txid"`
 		BlockTimestamp uint32         `json:"block_timestamp"`

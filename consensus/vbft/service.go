@@ -33,11 +33,17 @@ import (
 	"github.com/ontio/dad-go/common/log"
 	actorTypes "github.com/ontio/dad-go/consensus/actor"
 	"github.com/ontio/dad-go/consensus/vbft/config"
+	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
 	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
+	gover "github.com/ontio/dad-go/smartcontract/service/native"
+	"github.com/ontio/dad-go/smartcontract/states"
+	stypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go/validator/increment"
 )
 
@@ -243,32 +249,18 @@ func (self *Server) LoadChainConfig(chainStore *ChainStore) error {
 	self.metaLock.Lock()
 	defer self.metaLock.Unlock()
 
-	block, err := chainStore.GetBlock(chainStore.GetChainedBlockNum())
+	config, err := chainStore.GetVbftConfigInfo()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get chainconfig from leveldb: %s", err)
 	}
-
-	var cfg vconfig.ChainConfig
-	if block.getNewChainConfig() != nil {
-		cfg = *block.getNewChainConfig()
-	} else {
-		cfgBlock := block
-		if block.getLastConfigBlockNum() != math.MaxUint64 {
-			cfgBlock, err = chainStore.GetBlock(block.getLastConfigBlockNum())
-			if err != nil {
-				return fmt.Errorf("failed to get cfg block: %s", err)
-			}
-		}
-		if cfgBlock.getNewChainConfig() == nil {
-			panic("failed to get chain config from config block")
-		}
-		cfg = *cfgBlock.getNewChainConfig()
+	cfg, err := vconfig.GenesisChainConfig(config)
+	if err != nil {
+		return fmt.Errorf("GenesisChainConfig failed: %s", err)
 	}
-	self.config = &cfg
+	self.config = cfg
 	if self.config.View == 0 {
 		panic("invalid view")
 	}
-
 	// update msg delays
 	makeProposalTimeout = time.Duration(cfg.BlockMsgDelay * 2)
 	make2ndProposalTimeout = time.Duration(cfg.BlockMsgDelay)
@@ -292,12 +284,20 @@ func (self *Server) LoadChainConfig(chainStore *ChainStore) error {
 	return nil
 }
 
+//updateChainCofig
 func (self *Server) updateChainConfig() error {
 	self.metaLock.Lock()
 	defer self.metaLock.Unlock()
-
+	config, err := self.chainStore.GetVbftConfigInfo()
+	if err != nil {
+		return fmt.Errorf("failed to get chainconfig from leveldb: %s", err)
+	}
+	cfg, err := vconfig.GenesisChainConfig(config)
+	if err != nil {
+		return fmt.Errorf("GenesisChainConfig failed: %s", err)
+	}
+	self.config = cfg
 	// TODO
-
 	// 1. update peer pool
 	// 2. reset all peer connections, create new connections with new peers
 	// 3. check connections num for state-mgmt
@@ -1846,6 +1846,55 @@ func (self *Server) msgSendLoop() {
 	}
 }
 
+// FIXME
+//    copied from dbft
+func (self *Server) createBookkeepingTransaction(nonce uint64, fee uint64) *types.Transaction {
+	log.Debug()
+	//TODO: sysfee
+	bookKeepingPayload := &payload.Bookkeeping{
+		Nonce: uint64(time.Now().UnixNano()),
+	}
+	return &types.Transaction{
+		TxType:     types.BookKeeping,
+		Payload:    bookKeepingPayload,
+		Attributes: []*types.TxAttribute{},
+	}
+}
+
+//creategovernaceTransaction invoke governance native contract commit_pos
+func (self *Server) creategovernaceTransaction() *types.Transaction {
+	init := states.Contract{
+		Address: genesis.GovernanceContractAddress,
+		Method:  gover.COMMIT_DPOS,
+	}
+	bf := new(bytes.Buffer)
+	init.Serialize(bf)
+	vmCode := stypes.VmCode{
+		VmType: stypes.Native,
+		Code:   bf.Bytes(),
+	}
+	tx := utils.NewInvokeTransaction(vmCode)
+	return tx
+}
+
+//checkNeedUpdateChainConfig use blockcount
+func (self *Server) checkNeedUpdateChainConfig() bool {
+	log.Debugf("blockcount: %d", self.config.BlockCount)
+	//todo
+	return false
+}
+
+//checkForceUpdateChainConfig query leveldb check is force update
+func (self *Server) checkForceUpdateChainConfig() bool {
+	force, err := self.chainStore.GetForceUpdate()
+	if err != nil {
+		log.Errorf("checkNeedUpdateChainConfig err:%s", err)
+		return false
+	}
+	log.Debugf("checkNeedUpdateChainConfig force: %v", force)
+	return force
+}
+
 func (self *Server) makeProposal(blkNum uint64, forEmpty bool) error {
 	var txs []*types.Transaction
 
@@ -1861,6 +1910,22 @@ func (self *Server) makeProposal(blkNum uint64, forEmpty bool) error {
 		validHeight = start
 	} else {
 		self.incrValidator.Clean()
+	}
+
+	// FIXME: self.index as nonce??
+	// FIXME: fix feesum calculation
+	txBookkeeping := self.createBookkeepingTransaction(uint64(self.Index), 0)
+	txs = append(txs, txBookkeeping)
+
+	//check need upate chainconfig
+	if self.checkNeedUpdateChainConfig() || self.checkForceUpdateChainConfig() {
+		err := self.updateChainConfig()
+		if err != nil {
+			log.Errorf("updateChainConfig failed:%s", err)
+		} else {
+			//add transaction invoke governance native,commit_pos contract
+			txs = append(txs, self.creategovernaceTransaction())
+		}
 	}
 
 	if !forEmpty {

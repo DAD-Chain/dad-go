@@ -19,11 +19,18 @@
 package vbft
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"math"
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/states"
+	gov "github.com/ontio/dad-go/smartcontract/service/native"
+	govcon "github.com/ontio/dad-go/smartcontract/service/native/states"
 )
 
 type ChainStore struct {
@@ -115,4 +122,79 @@ func (self *ChainStore) GetBlock(blockNum uint64) (*Block, error) {
 	}
 
 	return initVbftBlock(block)
+}
+
+func (self *ChainStore) GetVbftConfigInfo() (*govcon.Configuration, error) {
+	storageKey := &states.StorageKey{
+		CodeHash: genesis.GovernanceContractAddress,
+		Key:      append([]byte(gov.VBFT_CONFIG)),
+	}
+	vbft, err := ledger.DefLedger.GetStorageItem(storageKey.CodeHash, storageKey.Key)
+	if err != nil {
+		return nil, err
+	}
+	chainconfig := &govcon.Configuration{}
+	if err := json.Unmarshal(vbft, chainconfig); err != nil {
+		return nil, fmt.Errorf("unmarshal chainconfig: %s", err)
+	}
+	return chainconfig, nil
+}
+
+func (self *ChainStore) GetForceUpdate() (bool, error) {
+	storageKey := &states.StorageKey{
+		CodeHash: genesis.GovernanceContractAddress,
+		Key:      append([]byte(gov.FORCE_COMMIT)),
+	}
+	isforce, err := ledger.DefLedger.GetStorageItem(storageKey.CodeHash, storageKey.Key)
+	if err != nil {
+		return false, err
+	}
+	if bytes.Compare(isforce, []byte{1}) == 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (self *ChainStore) GetNewDopsInfo() ([]uint64, error) {
+	// calculate peer ranks
+	config, err := self.GetVbftConfigInfo()
+	if err != nil {
+		return nil, fmt.Errorf("GetVbftConfigInfo err:%s", err)
+	}
+	scale := config.L/config.K - 1
+	if scale <= 0 {
+		return nil, fmt.Errorf(" L is equal or less than K!")
+	}
+	peers := config.Peers
+	peerRanks := make([]uint64, 0)
+	var sum uint64
+	for i := 0; i < int(config.K); i++ {
+		sum += peers[i].Stake
+	}
+	for i := 0; i < int(config.K); i++ {
+		if peers[i].Stake == 0 {
+			return nil, fmt.Errorf(fmt.Sprintf("peers rank %d, has zero stake!", i))
+		}
+		s := uint64(math.Ceil(float64(peers[i].Stake) * float64(scale) * float64(config.K) / float64(sum)))
+		peerRanks = append(peerRanks, s)
+	}
+	// calculate dpos table
+	dposTable := make([]uint64, 0)
+	for i := 0; i < int(config.K); i++ {
+		for j := uint64(0); j < peerRanks[i]; j++ {
+			dposTable = append(dposTable, peers[i].Index)
+		}
+	}
+	// shuffle
+	for i := len(dposTable) - 1; i > 0; i-- {
+		h, err := gov.Shufflehash(common.Uint256{}, 1, peers[dposTable[i]].PeerPubkey, i)
+		//	h, err := gov.Shufflehash(native.Tx.Hash(), native.Height, peers[dposTable[i]].PeerPubkey, i)
+		if err != nil {
+			return nil, fmt.Errorf("[commitDpos] Failed to calculate hash value!")
+		}
+		j := h % uint64(i)
+		dposTable[i], dposTable[j] = dposTable[j], dposTable[i]
+	}
+	log.Debugf("DPOS table is:", dposTable)
+	return dposTable, nil
 }
