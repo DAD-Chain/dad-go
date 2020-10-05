@@ -19,11 +19,16 @@
 package vbft
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/states"
+	gov "github.com/ontio/dad-go/smartcontract/service/native"
+	govcon "github.com/ontio/dad-go/smartcontract/service/native/states"
 )
 
 type ChainStore struct {
@@ -115,4 +120,20 @@ func (self *ChainStore) GetBlock(blockNum uint64) (*Block, error) {
 	}
 
 	return initVbftBlock(block)
+}
+
+func (slef *ChainStore) GetVbftConfigInfo() (*govcon.Configuration, error) {
+	storageKey := &states.StorageKey{
+		CodeHash: genesis.GovernanceContractAddress,
+		Key:      append([]byte(gov.VBFT_CONFIG)),
+	}
+	vbft, err := ledger.DefLedger.GetStorageItem(storageKey.CodeHash, storageKey.Key)
+	if err != nil {
+		return nil, err
+	}
+	chainconfig := &govcon.Configuration{}
+	if err := json.Unmarshal(vbft, chainconfig); err != nil {
+		return nil, fmt.Errorf("unmarshal chainconfig: %s", err)
+	}
+	return chainconfig, nil
 }

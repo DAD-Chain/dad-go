@@ -19,19 +19,22 @@
 package native
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"math/big"
 
 	"fmt"
+	"io/ioutil"
+	"math"
+	"sort"
+
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/core/genesis"
 	cstates "github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
-	"io/ioutil"
-	"math"
-	"sort"
 )
 
 const (
@@ -90,14 +93,13 @@ func RegisterGovernanceContract(native *NativeService) {
 }
 
 func InitConfig(native *NativeService) error {
-	//consensusConfigFile := config.Parameters.ConsensusConfigPath
-	consensusConfigFile := "/app/gopath/src/github.com/ontio/dad-go/config-vbft.json"
-
+	consensusConfigFile := config.Parameters.ConsensusConfigPath
 	// load dpos config
 	file, err := ioutil.ReadFile(consensusConfigFile)
 	if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[initConfig] Failed to open config file!")
 	}
+	file = bytes.TrimPrefix(file, []byte("\xef\xbb\xbf"))
 
 	config := new(states.Configuration)
 	err = json.Unmarshal(file, config)
@@ -105,14 +107,11 @@ func InitConfig(native *NativeService) error {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[initConfig] Contract params Unmarshal error!")
 	}
 	contract := native.ContextRef.CurrentContext().ContractAddress
-
 	//TODO: check the config
-
 	value, err := json.Marshal(config)
 	if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "[initConfig] Marshal candidatePool error!")
 	}
-
 	native.CloneCache.Add(scommon.ST_STORAGE, concatKey(contract, []byte(VBFT_CONFIG)), &cstates.StorageItem{Value: value})
 
 	initPeerPool := &states.InitPeerPool{}
@@ -137,7 +136,6 @@ func InitConfig(native *NativeService) error {
 	native.CloneCache.Add(scommon.ST_STORAGE, concatKey(contract, []byte(CANDIDITE_INDEX)), &cstates.StorageItem{Value: new(big.Int).SetInt64(8).Bytes()})
 
 	addCommonEvent(native, contract, INIT_CONFIG, true)
-
 	return nil
 }
 
