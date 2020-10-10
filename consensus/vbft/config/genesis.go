@@ -29,7 +29,6 @@ import (
 
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
-	govcon "github.com/ontio/dad-go/smartcontract/service/native/states"
 )
 
 func shuffle_hash(txid uint64, ts uint64, id []byte, idx int) (uint64, error) {
