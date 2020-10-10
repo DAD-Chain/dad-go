@@ -30,12 +30,12 @@ import (
 	"sort"
 
 	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/genesis"
 	cstates "github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/service/native/states"
+	vbftconfig "github.com/ontio/dad-go/consensus/vbft/config"
 )
 
 const (
@@ -62,7 +62,7 @@ const (
 	VOTE_COMMIT_INFO = "voteCommitInfo"
 
 	//status
-	RegisterSyncNodeStatus states.Status = 0
+	RegisterSyncNodeStatus states.Status = iota
 	SyncNodeStatus
 	RegisterCandidateStatus
 	CandidateStatus
@@ -475,7 +475,7 @@ func VoteForPeer(native *NativeService) error {
 			FreezePos:  new(big.Int),
 			NewPos:     new(big.Int),
 		}
-		if pos.Cmp(new(big.Int)) >= 0 {
+		if pos.Sign() >= 0 {
 			if voteInfoPoolBytes != nil {
 				voteInfoPoolStore, _ := voteInfoPoolBytes.(*cstates.StorageItem)
 				err = json.Unmarshal(voteInfoPoolStore.Value, voteInfoPool)
@@ -509,9 +509,9 @@ func VoteForPeer(native *NativeService) error {
 					return errors.NewDetailErr(err, errors.ErrNoCode, "[voteForPeer] Unmarshal voteInfoPool error!")
 				}
 				temp := new(big.Int).Add(voteInfoPool.NewPos, pos)
-				if temp.Cmp(new(big.Int)) < 0 {
+				if temp.Sign() < 0 {
 					voteInfoPool.PrePos = new(big.Int).Sub(voteInfoPool.PrePos, temp)
-					if voteInfoPool.PrePos.Cmp(new(big.Int)) < 0 {
+					if voteInfoPool.PrePos.Sign() < 0 {
 						continue
 					}
 					voteInfoPool.FreezePos = new(big.Int).Add(voteInfoPool.FreezePos, temp)
@@ -539,10 +539,10 @@ func VoteForPeer(native *NativeService) error {
 			}
 		}
 	}
-	if total.Cmp(new(big.Int)) > 0 {
+	if total.Sign() > 0 {
 		//TODO: pay
 	}
-	if total.Cmp(new(big.Int)) < 0 {
+	if total.Sign() < 0 {
 		//TODO: withdraw
 	}
 
@@ -602,7 +602,7 @@ func CommitDpos(native *NativeService) error {
 			fmt.Println(peerPool)
 			stake := new(big.Int).Add(peerPool.TotalPos, peerPool.InitPos)
 			peers = append(peers, &states.PeerStakeInfo{
-				Index:      peerPool.Index.Uint64(),
+				Index:      uint32(peerPool.Index.Uint64()),
 				PeerPubkey: peerPool.PeerPubkey,
 				Stake:      stake.Uint64(),
 			})
@@ -844,24 +844,34 @@ func CommitDpos(native *NativeService) error {
 		peerRanks = append(peerRanks, s)
 	}
 
-	// calculate dpos table
-	dposTable := make([]uint64, 0)
+	// calculate pos table
+	chainPeers := make(map[uint32]*vbftconfig.PeerConfig, 0)
+	posTable := make([]uint32, 0)
 	for i := 0; i < int(config.K); i++ {
+		nodeId, err := vbftconfig.StringID(peers[i].PeerPubkey)
+		if err != nil {
+			return errors.NewDetailErr(err, errors.ErrNoCode, fmt.Sprintf("[commitDpos] Failed to format NodeID, index: %d: %s", peers[i].Index, err))
+		}
+		chainPeers[peers[i].Index] = &vbftconfig.PeerConfig{
+			Index: peers[i].Index,
+			ID:    nodeId,
+		}
 		for j := uint64(0); j < peerRanks[i]; j++ {
-			dposTable = append(dposTable, peers[i].Index)
+			posTable = append(posTable, peers[i].Index)
 		}
 	}
 
 	// shuffle
-	for i := len(dposTable) - 1; i > 0; i-- {
-		h, err := Shufflehash(native.Tx.Hash(), native.Height, peers[dposTable[i]].PeerPubkey, i)
+	for i := len(posTable) - 1; i > 0; i-- {
+		h, err := Shufflehash(native.Tx.Hash(), native.Height, chainPeers[posTable[i]].ID.Bytes(), i)
 		if err != nil {
-			return errors.NewDetailErr(err, errors.ErrNoCode, "[commitDpos] Failed to calculate hash value!")
+			return  errors.NewDetailErr(err, errors.ErrNoCode, "[commitDpos] Failed to calculate hash value")
 		}
 		j := h % uint64(i)
-		dposTable[i], dposTable[j] = dposTable[j], dposTable[i]
+		posTable[i], posTable[j] = posTable[j], posTable[i]
 	}
-	log.Debugf("DPOS table is:", dposTable)
+
+	fmt.Println("DPOS table is:", posTable)
 
 	//update view
 	view = new(big.Int).Add(view, new(big.Int).SetInt64(1))
@@ -909,7 +919,7 @@ func VoteCommitDpos(native *NativeService) error {
 		voteCommitInfo = new(big.Int).SetBytes(voteCommitStore.Value)
 	}
 	newVoteCommitInfo := new(big.Int).Add(voteCommitInfo, params.Pos)
-	if newVoteCommitInfo.Cmp(new(big.Int)) < 0 {
+	if newVoteCommitInfo.Sign() < 0 {
 		return errors.NewErr("[voteCommitDpos] Remain pos is negative!")
 	}
 	native.CloneCache.Add(scommon.ST_STORAGE, concatKey(contract, []byte(VOTE_COMMIT_INFO), view.Bytes(), addressPrefix), &cstates.StorageItem{Value: newVoteCommitInfo.Bytes()})
