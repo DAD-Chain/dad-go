@@ -30,7 +30,6 @@ import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	actorTypes "github.com/ontio/dad-go/consensus/actor"
 	"github.com/ontio/dad-go/consensus/vbft/config"
@@ -1918,9 +1917,7 @@ func (self *Server) creategovernaceTransaction() *types.Transaction {
 
 //checkNeedUpdateChainConfig use blockcount
 func (self *Server) checkNeedUpdateChainConfig() bool {
-	if self.currentBlockNum%config.Parameters.MaxBlockChangeView == 0 {
-		return true
-	}
+
 	log.Debugf("blockcount: %d", self.config.BlockCount)
 	//todo
 	return false
