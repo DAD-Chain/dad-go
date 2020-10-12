@@ -211,6 +211,13 @@ func (self *Server) handleBlockPersistCompleted(block *types.Block) {
 
 	self.incrValidator.AddBlock(block)
 
+	if self.checkNeedUpdateChainConfig() || self.checkForceUpdateChainConfig() {
+		err := self.updateChainConfig()
+		if err != nil {
+			log.Errorf("updateChainConfig failed:%s", err)
+		}
+	}
+
 	if uint64(block.Header.Height) > self.completedBlockNum {
 		self.completedBlockNum = uint64(block.Header.Height)
 	} else {
@@ -255,8 +262,8 @@ func (self *Server) LoadChainConfig(chainStore *ChainStore) error {
 	}
 
 	self.config = cfg
-	if self.config.View == 0 {
-		panic("invalid view")
+	if self.config.View == 0 || self.config.MaxBlockChangeView == 0 {
+		panic("invalid view or maxblockchangeview ")
 	}
 	// update msg delays
 	makeProposalTimeout = time.Duration(cfg.BlockMsgDelay * 2)
@@ -326,12 +333,19 @@ func (self *Server) updateChainConfig() error {
 		}
 	}
 
+	if self.Index == math.MaxUint32 {
+		id, _ := vconfig.PubkeyID(self.account.PublicKey)
+		index, present := self.peerPool.GetPeerIndex(id)
+		if present {
+			self.Index = index
+		}
+	}
+
 	for id, index := range self.peerPool.IDMap {
 		_, present := peermap[id]
 		if !present {
 			if index == self.Index {
-				self.stop()
-				log.Info("updateChainConfig stop consensus service")
+				self.Index = math.MaxUint32
 			} else {
 				log.Info("updateChainConfig remove consensus")
 				if C, present := self.msgRecvC[index]; present {
@@ -391,8 +405,15 @@ func (self *Server) initialize() error {
 		log.Infof("added peer: %s", p.ID.String())
 	}
 
+	//index equal math.MaxUint32  is noconsensus node
 	id, _ := vconfig.PubkeyID(self.account.PublicKey)
-	self.Index, _ = self.peerPool.GetPeerIndex(id)
+	index, present := self.peerPool.GetPeerIndex(id)
+	if present {
+		self.Index = index
+	} else {
+		self.Index = math.MaxUint32
+	}
+
 	self.sub.Subscribe(message.TOPIC_SAVE_BLOCK_COMPLETE)
 	go self.syncer.run()
 	go self.stateMgr.run()
@@ -493,7 +514,7 @@ func (self *Server) run(peerPubKey keypair.PublicKey) error {
 	defer func() {
 		// TODO: handle peer disconnection here
 
-		log.Errorf("server %d: disconnected with peer %d", self.Index, peerIdx)
+		log.Warnf("server %d: disconnected with peer %d", self.Index, peerIdx)
 		close(self.msgRecvC[peerIdx])
 		delete(self.msgRecvC, peerIdx)
 
@@ -1860,6 +1881,9 @@ func (self *Server) msgSendLoop() {
 	for {
 		select {
 		case evt := <-self.msgSendC:
+			if self.Index == math.MaxUint32 {
+				continue
+			}
 			payload, err := SerializeVbftMsg(evt.Msg)
 			if err != nil {
 				log.Errorf("server %d failed to serialized msg (type: %d): %s", self.Index, evt.Msg.Type(), err)
@@ -1899,6 +1923,22 @@ func (self *Server) createBookkeepingTransaction(nonce uint64, fee uint64) *type
 	}
 }
 
+//createfeeSplitTransaction invoke fee native contract EXECUTE_SPLIT
+func (self *Server) createfeeSplitTransaction() *types.Transaction {
+	init := states.Contract{
+		Address: genesis.FeeSplitContractAddress,
+		Method:  "executeSplit",
+	}
+	bf := new(bytes.Buffer)
+	init.Serialize(bf)
+	vmCode := stypes.VmCode{
+		VmType: stypes.Native,
+		Code:   bf.Bytes(),
+	}
+	tx := utils.NewInvokeTransaction(vmCode)
+	return tx
+}
+
 //creategovernaceTransaction invoke governance native contract commit_pos
 func (self *Server) creategovernaceTransaction() *types.Transaction {
 	init := states.Contract{
@@ -1917,7 +1957,9 @@ func (self *Server) creategovernaceTransaction() *types.Transaction {
 
 //checkNeedUpdateChainConfig use blockcount
 func (self *Server) checkNeedUpdateChainConfig() bool {
-
+	if self.currentBlockNum%self.config.MaxBlockChangeView == 0 {
+		return true
+	}
 	log.Debugf("blockcount: %d", self.config.BlockCount)
 	//todo
 	return false
@@ -1962,8 +2004,8 @@ func (self *Server) makeProposal(blkNum uint64, forEmpty bool) error {
 		if err != nil {
 			log.Errorf("updateChainConfig failed:%s", err)
 		} else {
-			//add transaction invoke governance native,commit_pos contract
-			txs = append(txs, self.creategovernaceTransaction())
+			//add transaction invoke governance native,executeSplit、commit_pos contract
+			txs = append(txs, self.createfeeSplitTransaction(), self.creategovernaceTransaction())
 		}
 	}
 
