@@ -23,8 +23,8 @@ import (
 	"fmt"
 
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
-	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/states"
@@ -123,7 +123,7 @@ func (self *ChainStore) GetBlock(blockNum uint64) (*Block, error) {
 	return initVbftBlock(block)
 }
 
-func (self *ChainStore) GetVbftConfigInfo() (*vconfig.Configuration, error) {
+func (self *ChainStore) GetVbftConfigInfo() (*config.VBFTConfig, error) {
 	storageKey := &states.StorageKey{
 		CodeHash: genesis.GovernanceContractAddress,
 		Key:      append([]byte(gov.VBFT_CONFIG)),
@@ -132,25 +132,24 @@ func (self *ChainStore) GetVbftConfigInfo() (*vconfig.Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	config := &govcon.Configuration{}
-	if err := json.Unmarshal(vbft, config); err != nil {
+	cfg := &govcon.Configuration{}
+	if err := json.Unmarshal(vbft, cfg); err != nil {
 		return nil, fmt.Errorf("unmarshal config: %s", err)
 	}
-	chainconfig := &vconfig.Configuration{
-		View:                 uint32(1),
-		N:                    config.N,
-		C:                    config.C,
-		K:                    config.K,
-		L:                    config.L,
-		BlockMsgDelay:        config.BlockMsgDelay,
-		HashMsgDelay:         config.HashMsgDelay,
-		PeerHandshakeTimeout: config.PeerHandshakeTimeout,
-		MaxBlockChangeView:   config.MaxBlockChangeView,
+	chainconfig := &config.VBFTConfig{
+		N:                    cfg.N,
+		C:                    cfg.C,
+		K:                    cfg.K,
+		L:                    cfg.L,
+		BlockMsgDelay:        cfg.BlockMsgDelay,
+		HashMsgDelay:         cfg.HashMsgDelay,
+		PeerHandshakeTimeout: cfg.PeerHandshakeTimeout,
+		MaxBlockChangeView:   cfg.MaxBlockChangeView,
 	}
 	return chainconfig, nil
 }
 
-func (self *ChainStore) GetPeersConfig() ([]*vconfig.PeerStakeInfo, error) {
+func (self *ChainStore) GetPeersConfig() ([]*config.VBFTPeerStakeInfo, error) {
 	goveranceview, err := self.GetGovernanceView()
 	if err != nil {
 		return nil, err
@@ -169,12 +168,12 @@ func (self *ChainStore) GetPeersConfig() ([]*vconfig.PeerStakeInfo, error) {
 	if err := json.Unmarshal(peers, peerMap); err != nil {
 		return nil, fmt.Errorf("unmarshal peersconfig: %s", err)
 	}
-	var peerstakes []*vconfig.PeerStakeInfo
+	var peerstakes []*config.VBFTPeerStakeInfo
 	for _, id := range peerMap.PeerPoolMap {
-		config := &vconfig.PeerStakeInfo{
-			Index:  uint32(id.Index),
-			NodeID: id.PeerPubkey,
-			Stake:  id.InitPos + id.TotalPos,
+		config := &config.VBFTPeerStakeInfo{
+			Index:      uint32(id.Index),
+			PeerPubkey: id.PeerPubkey,
+			InitPos:    id.InitPos + id.TotalPos,
 		}
 		peerstakes = append(peerstakes, config)
 

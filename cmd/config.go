@@ -22,11 +22,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/urfave/cli"
-	"io/ioutil"
 )
 
 func Setdad-goConfig(ctx *cli.Context) (*config.dad-goConfig, error) {

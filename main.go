@@ -21,6 +21,13 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"os"
+	"os/signal"
+	"runtime"
+	"strings"
+	"syscall"
+	"time"
+
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
@@ -50,12 +57,6 @@ import (
 	"github.com/ontio/dad-go/validator/stateful"
 	"github.com/ontio/dad-go/validator/stateless"
 	"github.com/urfave/cli"
-	"os"
-	"os/signal"
-	"runtime"
-	"strings"
-	"syscall"
-	"time"
 )
 
 func setupAPP() *cli.App {
