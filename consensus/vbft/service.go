@@ -41,7 +41,7 @@ import (
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
 	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
-	gover "github.com/ontio/dad-go/smartcontract/service/native"
+	gover "github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/ontio/dad-go/smartcontract/states"
 	stypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go/validator/increment"
