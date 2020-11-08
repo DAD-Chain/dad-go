@@ -16,7 +16,7 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package states
+package governance
 
 import (
 	"math/big"
@@ -45,6 +45,14 @@ type RegisterCandidateParam struct {
 }
 
 type ApproveCandidateParam struct {
+	PeerPubkey string `json:"peerPubkey"`
+}
+
+type BlackNodeParam struct {
+	PeerPubkey string `json:"peerPubkey"`
+}
+
+type WhiteNodeParam struct {
 	PeerPubkey string `json:"peerPubkey"`
 }
 
@@ -98,7 +106,7 @@ type Configuration struct {
 	BlockMsgDelay        uint32 `json:"block_msg_delay"`
 	HashMsgDelay         uint32 `json:"hash_msg_delay"`
 	PeerHandshakeTimeout uint32 `json:"peer_handshake_timeout"`
-	MaxBlockChangeView   uint64 `json:"MaxBlockChangeView"`
+	MaxBlockChangeView   uint32 `json:"MaxBlockChangeView"`
 }
 
 type VoteCommitDposParam struct {
