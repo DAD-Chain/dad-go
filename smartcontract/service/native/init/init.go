@@ -25,7 +25,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/ontio/dad-go/smartcontract/service/native/ong"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
-	"github.com/ontio/dad-go/smartcontract/service/native/oracle"
 )
 
 func init() {
@@ -33,7 +32,6 @@ func init() {
 	ont.InitOnt()
 	params.InitGlobalParams()
 	auth.Init()
-	oracle.InitOracle()
 	governance.InitGovernance()
 	fee_split.InitFeeSplit()
 }
