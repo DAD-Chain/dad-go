@@ -28,6 +28,7 @@ import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/types"
 )
 
 type BlockList []*Block
@@ -615,7 +616,19 @@ func (pool *BlockPool) setBlockSealed(block *Block, forEmpty bool) error {
 	if !forEmpty {
 		c.SealedBlock = block
 	} else {
-		block.Block.Transactions = nil // remove its payload
+		// FIXME: check if missed any other system-txns
+		systemTxs := make([]*types.Transaction, 0)
+		emptyAddr := common.Address{}
+		for _, tx := range block.Block.Transactions {
+			if tx.TxType == types.BookKeeping ||
+				(tx.TxType == types.Invoke && bytes.Compare(tx.Payer[:], emptyAddr[:]) == 0) {
+				systemTxs = append(systemTxs, tx)
+			} else {
+				break
+			}
+		}
+
+		block.Block.Transactions = systemTxs
 		c.SealedBlock = block
 	}
 
