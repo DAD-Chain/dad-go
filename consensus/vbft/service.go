@@ -36,7 +36,6 @@ import (
 	"github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/events"
@@ -1960,21 +1959,6 @@ func (self *Server) msgSendLoop() {
 	}
 }
 
-// FIXME
-//    copied from dbft
-func (self *Server) createBookkeepingTransaction(nonce uint64, fee uint64) *types.Transaction {
-	log.Debug()
-	//TODO: sysfee
-	bookKeepingPayload := &payload.Bookkeeping{
-		Nonce: uint64(time.Now().UnixNano()),
-	}
-	return &types.Transaction{
-		TxType:     types.BookKeeping,
-		Payload:    bookKeepingPayload,
-		Attributes: []*types.TxAttribute{},
-	}
-}
-
 //createfeeSplitTransaction invoke fee native contract EXECUTE_SPLIT
 func (self *Server) createfeeSplitTransaction() *types.Transaction {
 	init := states.Contract{
@@ -2044,11 +2028,6 @@ func (self *Server) makeProposal(blkNum uint64, forEmpty bool) error {
 	} else {
 		self.incrValidator.Clean()
 	}
-
-	// FIXME: self.index as nonce??
-	// FIXME: fix feesum calculation
-	txBookkeeping := self.createBookkeepingTransaction(uint64(self.Index), 0)
-	txs = append(txs, txBookkeeping)
 
 	//check need upate chainconfig
 	cfg := &vconfig.ChainConfig{}
