@@ -24,12 +24,14 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/ontio/dad-go/smartcontract/service/native/ong"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
+	"github.com/ontio/dad-go/smartcontract/service/native/ontid"
 )
 
 func init() {
 	ong.InitOng()
 	ont.InitOnt()
 	params.InitGlobalParams()
+	ontid.Init()
 	auth.Init()
 	governance.InitGovernance()
 }
