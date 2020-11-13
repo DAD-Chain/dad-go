@@ -30,7 +30,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native"
 	_ "github.com/ontio/dad-go/smartcontract/service/native/init"
-	_ "github.com/ontio/dad-go/smartcontract/service/native/ontid"
 	"github.com/ontio/dad-go/smartcontract/service/neovm"
 	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
 	"github.com/ontio/dad-go/smartcontract/states"
