@@ -98,9 +98,7 @@ const TEMPLATE_PAGE = `
 
 <table class="font" border="0" width="80%">
 	<tr>
-	<td width="26%" align="left"><a href="https://forum.DAD-Chain.org" class="site">forum : https://forum.DAD-Chain.org</a><br></td>
-	<td width="26%" align="center"><a href="https://www.DAD-Chain.org" class="site">site : https://www.DAD-Chain.org</a></td>
-	<td width="28%" align="right"><a href="https://wiki.DAD-Chain.org/docs/DAD-Chain" class="site">doc : https://wiki.DAD-Chain.org</a></td>
+	<td width="26%" align="center"><a href="https://ont.io" class="site">site : https://ont.io</a></td>
 	</tr>
 </table>
 <br><br><br><br>

@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/DAD-Chain/gopass"
+	"github.com/howeyc/gopass"
 )
 
 // GetPassword gets password from user input
