@@ -21,8 +21,8 @@ package ledgerstore
 import (
 	"bytes"
 	"fmt"
-
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/store"
@@ -102,6 +102,9 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, stateBa
 }
 
 func saveNotify(eventStore scommon.EventStore, txHash common.Uint256, notify *event.ExecuteNotify) error {
+	if !config.DefConfig.Common.EnableEventLog {
+		return nil
+	}
 	if err := eventStore.SaveEventNotifyByTx(txHash, notify); err != nil {
 		return fmt.Errorf("SaveEventNotifyByTx error %s", err)
 	}
