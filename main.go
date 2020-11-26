@@ -63,7 +63,7 @@ func setupAPP() *cli.App {
 	app := cli.NewApp()
 	app.Usage = "dad-go CLI"
 	app.Action = startdad-go
-	app.Version = "0.7.0"
+	app.Version = "0.8.0"
 	app.Copyright = "Copyright in 2018 The dad-go Authors"
 	app.Commands = []cli.Command{
 		cmd.AccountCommand,
