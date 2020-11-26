@@ -21,6 +21,7 @@ package ledgerstore
 import (
 	"bytes"
 	"fmt"
+	"math"
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
@@ -40,7 +41,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/storage"
 	stypes "github.com/ontio/dad-go/smartcontract/types"
 	vmtype "github.com/ontio/dad-go/smartcontract/types"
-	"math"
 )
 
 //HandleDeployTransaction deal with smart contract deploy transaction
