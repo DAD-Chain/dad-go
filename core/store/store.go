@@ -25,6 +25,7 @@ import (
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract/event"
+	cstates "github.com/ontio/dad-go/smartcontract/states"
 )
 
 // LedgerStore provides func with store package.
@@ -50,7 +51,7 @@ type LedgerStore interface {
 	GetContractState(contractHash common.Address) (*payload.DeployCode, error)
 	GetBookkeeperState() (*states.BookkeeperState, error)
 	GetStorageItem(key *states.StorageKey) (*states.StorageItem, error)
-	PreExecuteContract(tx *types.Transaction) (interface{}, error)
+	PreExecuteContract(tx *types.Transaction) (*cstates.PreExecResult, error)
 	GetEventNotifyByTx(tx common.Uint256) (*event.ExecuteNotify, error)
 	GetEventNotifyByBlock(height uint32) ([]common.Uint256, error)
 }
