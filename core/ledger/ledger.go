@@ -31,6 +31,7 @@ import (
 	"github.com/ontio/dad-go/core/store/ledgerstore"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract/event"
+	cstate "github.com/ontio/dad-go/smartcontract/states"
 )
 
 var DefLedger *Ledger
@@ -165,7 +166,7 @@ func (self *Ledger) GetMerkleProof(proofHeight, rootHeight uint32) ([]common.Uin
 	return self.ldgStore.GetMerkleProof(proofHeight, rootHeight)
 }
 
-func (self *Ledger) PreExecuteContract(tx *types.Transaction) (interface{}, error) {
+func (self *Ledger) PreExecuteContract(tx *types.Transaction) (*cstate.PreExecResult, error) {
 	return self.ldgStore.PreExecuteContract(tx)
 }
 
