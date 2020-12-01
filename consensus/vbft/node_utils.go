@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/signature"
@@ -191,15 +192,10 @@ func (self *Server) getHighestRankProposal(blockNum uint32, proposals []*blockPr
 //
 //  call this method with metaLock locked
 //
-func (self *Server) buildParticipantConfig(blkNum uint32, chainCfg *vconfig.ChainConfig) (*BlockParticipantConfig, error) {
+func (self *Server) buildParticipantConfig(blkNum uint32, block *Block, blockHash common.Uint256, chainCfg *vconfig.ChainConfig) (*BlockParticipantConfig, error) {
 
 	if blkNum == 0 {
 		return nil, fmt.Errorf("not participant config for genesis block")
-	}
-
-	block, blockHash := self.blockPool.getSealedBlock(blkNum - 1)
-	if block == nil {
-		return nil, fmt.Errorf("failed to get sealed block (%d)", blkNum-1)
 	}
 
 	vrfValue := vrf(block, blockHash)
