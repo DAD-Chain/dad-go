@@ -27,6 +27,7 @@ import (
 	"github.com/ontio/dad-go/common/log"
 	tx "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/events/message"
+	"github.com/ontio/dad-go/smartcontract/service/neovm"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go/validator/types"
 )
@@ -80,6 +81,13 @@ func (ta *TxActor) handleTransaction(sender tc.SenderType, self *actor.PID,
 				txn.GasLimit, txn.GasPrice)
 			return
 		}
+
+		if txn.TxType == tx.Deploy && txn.GasLimit < neovm.CONTRACT_CREATE_GAS {
+			log.Debugf("handleTransaction: deploy tx invalid gasLimit %v, gasPrice %v",
+				txn.GasLimit, txn.GasPrice)
+			return
+		}
+
 		<-ta.server.slots
 		ta.server.assignTxToWorker(txn, sender)
 	}
