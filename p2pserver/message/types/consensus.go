@@ -23,7 +23,6 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/errors"
 )
@@ -31,11 +30,6 @@ import (
 type Consensus struct {
 	MsgHdr
 	Cons ConsensusPayload
-}
-
-type PeerStateUpdate struct {
-	PeerPubKey keypair.PublicKey
-	Connected  bool
 }
 
 //Serialize message payload
