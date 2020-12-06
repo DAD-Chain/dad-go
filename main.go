@@ -32,6 +32,7 @@ import (
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/cmd"
+	"github.com/ontio/dad-go/cmd/abi"
 	cmdcom "github.com/ontio/dad-go/cmd/common"
 	cmdsvr "github.com/ontio/dad-go/cmd/server"
 	cmdsvrcom "github.com/ontio/dad-go/cmd/server/common"
@@ -377,7 +378,7 @@ func initCliSvr(ctx *cli.Context, acc *account.Account) {
 	}
 	cmdsvrcom.DefAccount = acc
 	go cmdsvr.DefCliRpcSvr.Start(config.DefConfig.Cli.CliRpcPort)
-
+	abi.DefAbiMgr.Init()
 	log.Infof("Cli rpc server init success")
 }
 
