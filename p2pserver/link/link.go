@@ -26,6 +26,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/p2pserver/common"
 	"github.com/ontio/dad-go/p2pserver/message/types"
@@ -139,7 +140,8 @@ func unpackNodeBuf(this *Link, buf []byte) {
 		if types.ValidMsgHdr(rxBuf.p) == false {
 			rxBuf.p = nil
 			rxBuf.len = 0
-			log.Warn("Get error message header")
+			log.Warn("receive unmatched message header")
+			this.CloseConn()
 			return
 		}
 
@@ -206,7 +208,7 @@ func (this *Link) disconnectNotify() {
 
 	var m types.MsgCont
 	cmd := common.DISCONNECT_TYPE
-	m.Hdr.Magic = common.NETMAGIC
+	m.Hdr.Magic = uint32(config.DefConfig.P2PNode.NetworkId)
 	copy(m.Hdr.CMD[0:uint32(len(cmd))], cmd)
 	var buf bytes.Buffer
 	binary.Write(&buf, binary.LittleEndian, m.Hdr)
