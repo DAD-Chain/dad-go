@@ -22,17 +22,18 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
 	bactor "github.com/ontio/dad-go/http/base/actor"
 	bcomn "github.com/ontio/dad-go/http/base/common"
 	berr "github.com/ontio/dad-go/http/base/error"
+	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 )
 
 func GetGenerateBlockTime(params []interface{}) map[string]interface{} {
@@ -567,7 +568,7 @@ func GetUnclaimOng(params []interface{}) map[string]interface{} {
 	if err != nil {
 		return responsePack(berr.INVALID_PARAMS, "")
 	}
-	fromAddr := genesis.OntContractAddress
+	fromAddr := utils.OntContractAddress
 	rsp, err := bcomn.GetAllowance("ong", fromAddr, toAddr)
 	if err != nil {
 		log.Errorf("GetUnclaimOng %s error:%s", toAddr.ToBase58(), err)

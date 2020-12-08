@@ -29,12 +29,12 @@ import (
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	httpcom "github.com/ontio/dad-go/http/base/common"
 	rpccommon "github.com/ontio/dad-go/http/base/common"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
+	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
 	cstates "github.com/ontio/dad-go/smartcontract/states"
 	vmtypes "github.com/ontio/dad-go/smartcontract/types"
@@ -158,10 +158,10 @@ func ApproveTx(gasPrice, gasLimit uint64, asset string, from, to string, amount 
 	var contractAddr common.Address
 	switch strings.ToLower(asset) {
 	case ASSET_ONT:
-		contractAddr = genesis.OntContractAddress
+		contractAddr = utils.OntContractAddress
 		cversion = VERSION_CONTRACT_ONT
 	case ASSET_ONG:
-		contractAddr = genesis.OngContractAddress
+		contractAddr = utils.OngContractAddress
 		cversion = VERSION_CONTRACT_ONG
 	default:
 		return nil, fmt.Errorf("Unsupport asset:%s", asset)
@@ -196,10 +196,10 @@ func TransferTx(gasPrice, gasLimit uint64, asset, from, to string, amount uint64
 	var contractAddr common.Address
 	switch strings.ToLower(asset) {
 	case ASSET_ONT:
-		contractAddr = genesis.OntContractAddress
+		contractAddr = utils.OntContractAddress
 		cversion = VERSION_CONTRACT_ONT
 	case ASSET_ONG:
-		contractAddr = genesis.OngContractAddress
+		contractAddr = utils.OngContractAddress
 		cversion = VERSION_CONTRACT_ONG
 	default:
 		return nil, fmt.Errorf("Unsupport asset:%s", asset)
@@ -235,10 +235,10 @@ func TransferFromTx(gasPrice, gasLimit uint64, asset, sender, from, to string, a
 	var contractAddr common.Address
 	switch strings.ToLower(asset) {
 	case ASSET_ONT:
-		contractAddr = genesis.OntContractAddress
+		contractAddr = utils.OntContractAddress
 		cversion = VERSION_CONTRACT_ONT
 	case ASSET_ONG:
-		contractAddr = genesis.OngContractAddress
+		contractAddr = utils.OngContractAddress
 		cversion = VERSION_CONTRACT_ONG
 	default:
 		return nil, fmt.Errorf("Unsupport asset:%s", asset)

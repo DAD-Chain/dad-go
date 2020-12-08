@@ -20,17 +20,18 @@ package rest
 
 import (
 	"bytes"
+	"strconv"
+
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
 	bactor "github.com/ontio/dad-go/http/base/actor"
 	bcomn "github.com/ontio/dad-go/http/base/common"
 	berr "github.com/ontio/dad-go/http/base/error"
-	"strconv"
+	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 )
 
 const TLS_PORT int = 443
@@ -529,7 +530,7 @@ func GetUnclaimOng(cmd map[string]interface{}) map[string]interface{} {
 	if err != nil {
 		return ResponsePack(berr.INVALID_PARAMS)
 	}
-	fromAddr := genesis.OntContractAddress
+	fromAddr := utils.OntContractAddress
 	rsp, err := bcomn.GetAllowance("ong", fromAddr, toAddr)
 	if err != nil {
 		log.Errorf("GetUnclaimOng %s error:%s", toAddr.ToBase58(), err)
