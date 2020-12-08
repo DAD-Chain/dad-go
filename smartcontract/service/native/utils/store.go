@@ -20,6 +20,7 @@ package utils
 
 import (
 	"bytes"
+
 	"github.com/ontio/dad-go/common/serialization"
 	cstates "github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"

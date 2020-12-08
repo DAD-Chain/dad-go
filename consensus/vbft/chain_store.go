@@ -25,10 +25,10 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/states"
 	gov "github.com/ontio/dad-go/smartcontract/service/native/governance"
+	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 )
 
 type ChainStore struct {
@@ -124,7 +124,7 @@ func (self *ChainStore) GetBlock(blockNum uint32) (*Block, error) {
 
 func (self *ChainStore) GetVbftConfigInfo() (*config.VBFTConfig, error) {
 	storageKey := &states.StorageKey{
-		CodeHash: genesis.GovernanceContractAddress,
+		CodeHash: utils.GovernanceContractAddress,
 		Key:      append([]byte(gov.VBFT_CONFIG)),
 	}
 	data, err := ledger.DefLedger.GetStorageItem(storageKey.CodeHash, storageKey.Key)
@@ -155,7 +155,7 @@ func (self *ChainStore) GetPeersConfig() ([]*config.VBFTPeerStakeInfo, error) {
 		return nil, err
 	}
 	storageKey := &states.StorageKey{
-		CodeHash: genesis.GovernanceContractAddress,
+		CodeHash: utils.GovernanceContractAddress,
 		Key:      append([]byte(gov.PEER_POOL), goveranceview.View.Bytes()...),
 	}
 	data, err := ledger.DefLedger.GetStorageItem(storageKey.CodeHash, storageKey.Key)
@@ -194,7 +194,7 @@ func (self *ChainStore) isUpdate(view uint32) (bool, error) {
 
 func (self *ChainStore) GetGovernanceView() (*gov.GovernanceView, error) {
 	storageKey := &states.StorageKey{
-		CodeHash: genesis.GovernanceContractAddress,
+		CodeHash: utils.GovernanceContractAddress,
 		Key:      append([]byte(gov.GOVERNANCE_VIEW)),
 	}
 	data, err := ledger.DefLedger.GetStorageItem(storageKey.CodeHash, storageKey.Key)
