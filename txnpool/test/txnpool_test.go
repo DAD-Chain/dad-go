@@ -27,6 +27,7 @@ import (
 
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/types"
@@ -70,7 +71,7 @@ func Test_RCV(t *testing.T) {
 	var s *tp.TXPoolServer
 	var wg sync.WaitGroup
 
-	ledger.DefLedger, _ = ledger.NewLedger()
+	ledger.DefLedger, _ = ledger.NewLedger(config.DEFAULT_DATA_DIR)
 
 	// Start txnpool server to receive msgs from p2p, consensus and valdiators
 	s = tp.NewTxPoolServer(tc.MAX_WORKER_NUM)
