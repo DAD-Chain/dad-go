@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/ontio/dad-go/account"
+	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/ledger"
 )
@@ -37,7 +38,7 @@ func newChainStore() *ChainStore {
 		os.Exit(1)
 	}
 
-	ledger.DefLedger, err = ledger.NewLedger()
+	ledger.DefLedger, err = ledger.NewLedger(config.DEFAULT_DATA_DIR)
 	if err != nil {
 		log.Fatalf("NewLedger error %s", err)
 		os.Exit(1)
