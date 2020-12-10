@@ -37,7 +37,7 @@ import (
 	ninit "github.com/ontio/dad-go/smartcontract/service/native/init"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
-	neovm "github.com/ontio/dad-go/smartcontract/service/neovm"
+	"github.com/ontio/dad-go/smartcontract/service/neovm"
 	sstates "github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/smartcontract/storage"
 	stypes "github.com/ontio/dad-go/smartcontract/types"
@@ -98,11 +98,7 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, stateBa
 	invoke := tx.Payload.(*payload.InvokeCode)
 	txHash := tx.Hash()
 	code := invoke.Code.Code
-	sysTransFlag := bytes.Compare(code, ninit.COMMIT_DPOS_BYTES) == 0 ||
-		bytes.Compare(code, ninit.INIT_CONFIG_BYTES) == 0 ||
-		bytes.Compare(code, ninit.ONT_INIT_BYTES) == 0 ||
-		bytes.Compare(code, ninit.ONG_INIT_BYTES) == 0 ||
-		bytes.Compare(code, ninit.PARAM_INIT_BYTES) == 0
+	sysTransFlag := bytes.Compare(code, ninit.COMMIT_DPOS_BYTES) == 0 || block.Header.Height == 0
 
 	if !sysTransFlag && tx.GasPrice != 0 {
 		if err := isBalanceSufficient(tx, stateBatch); err != nil {
