@@ -23,7 +23,6 @@ import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/core/store"
@@ -53,12 +52,8 @@ func (self *Ledger) GetStore() store.LedgerStore {
 	return self.ldgStore
 }
 
-func (self *Ledger) Init(defaultBookkeeper []keypair.PublicKey) error {
-	genesisBlock, err := genesis.GenesisBlockInit(defaultBookkeeper)
-	if err != nil {
-		return fmt.Errorf("genesisBlock error %s", err)
-	}
-	err = self.ldgStore.InitLedgerStoreWithGenesisBlock(genesisBlock, defaultBookkeeper)
+func (self *Ledger) Init(defaultBookkeeper []keypair.PublicKey, genesisBlock *types.Block) error {
+	err := self.ldgStore.InitLedgerStoreWithGenesisBlock(genesisBlock, defaultBookkeeper)
 	if err != nil {
 		return fmt.Errorf("InitLedgerStoreWithGenesisBlock error %s", err)
 	}

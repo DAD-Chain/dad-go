@@ -41,6 +41,7 @@ import (
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/consensus"
+	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/events"
 	hserver "github.com/ontio/dad-go/http/base/actor"
@@ -237,7 +238,12 @@ func initLedger(ctx *cli.Context) (*ledger.Ledger, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetBookkeepers error:%s", err)
 	}
-	err = ledger.DefLedger.Init(bookKeepers)
+	genesisConfig := config.DefConfig.Genesis
+	genesisBlock, err := genesis.BuildGenesisBlock(bookKeepers, genesisConfig)
+	if err != nil {
+		return nil, fmt.Errorf("genesisBlock error %s", err)
+	}
+	err = ledger.DefLedger.Init(bookKeepers, genesisBlock)
 	if err != nil {
 		return nil, fmt.Errorf("Init ledger error:%s", err)
 	}
