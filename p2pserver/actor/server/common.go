@@ -21,6 +21,7 @@ package server
 import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	types "github.com/ontio/dad-go/p2pserver/common"
+	ptypes "github.com/ontio/dad-go/p2pserver/message/types"
 )
 
 //stop net server
@@ -130,5 +131,5 @@ type GetNeighborAddrsRsp struct {
 
 type TransmitConsensusMsgReq struct {
 	Target keypair.PublicKey
-	Msg    []byte
+	Msg    ptypes.Message
 }

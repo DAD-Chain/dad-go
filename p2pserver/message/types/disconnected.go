@@ -19,34 +19,21 @@
 package types
 
 import (
-	"bytes"
-	"fmt"
-
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/errors"
-	common2 "github.com/ontio/dad-go/p2pserver/common"
+	"github.com/ontio/dad-go/p2pserver/common"
 )
 
-type NotFound struct {
-	Hash common.Uint256
-}
+type Disconnected struct{}
 
 //Serialize message payload
-func (this NotFound) Serialization() ([]byte, error) {
-	return this.Hash[:], nil
+func (this Disconnected) Serialization() ([]byte, error) {
+	return nil, nil
 }
 
-func (this NotFound) CmdType() string {
-	return common2.NOT_FOUND_TYPE
+func (this Disconnected) CmdType() string {
+	return common.DISCONNECT_TYPE
 }
 
 //Deserialize message payload
-func (this *NotFound) Deserialization(p []byte) error {
-	buf := bytes.NewBuffer(p)
-
-	err := this.Hash.Deserialize(buf)
-	if err != nil {
-		return errors.NewDetailErr(err, errors.ErrNetUnPackFail, fmt.Sprintf("deserialize Hash error. buf:%v", buf))
-	}
+func (this *Disconnected) Deserialization(p []byte) error {
 	return nil
 }
