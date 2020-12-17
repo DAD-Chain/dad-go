@@ -27,6 +27,7 @@ import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/constants"
 	"github.com/ontio/dad-go/consensus/vbft/config"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
@@ -80,7 +81,7 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 		Version:          BlockVersion,
 		PrevBlockHash:    common.Uint256{},
 		TransactionsRoot: common.Uint256{},
-		Timestamp:        uint32(uint32(time.Date(2017, time.February, 23, 0, 0, 0, 0, time.UTC).Unix())),
+		Timestamp:        constants.GENESIS_BLOCK_TIMESTAMP,
 		Height:           uint32(0),
 		ConsensusData:    GenesisNonce,
 		NextBookkeeper:   nextBookkeeper,
