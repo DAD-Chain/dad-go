@@ -21,13 +21,13 @@ package rpc
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ontio/dad-go/common/log"
+	berr "github.com/ontio/dad-go/http/base/error"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
-
-	"github.com/ontio/dad-go/common/log"
 )
 
 func init() {
@@ -56,8 +56,8 @@ func SetDefaultFunc(def func(http.ResponseWriter, *http.Request)) {
 	mainMux.defaultFunction = def
 }
 
-//this is the funciton that should be called in order to answer an rpc call
-//should be registered like "http.HandleFunc("/", httpjsonrpc.Handle)"
+// this is the function that should be called in order to answer an rpc call
+// should be registered like "http.HandleFunc("/", httpjsonrpc.Handle)"
 func Handle(w http.ResponseWriter, r *http.Request) {
 	mainMux.RLock()
 	defer mainMux.RUnlock()
@@ -130,8 +130,8 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		//if the function does not exist
 		log.Warn("HTTP JSON RPC Handle - No function to call for ", request["method"])
 		data, err := json.Marshal(map[string]interface{}{
-			"result": nil,
-			"error": map[string]interface{}{
+			"error": berr.INVALID_METHOD,
+			"result": map[string]interface{}{
 				"code":    -32601,
 				"message": "Method not found",
 				"data":    "The called method was not found on the server",
