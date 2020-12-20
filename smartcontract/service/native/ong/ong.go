@@ -28,6 +28,7 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"github.com/ontio/dad-go/vm/neovm/types"
 )
 
 func InitOng() {
@@ -133,7 +134,7 @@ func OngTotalSupply(native *native.NativeService) ([]byte, error) {
 	if err != nil {
 		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OntTotalSupply] get totalSupply error!")
 	}
-	return big.NewInt(int64(amount)).Bytes(), nil
+	return types.BigIntToBytes(big.NewInt(int64(amount))), nil
 }
 
 func OngBalanceOf(native *native.NativeService) ([]byte, error) {

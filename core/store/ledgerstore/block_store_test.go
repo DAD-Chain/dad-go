@@ -30,7 +30,6 @@ import (
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	cstates "github.com/ontio/dad-go/smartcontract/states"
-	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	"testing"
 	"time"
 )

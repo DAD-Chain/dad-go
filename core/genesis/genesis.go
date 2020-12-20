@@ -35,8 +35,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	nutils "github.com/ontio/dad-go/smartcontract/service/native/utils"
-	"github.com/ontio/dad-go/smartcontract/states"
-	stypes "github.com/ontio/dad-go/smartcontract/types"
 )
 
 const (
@@ -119,74 +117,54 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 }
 
 func newGoverningToken() *types.Transaction {
-	tx := utils.NewDeployTransaction(stypes.VmCode{Code: nutils.OntContractAddress[:], VmType: stypes.Native}, "ONT", "1.0",
+	tx := utils.NewDeployTransaction(nutils.OntContractAddress[:], "ONT", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network ONT Token", true)
 	return tx
 }
 
 func newUtilityToken() *types.Transaction {
-	tx := utils.NewDeployTransaction(stypes.VmCode{Code: nutils.OngContractAddress[:], VmType: stypes.Native}, "ONG", "1.0",
+	tx := utils.NewDeployTransaction(nutils.OngContractAddress[:], "ONG", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network ONG Token", true)
 	return tx
 }
 
 func newParamContract() *types.Transaction {
-	tx := utils.NewDeployTransaction(stypes.VmCode{Code: nutils.ParamContractAddress[:], VmType: stypes.Native},
+	tx := utils.NewDeployTransaction(nutils.ParamContractAddress[:],
 		"ParamConfig", "1.0", "dad-go Team", "contact@ont.io",
 		"Chain Global Environment Variables Manager ", true)
 	return tx
 }
 
 func newConfig() *types.Transaction {
-	tx := utils.NewDeployTransaction(stypes.VmCode{Code: nutils.GovernanceContractAddress[:], VmType: stypes.Native}, "CONFIG", "1.0",
+	tx := utils.NewDeployTransaction(nutils.GovernanceContractAddress[:], "CONFIG", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network Consensus Config", true)
 	return tx
 }
 
 func deployAuthContract() *types.Transaction {
-	tx := utils.NewDeployTransaction(stypes.VmCode{Code: nutils.AuthContractAddress[:], VmType: stypes.Native}, "AuthContract", "1.0",
+	tx := utils.NewDeployTransaction(nutils.AuthContractAddress[:], "AuthContract", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network Authorization Contract", true)
 	return tx
 }
 
 func deployOntIDContract() *types.Transaction {
-	tx := utils.NewDeployTransaction(stypes.VmCode{Code: nutils.OntIDContractAddress[:], VmType: stypes.Native}, "OID", "1.0",
+	tx := utils.NewDeployTransaction(nutils.OntIDContractAddress[:], "OID", "1.0",
 		"dad-go Team", "contact@ont.io", "dad-go Network ONT ID", true)
 	return tx
 }
 
 func newGoverningInit() *types.Transaction {
-	return buildInitTransaction(nutils.OntContractAddress, ont.INIT_NAME, nil)
-}
-
-func buildInitTransaction(addr common.Address, initMethod string, args []byte) *types.Transaction {
-	init := states.Contract{Address: addr, Method: initMethod, Args: args}
-	bf := new(bytes.Buffer)
-	init.Serialize(bf)
-
-	vmCode := stypes.VmCode{
-		VmType: stypes.Native,
-		Code:   bf.Bytes(),
-	}
-
-	tx := utils.NewInvokeTransaction(vmCode)
-	return tx
+	return utils.Buildad-gotiveTransaction(nutils.OntContractAddress, ont.INIT_NAME, nil)
 }
 
 func newUtilityInit() *types.Transaction {
-	return buildInitTransaction(nutils.OngContractAddress, ont.INIT_NAME, nil)
+	return utils.Buildad-gotiveTransaction(nutils.OngContractAddress, ont.INIT_NAME, []byte{})
 }
 
 func newParamInit() *types.Transaction {
-	initParams := new(global_params.Params)
-	for k, v := range INIT_PARAM {
-		initParams.SetParam(&global_params.Param{k, v})
-	}
-	bf := new(bytes.Buffer)
-	initParams.Serialize(bf)
-	return buildInitTransaction(nutils.ParamContractAddress, global_params.INIT_NAME, bf.Bytes())
+	return utils.Buildad-gotiveTransaction(nutils.ParamContractAddress, global_params.INIT_NAME, []byte{})
 }
 
 func newGoverConfigInit(config []byte) *types.Transaction {
-	return buildInitTransaction(nutils.GovernanceContractAddress, governance.INIT_CONFIG, config)
+	return utils.Buildad-gotiveTransaction(nutils.GovernanceContractAddress, governance.INIT_CONFIG, config)
 }

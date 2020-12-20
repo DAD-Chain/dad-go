@@ -25,7 +25,6 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/merkle"
-	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go/vm/neovm"
 	"github.com/stretchr/testify/assert"
 	"math/big"
@@ -73,13 +72,6 @@ func TestMerkleVerifier(t *testing.T) {
 	res := verify.VerifyLeafHashInclusion(leaf_hash, proof.BlockHeight, hashes, root_hash, proof.CurBlockHeight+1)
 	assert.Nil(t, res)
 
-}
-
-func TestCodeHash(t *testing.T) {
-	code, _ := common.HexToBytes("120203")
-	vmcode := vmtypes.VmCode{vmtypes.NEOVM, code}
-	codehash := vmcode.AddressFromVmCode()
-	assert.Equal(t, codehash[0], byte(vmtypes.NEOVM))
 }
 
 func TestTxDeserialize(t *testing.T) {

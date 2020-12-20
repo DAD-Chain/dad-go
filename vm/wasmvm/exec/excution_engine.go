@@ -27,8 +27,8 @@ import (
 	"reflect"
 
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go/vm/neovm/interfaces"
 	"github.com/ontio/dad-go/vm/wasmvm/memory"
 	"github.com/ontio/dad-go/vm/wasmvm/util"
@@ -391,9 +391,8 @@ func (e *ExecutionEngine) call(caller common.Address,
 
 		vm.Caller = caller
 
-		vmcode := types.VmCode{VmType: types.WASMVM, Code: code}
-		vm.VMCode = vmcode
-		vm.ContractAddress = vmcode.AddressFromVmCode()
+		vm.VMCode = code
+		vm.ContractAddress = types.AddressFromVmCode(code)
 
 		entry, ok := m.Export.Entries[methodad-gome]
 
