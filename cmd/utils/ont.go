@@ -24,6 +24,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/big"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ontio/dad-go-crypto/keypair"
 	sig "github.com/ontio/dad-go-crypto/signature"
 	"github.com/ontio/dad-go/account"
@@ -39,12 +44,7 @@ import (
 	cstates "github.com/ontio/dad-go/smartcontract/states"
 	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/ontio/dad-go/vm/neovm"
-	neotypes "github.com/ontio/dad-go/vm/neovm/types"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
-	"math/big"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const (
@@ -284,14 +284,13 @@ func NewInvokeTransaction(gasPirce, gasLimit uint64, vmType vmtypes.VmType, code
 		},
 	}
 	tx := &types.Transaction{
-		Version:    VERSION_TRANSACTION,
-		GasPrice:   gasPirce,
-		GasLimit:   gasLimit,
-		TxType:     types.Invoke,
-		Nonce:      uint32(time.Now().Unix()),
-		Payload:    invokePayload,
-		Attributes: make([]*types.TxAttribute, 0, 0),
-		Sigs:       make([]*types.Sig, 0, 0),
+		Version:  VERSION_TRANSACTION,
+		GasPrice: gasPirce,
+		GasLimit: gasLimit,
+		TxType:   types.Invoke,
+		Nonce:    uint32(time.Now().Unix()),
+		Payload:  invokePayload,
+		Sigs:     make([]*types.Sig, 0, 0),
 	}
 	return tx
 }
@@ -601,14 +600,13 @@ func NewDeployCodeTransaction(
 		Description: cdesc,
 	}
 	tx := &types.Transaction{
-		Version:    VERSION_TRANSACTION,
-		TxType:     types.Deploy,
-		Nonce:      uint32(time.Now().Unix()),
-		Payload:    deployPayload,
-		Attributes: make([]*types.TxAttribute, 0, 0),
-		GasPrice:   gasPrice,
-		GasLimit:   gasLimit,
-		Sigs:       make([]*types.Sig, 0, 0),
+		Version:  VERSION_TRANSACTION,
+		TxType:   types.Deploy,
+		Nonce:    uint32(time.Now().Unix()),
+		Payload:  deployPayload,
+		GasPrice: gasPrice,
+		GasLimit: gasLimit,
+		Sigs:     make([]*types.Sig, 0, 0),
 	}
 	return tx
 }
@@ -798,7 +796,7 @@ func ParseNeoVMContractReturnTypeInteger(hexStr string) (int64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("hex.DecodeString error:%s", err)
 	}
-	return neotypes.ConvertBytesToBigInteger(data).Int64(), nil
+	return common.BigIntFromNeoBytes(data).Int64(), nil
 }
 
 //ParseNeoVMContractReturnTypeByteArray return []byte value of smart contract execute code.
