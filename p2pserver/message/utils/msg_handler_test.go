@@ -39,7 +39,6 @@ import (
 	"github.com/ontio/dad-go/p2pserver/net/netserver"
 	"github.com/ontio/dad-go/p2pserver/net/protocol"
 	"github.com/ontio/dad-go/p2pserver/peer"
-	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	"github.com/stretchr/testify/assert"
 )
 

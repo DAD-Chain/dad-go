@@ -30,7 +30,6 @@ import (
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
-	vmtypes "github.com/ontio/dad-go/smartcontract/types"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go/validator/stateless"
 	vt "github.com/ontio/dad-go/validator/types"
@@ -48,13 +47,9 @@ func init() {
 	topic = "TXN"
 
 	code := []byte("ont")
-	vmcode := vmtypes.VmCode{
-		VmType: vmtypes.Native,
-		Code:   code,
-	}
 
 	invokeCodePayload := &payload.InvokeCode{
-		Code: vmcode,
+		Code: code,
 	}
 
 	txn = &types.Transaction{

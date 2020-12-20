@@ -19,13 +19,19 @@
 package utils
 
 import (
+	"bytes"
+	"math/big"
+
+	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
-	stypes "github.com/ontio/dad-go/smartcontract/types"
+	neovm "github.com/ontio/dad-go/smartcontract/service/neovm"
+	vm "github.com/ontio/dad-go/vm/neovm"
+	"math"
 )
 
 // NewDeployTransaction returns a deploy Transaction
-func NewDeployTransaction(code stypes.VmCode, name, version, author, email, desp string, needStorage bool) *types.Transaction {
+func NewDeployTransaction(code []byte, name, version, author, email, desp string, needStorage bool) *types.Transaction {
 	//TODO: check arguments
 	DeployCodePayload := &payload.DeployCode{
 		Code:        code,
@@ -44,14 +50,29 @@ func NewDeployTransaction(code stypes.VmCode, name, version, author, email, desp
 }
 
 // NewInvokeTransaction returns an invoke Transaction
-func NewInvokeTransaction(vmcode stypes.VmCode) *types.Transaction {
+func NewInvokeTransaction(code []byte) *types.Transaction {
 	//TODO: check arguments
 	invokeCodePayload := &payload.InvokeCode{
-		Code: vmcode,
+		Code: code,
 	}
 
 	return &types.Transaction{
 		TxType:  types.Invoke,
 		Payload: invokeCodePayload,
 	}
+}
+
+func Buildad-gotiveTransaction(addr common.Address, initMethod string, args []byte) *types.Transaction {
+	bf := new(bytes.Buffer)
+	builder := vm.NewParamsBuilder(bf)
+	builder.EmitPushByteArray(args)
+	builder.EmitPushByteArray([]byte(initMethod))
+	builder.EmitPushByteArray(addr[:])
+	builder.EmitPushInteger(big.NewInt(0))
+	builder.Emit(vm.SYSCALL)
+	builder.EmitPushByteArray([]byte(neovm.NATIVE_INVOKE_NAME))
+
+	tx := NewInvokeTransaction(builder.ToArray())
+	tx.GasLimit = math.MaxUint64
+	return tx
 }

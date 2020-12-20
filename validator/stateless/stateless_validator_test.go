@@ -28,7 +28,6 @@ import (
 	ctypes "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/types"
 	types2 "github.com/ontio/dad-go/validator/types"
 	"github.com/stretchr/testify/assert"
 	"time"
@@ -49,10 +48,8 @@ func TestStatelessValidator(t *testing.T) {
 	log.Init(log.PATH, log.Stdout)
 	acc := account.NewAccount("")
 
-	code := types.VmCode{
-		VmType: types.NEOVM,
-		Code:   []byte{1, 2, 3},
-	}
+	code := []byte{1, 2, 3}
+
 	tx := utils.NewDeployTransaction(code, "test", "1", "author", "author@123.com", "test desp", false)
 
 	tx.Payer = acc.Address
