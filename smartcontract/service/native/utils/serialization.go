@@ -16,59 +16,44 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package types
+package utils
 
 import (
-	"crypto/sha256"
+	"fmt"
 	"io"
+	"math/big"
 
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
-	"golang.org/x/crypto/ripemd160"
+	"github.com/ontio/dad-go/vm/neovm/types"
 )
 
-// Prefix of address
-type VmType byte
-
-const (
-	Native = VmType(0xFF)
-	NEOVM  = VmType(0x80)
-	WASMVM = VmType(0x90)
-	// EVM = VmType(0x90)
-)
-
-// VmCode describe smart contract code and vm type
-type VmCode struct {
-	VmType VmType
-	Code   []byte
-}
-
-func (self *VmCode) Serialize(w io.Writer) error {
-	w.Write([]byte{byte(self.VmType)})
-	return serialization.WriteVarBytes(w, self.Code)
-
-}
-
-func (self *VmCode) Deserialize(r io.Reader) error {
-	var b [1]byte
-	r.Read(b[:])
-	buf, err := serialization.ReadVarBytes(r)
-	if err != nil {
-		return err
+func WriteVarUint(w io.Writer, value uint64) error {
+	if err := serialization.WriteVarBytes(w, types.BigIntToBytes(big.NewInt(int64(value)))); err != nil {
+		return fmt.Errorf("serialize value error:%v", err)
 	}
-	self.VmType = VmType(b[0])
-	self.Code = buf
 	return nil
 }
 
-// AddressFromVmCode return address of contract
-func (self *VmCode) AddressFromVmCode() common.Address {
-	var addr common.Address
-	temp := sha256.Sum256(self.Code)
-	md := ripemd160.New()
-	md.Write(temp[:])
-	md.Sum(addr[:0])
+func ReadVarUint(r io.Reader) (uint64, error) {
+	value, err := serialization.ReadVarBytes(r)
+	if err != nil {
+		return 0, fmt.Errorf("deserialize value error:%v", err)
+	}
+	return types.BigIntFromBytes(value).Uint64(), nil
+}
 
-	addr[0] = byte(self.VmType)
-	return addr
+func WriteAddress(w io.Writer, address common.Address) error {
+	if err := serialization.WriteVarBytes(w, address[:]); err != nil {
+		return fmt.Errorf("serialize value error:%v", err)
+	}
+	return nil
+}
+
+func ReadAddress(r io.Reader) (common.Address, error) {
+	from, err := serialization.ReadVarBytes(r)
+	if err != nil {
+		return common.Address{}, fmt.Errorf("[State] deserialize from error:%v", err)
+	}
+	return common.AddressParseFromBytes(from)
 }
