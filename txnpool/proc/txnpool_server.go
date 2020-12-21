@@ -24,22 +24,21 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"sort"
-	"strconv"
-	"sync"
-
 	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/ledger"
 	tx "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
+	httpcom "github.com/ontio/dad-go/http/base/common"
 	params "github.com/ontio/dad-go/smartcontract/service/native/global_params"
 	nutils "github.com/ontio/dad-go/smartcontract/service/native/utils"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	"github.com/ontio/dad-go/validator/types"
+	"sort"
+	"strconv"
+	"sync"
 )
 
 type txStats struct {
@@ -96,14 +95,10 @@ func NewTxPoolServer(num uint8) *TXPoolServer {
 
 // getGlobalGasPrice returns a global gas price
 func getGlobalGasPrice() (uint64, error) {
-	paramNameList := &params.ParamNameList{"gasPrice"}
-	bf := new(bytes.Buffer)
-	paramNameList.Serialize(bf)
-	tx, err := utils.InvokeNativeContractTx(0, 0, 0, nutils.ParamContractAddress, "getGlobalParam", bf.Bytes())
+	tx, err := httpcom.NewNativeInvokeTransaction(0, 0, nutils.ParamContractAddress, 0, "getGlobalParam", []interface{}{[]interface{}{"gasPrice"}})
 	if err != nil {
-		return 0, fmt.Errorf("failed to create invoke native contract tx for getGlobalParam %v", err)
+		return 0, fmt.Errorf("NewNativeInvokeTransaction error:%s", err)
 	}
-
 	result, err := ledger.DefLedger.PreExecuteContract(tx)
 	if err != nil {
 		return 0, fmt.Errorf("PreExecuteContract failed %v", err)
