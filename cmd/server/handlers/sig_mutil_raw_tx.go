@@ -22,17 +22,17 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"sort"
+
 	"github.com/ontio/dad-go-crypto/keypair"
 	clisvrcom "github.com/ontio/dad-go/cmd/server/common"
 	cliutil "github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/constants"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/signature"
 	"github.com/ontio/dad-go/core/types"
-	"sort"
 )
-
-const MAX_PUBLIC_KEY_SIZE = 24
 
 type SigMutilRawTransactionReq struct {
 	RawTx   string   `json:"raw_tx"`
@@ -51,7 +51,7 @@ func SigMutilRawTransaction(req *clisvrcom.CliRpcRequest, resp *clisvrcom.CliRpc
 		resp.ErrorCode = clisvrcom.CLIERR_INVALID_PARAMS
 		return
 	}
-	if rawReq.M <= 0 || len(rawReq.PubKeys) < rawReq.M || len(rawReq.PubKeys) > MAX_PUBLIC_KEY_SIZE {
+	if rawReq.M <= 0 || len(rawReq.PubKeys) < rawReq.M || len(rawReq.PubKeys) > constants.MULTI_SIG_MAX_PUBKEY_SIZE {
 		resp.ErrorCode = clisvrcom.CLIERR_INVALID_PARAMS
 		return
 	}
