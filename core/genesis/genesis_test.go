@@ -21,9 +21,17 @@ import (
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
+	"github.com/ontio/dad-go/common/log"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
+
+func TestMain(m *testing.M) {
+	log.InitLog(0, log.Stdout)
+	m.Run()
+	os.RemoveAll("./ActorLog")
+}
 
 func TestGenesisBlockInit(t *testing.T) {
 	_, pub, _ := keypair.GenerateKeyPair(keypair.PK_ECDSA, keypair.P256)
