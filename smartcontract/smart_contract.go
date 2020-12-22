@@ -26,7 +26,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native"
-	_ "github.com/ontio/dad-go/smartcontract/service/native/init"
 	"github.com/ontio/dad-go/smartcontract/service/neovm"
 	"github.com/ontio/dad-go/smartcontract/storage"
 	vm "github.com/ontio/dad-go/vm/neovm"
@@ -138,6 +137,7 @@ func (this *SmartContract) NewNativeService() (*native.NativeService, error) {
 		Tx:         this.Config.Tx,
 		Time:       this.Config.Time,
 		Height:     this.Config.Height,
+		ServiceMap: make(map[string]native.Handler),
 	}
 	return service, nil
 }

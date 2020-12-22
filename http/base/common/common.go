@@ -32,7 +32,6 @@ import (
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 	svrneovm "github.com/ontio/dad-go/smartcontract/service/neovm"
-	cstates "github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/vm/neovm"
 	"math/big"
 	"reflect"
@@ -434,21 +433,9 @@ func BuildNeoVMInvokeCode(smartContractAddress common.Address, params []interfac
 	if err != nil {
 		return nil, err
 	}
-	args := builder.ToArray()
-
-	crt := &cstates.Contract{
-		Address: smartContractAddress,
-		Args:    args,
-	}
-	crtBuf := bytes.NewBuffer(nil)
-	err = crt.Serialize(crtBuf)
-	if err != nil {
-		return nil, fmt.Errorf("Serialize contract error:%s", err)
-	}
-
-	buf := bytes.NewBuffer(nil)
-	buf.Write(append([]byte{0x67}, crtBuf.Bytes()[:]...))
-	return buf.Bytes(), nil
+	args := append(builder.ToArray(), 0x67)
+	args = append(args, common.ToArrayReverse(smartContractAddress[:])...)
+	return args, nil
 }
 
 //buildNeoVMParamInter build neovm invoke param code
