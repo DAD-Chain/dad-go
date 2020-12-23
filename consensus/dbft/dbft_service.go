@@ -21,9 +21,6 @@ package dbft
 import (
 	"bytes"
 	"fmt"
-	"reflect"
-	"time"
-
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
@@ -39,6 +36,8 @@ import (
 	"github.com/ontio/dad-go/events/message"
 	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
 	"github.com/ontio/dad-go/validator/increment"
+	"reflect"
+	"time"
 )
 
 type DbftService struct {
