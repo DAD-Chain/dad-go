@@ -22,11 +22,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"errors"
-	"net"
-	"strconv"
-	"strings"
-	"time"
-
 	evtActor "github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
@@ -38,6 +33,10 @@ import (
 	"github.com/ontio/dad-go/p2pserver/message/msg_pack"
 	msgTypes "github.com/ontio/dad-go/p2pserver/message/types"
 	"github.com/ontio/dad-go/p2pserver/net/protocol"
+	"net"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // AddrReqHandle hadnles the neighbor address request from peer

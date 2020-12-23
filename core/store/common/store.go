@@ -19,10 +19,13 @@
 package common
 
 import (
+	"errors"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/states"
 	"github.com/ontio/dad-go/smartcontract/event"
 )
+
+var ErrNotFound = errors.New("not found")
 
 //Store iterator for iterate store
 type StoreIterator interface {
