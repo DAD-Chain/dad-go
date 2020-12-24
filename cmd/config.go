@@ -22,14 +22,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/urfave/cli"
+	"io/ioutil"
 )
 
 func Setdad-goConfig(ctx *cli.Context) (*config.dad-goConfig, error) {
@@ -48,6 +47,9 @@ func Setdad-goConfig(ctx *cli.Context) (*config.dad-goConfig, error) {
 	if cfg.Genesis.ConsensusType == config.CONSENSUS_TYPE_SOLO {
 		cfg.Ws.EnableHttpWs = true
 		cfg.Restful.EnableHttpRestful = true
+		cfg.P2PNode.NetworkId = config.NETWORK_ID_SOLO_NET
+		cfg.P2PNode.NetworkName = config.GetNetworkName(cfg.P2PNode.NetworkId)
+		cfg.P2PNode.NetworkMaigc = config.GetNetworkMagic(cfg.P2PNode.NetworkId)
 	}
 	return cfg, nil
 }
@@ -109,6 +111,7 @@ func setGenesis(ctx *cli.Context, cfg *config.GenesisConfig) error {
 }
 
 func setCommonConfig(ctx *cli.Context, cfg *config.CommonConfig) {
+	cfg.LogLevel = ctx.GlobalUint(utils.GetFlagName(utils.LogLevelFlag))
 	cfg.EnableEventLog = !ctx.GlobalBool(utils.GetFlagName(utils.DisableEventLogFlag))
 	cfg.GasLimit = ctx.GlobalUint64(utils.GetFlagName(utils.GasLimitFlag))
 	cfg.GasPrice = ctx.GlobalUint64(utils.GetFlagName(utils.GasPriceFlag))
@@ -122,6 +125,8 @@ func setConsensusConfig(ctx *cli.Context, cfg *config.ConsensusConfig) {
 
 func setP2PNodeConfig(ctx *cli.Context, cfg *config.P2PNodeConfig) {
 	cfg.NetworkId = uint32(ctx.GlobalUint(utils.GetFlagName(utils.NetworkIdFlag)))
+	cfg.NetworkMaigc = config.GetNetworkMagic(cfg.NetworkId)
+	cfg.NetworkName = config.GetNetworkName(cfg.NetworkId)
 	cfg.NodePort = ctx.GlobalUint(utils.GetFlagName(utils.NodePortFlag))
 	cfg.NodeConsensusPort = ctx.GlobalUint(utils.GetFlagName(utils.ConsensusPortFlag))
 	cfg.DualPortSupport = ctx.GlobalBool(utils.GetFlagName(utils.DualPortSupportFlag))
