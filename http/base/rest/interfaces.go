@@ -20,18 +20,18 @@ package rest
 
 import (
 	"bytes"
-	"strconv"
-
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/payload"
+	scom "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
 	bactor "github.com/ontio/dad-go/http/base/actor"
 	bcomn "github.com/ontio/dad-go/http/base/common"
 	berr "github.com/ontio/dad-go/http/base/error"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"strconv"
 )
 
 const TLS_PORT int = 443
@@ -279,6 +279,9 @@ func GetSmartCodeEventTxsByHeight(cmd map[string]interface{}) map[string]interfa
 	index := uint32(height)
 	eventInfos, err := bactor.GetEventNotifyByHeight(index)
 	if err != nil {
+		if scom.ErrNotFound == err {
+			return ResponsePack(berr.SUCCESS)
+		}
 		return ResponsePack(berr.INVALID_PARAMS)
 	}
 	eInfos := make([]*bcomn.ExecuteNotify, 0, len(eventInfos))
