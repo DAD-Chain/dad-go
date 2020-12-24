@@ -20,7 +20,11 @@ package init
 
 import (
 	"bytes"
+	"math"
+	"math/big"
+
 	"github.com/ontio/dad-go/common"
+	invoke "github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/smartcontract/service/native/auth"
 	params "github.com/ontio/dad-go/smartcontract/service/native/global_params"
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
@@ -28,7 +32,8 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/service/native/ontid"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
-	"github.com/ontio/dad-go/smartcontract/states"
+	"github.com/ontio/dad-go/smartcontract/service/neovm"
+	vm "github.com/ontio/dad-go/vm/neovm"
 )
 
 var (
@@ -45,8 +50,16 @@ func init() {
 }
 
 func InitBytes(addr common.Address, method string) []byte {
-	init := states.Contract{Address: addr, Method: method}
 	bf := new(bytes.Buffer)
-	init.Serialize(bf)
+	builder := vm.NewParamsBuilder(bf)
+	builder.EmitPushByteArray([]byte{})
+	builder.EmitPushByteArray([]byte(method))
+	builder.EmitPushByteArray(addr[:])
+	builder.EmitPushInteger(big.NewInt(0))
+	builder.Emit(vm.SYSCALL)
+	builder.EmitPushByteArray([]byte(neovm.NATIVE_INVOKE_NAME))
+
+	tx := invoke.NewInvokeTransaction(builder.ToArray())
+	tx.GasLimit = math.MaxUint64
 	return bf.Bytes()
 }
