@@ -45,7 +45,6 @@ import (
 	gover "github.com/ontio/dad-go/smartcontract/service/native/governance"
 	ninit "github.com/ontio/dad-go/smartcontract/service/native/init"
 	nutils "github.com/ontio/dad-go/smartcontract/service/native/utils"
-	"github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/validator/increment"
 )
 
@@ -2041,13 +2040,7 @@ func (self *Server) msgSendLoop() {
 
 //creategovernaceTransaction invoke governance native contract commit_pos
 func (self *Server) creategovernaceTransaction(blkNum uint32) *types.Transaction {
-	init := states.Contract{
-		Address: nutils.GovernanceContractAddress,
-		Method:  gover.COMMIT_DPOS,
-	}
-	bf := new(bytes.Buffer)
-	init.Serialize(bf)
-	tx := utils.NewInvokeTransaction(bf.Bytes())
+	tx := utils.Buildad-gotiveTransaction(nutils.GovernanceContractAddress, gover.COMMIT_DPOS, []byte{})
 	tx.Nonce = blkNum
 	return tx
 }
