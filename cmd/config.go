@@ -22,13 +22,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/urfave/cli"
-	"io/ioutil"
 )
 
 func Setdad-goConfig(ctx *cli.Context) (*config.dad-goConfig, error) {
@@ -130,6 +131,30 @@ func setP2PNodeConfig(ctx *cli.Context, cfg *config.P2PNodeConfig) {
 	cfg.NodePort = ctx.GlobalUint(utils.GetFlagName(utils.NodePortFlag))
 	cfg.NodeConsensusPort = ctx.GlobalUint(utils.GetFlagName(utils.ConsensusPortFlag))
 	cfg.DualPortSupport = ctx.GlobalBool(utils.GetFlagName(utils.DualPortSupportFlag))
+	cfg.ReservedPeersOnly = ctx.GlobalBool(utils.GetFlagName(utils.ReservedPeersOnlyFlag))
+	rsvfile := ctx.GlobalString(utils.GetFlagName(utils.ReservedPeersFileFlag))
+	if cfg.ReservedPeersOnly {
+		if !common.FileExisted(rsvfile) {
+			log.Infof("file %s not exist\n", rsvfile)
+			return
+		}
+		peers, err := ioutil.ReadFile(rsvfile)
+		if err != nil {
+			log.Errorf("ioutil.ReadFile:%s error:%s", rsvfile, err)
+			return
+		}
+		peers = bytes.TrimPrefix(peers, []byte("\xef\xbb\xbf"))
+
+		err = json.Unmarshal(peers, &cfg.ReservedPeers)
+		if err != nil {
+			log.Errorf("json.Unmarshal reserved peers:%s error:%s", peers, err)
+			return
+		}
+		for i := 0; i < len(cfg.ReservedPeers); i++ {
+			log.Info("reserved addr: " + cfg.ReservedPeers[i])
+		}
+	}
+
 }
 
 func setRpcConfig(ctx *cli.Context, cfg *config.RpcConfig) {
