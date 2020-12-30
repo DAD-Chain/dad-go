@@ -456,11 +456,6 @@ type WebSocketConfig struct {
 	HttpKeyPath  string
 }
 
-type CliConfig struct {
-	EnableCliRpcServer bool
-	CliRpcPort         uint
-}
-
 type dad-goConfig struct {
 	Genesis   *GenesisConfig
 	Common    *CommonConfig
@@ -469,7 +464,6 @@ type dad-goConfig struct {
 	Rpc       *RpcConfig
 	Restful   *RestfulConfig
 	Ws        *WebSocketConfig
-	Cli       *CliConfig
 }
 
 func Newdad-goConfig() *dad-goConfig {
@@ -517,10 +511,6 @@ func Newdad-goConfig() *dad-goConfig {
 		Ws: &WebSocketConfig{
 			EnableHttpWs: true,
 			HttpWsPort:   DEFAULT_WS_PORT,
-		},
-		Cli: &CliConfig{
-			EnableCliRpcServer: false,
-			CliRpcPort:         DEFAULT_CLI_RPC_PORT,
 		},
 	}
 }

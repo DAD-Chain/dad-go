@@ -21,21 +21,11 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"os"
-	"os/signal"
-	"runtime"
-	"strings"
-	"syscall"
-	"time"
-
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/cmd"
-	"github.com/ontio/dad-go/cmd/abi"
 	cmdcom "github.com/ontio/dad-go/cmd/common"
-	cmdsvr "github.com/ontio/dad-go/cmd/server"
-	cmdsvrcom "github.com/ontio/dad-go/cmd/server/common"
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
@@ -59,6 +49,12 @@ import (
 	"github.com/ontio/dad-go/validator/stateful"
 	"github.com/ontio/dad-go/validator/stateless"
 	"github.com/urfave/cli"
+	"os"
+	"os/signal"
+	"runtime"
+	"strings"
+	"syscall"
+	"time"
 )
 
 func setupAPP() *cli.App {
@@ -117,9 +113,6 @@ func setupAPP() *cli.App {
 		//ws setting
 		utils.WsEnabledFlag,
 		utils.WsPortFlag,
-		//cli setting
-		utils.CliEnableRpcFlag,
-		utils.CliRpcPortFlag,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -187,7 +180,7 @@ func startdad-go(ctx *cli.Context) {
 	initRestful(ctx)
 	initWs(ctx)
 	initNodeInfo(ctx, p2pSvr)
-	initCliSvr(ctx, acc)
+	//initCliSvr(ctx, acc)
 
 	go logCurrBlockHeight()
 	waitToExit()
@@ -403,16 +396,6 @@ func initNodeInfo(ctx *cli.Context, p2pSvr *p2pserver.P2PServer) {
 	go nodeinfo.StartServer(p2pSvr.GetNetWork())
 
 	log.Infof("Nodeinfo init success")
-}
-
-func initCliSvr(ctx *cli.Context, acc *account.Account) {
-	if !config.DefConfig.Cli.EnableCliRpcServer {
-		return
-	}
-	cmdsvrcom.DefAccount = acc
-	go cmdsvr.DefCliRpcSvr.Start(config.DefConfig.Cli.CliRpcPort)
-	abi.DefAbiMgr.Init()
-	log.Infof("Cli rpc server init success")
 }
 
 func importBlocks(ctx *cli.Context) error {
