@@ -29,6 +29,9 @@ var (
 	AppHelpTemplate = `NAME:
    {{.App.Name}} - {{.App.Usage}}
 
+	dad-go CLI is an dad-go node command line Client for starting and managing dad-go nodes, 
+	managing user wallets, sending transactions, deploying and invoking contract, and so on.
+
 USAGE:
 	{{.App.HelpName}} [options]{{if .App.Commands}} command [command options] {{end}}{{if .App.ArgsUsage}}{{.App.ArgsUsage}}{{else}}[arguments...]{{end}}
 	{{if .App.Version}}
@@ -111,6 +114,13 @@ var AppHelpFlagGroups = []flagGroup{
 		Flags: []cli.Flag{
 			utils.DisableConsensusFlag,
 			utils.MaxTxInBlockFlag,
+		},
+	},
+	{
+		Name: "TXPOOL",
+		Flags: []cli.Flag{
+			utils.GasPriceFlag,
+			utils.GasLimitFlag,
 		},
 	},
 	{
