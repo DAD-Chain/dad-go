@@ -26,6 +26,7 @@ import (
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/types"
+	"io"
 	"os"
 )
 
@@ -69,7 +70,8 @@ func ImportBlocks(importFile string, targetHeight uint32) error {
 			return fmt.Errorf("Read block height:%d error:%s", i, err)
 		}
 		compressData := make([]byte, size)
-		_, err = fReader.Read(compressData)
+
+		_, err = io.ReadFull(fReader, compressData)
 		if err != nil {
 			return fmt.Errorf("Read block data height:%d error:%s", i, err)
 		}
