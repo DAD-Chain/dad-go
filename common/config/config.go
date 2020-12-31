@@ -21,14 +21,12 @@ package config
 import (
 	"encoding/hex"
 	"fmt"
-	"io"
-	"sort"
-
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/constants"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/errors"
+	"io"
 )
 
 const (
@@ -530,7 +528,6 @@ func (this *dad-goConfig) GetBookkeepers() ([]keypair.PublicKey, error) {
 		return nil, fmt.Errorf("Does not support %s consensus", this.Genesis.ConsensusType)
 	}
 
-	sort.Strings(bookKeepers)
 	pubKeys := make([]keypair.PublicKey, 0, len(bookKeepers))
 	for _, key := range bookKeepers {
 		pubKey, err := hex.DecodeString(key)
@@ -540,6 +537,7 @@ func (this *dad-goConfig) GetBookkeepers() ([]keypair.PublicKey, error) {
 		}
 		pubKeys = append(pubKeys, k)
 	}
+	keypair.SortPublicKeys(pubKeys)
 	return pubKeys, nil
 }
 
