@@ -1,7 +1,7 @@
 package: github.com/ontio/dad-go
 import:
 - package: github.com/ontio/dad-go-eventbus
-  version: v0.9
+  version: v0.9.1
 - package: github.com/ontio/dad-go-crypto
   version: v0.9
 - package: github.com/howeyc/gopass

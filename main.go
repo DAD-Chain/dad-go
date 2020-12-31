@@ -21,8 +21,16 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"os"
+	"os/signal"
+	"runtime"
+	"strings"
+	"syscall"
+	"time"
+
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
+	alog "github.com/ontio/dad-go-eventbus/log"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/cmd"
 	cmdcom "github.com/ontio/dad-go/cmd/common"
@@ -49,12 +57,6 @@ import (
 	"github.com/ontio/dad-go/validator/stateful"
 	"github.com/ontio/dad-go/validator/stateless"
 	"github.com/urfave/cli"
-	"os"
-	"os/signal"
-	"runtime"
-	"strings"
-	"syscall"
-	"time"
 )
 
 func setupAPP() *cli.App {
@@ -190,6 +192,7 @@ func startdad-go(ctx *cli.Context) {
 func initLog(ctx *cli.Context) {
 	//init log module
 	logLevel := ctx.GlobalInt(utils.GetFlagName(utils.LogLevelFlag))
+	alog.InitLog(log.PATH)
 	log.InitLog(logLevel, log.PATH, log.Stdout)
 }
 
