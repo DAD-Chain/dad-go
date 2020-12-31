@@ -23,7 +23,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"github.com/ontio/dad-go/account"
-	clisvrcom "github.com/ontio/dad-go/cmd/server/common"
+	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common/log"
 	"os"
@@ -40,6 +40,7 @@ func TestMain(m *testing.M) {
 	clisvrcom.DefAccount = account.NewAccount("")
 	m.Run()
 	os.RemoveAll("./ActorLog")
+	os.RemoveAll("./Log")
 }
 
 func TestSigRawTx(t *testing.T) {
