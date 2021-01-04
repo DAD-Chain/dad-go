@@ -21,7 +21,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/ontio/dad-go/cmd/abi"
-	clisvrcom "github.com/ontio/dad-go/cmd/server/common"
+	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
 	"github.com/ontio/dad-go/common"
 	nutils "github.com/ontio/dad-go/smartcontract/service/native/utils"
 	"testing"
@@ -59,8 +59,8 @@ func TestSigNativeInvokeTx(t *testing.T) {
 		Params: data,
 	}
 	rsp := &clisvrcom.CliRpcResponse{}
-	abi.DefAbiMgr.Path = "../../abi"
-	abi.DefAbiMgr.Init()
+	abiPath := "../../abi"
+	abi.DefAbiMgr.Init(abiPath)
 	SigNativeInvokeTx(req, rsp)
 	if rsp.ErrorCode != 0 {
 		t.Errorf("SigNativeInvokeTx failed. ErrorCode:%d ErrorInfo:%s", rsp.ErrorCode, rsp.ErrorInfo)
