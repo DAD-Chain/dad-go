@@ -34,6 +34,7 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native/governance"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	nutils "github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"github.com/ontio/dad-go/smartcontract/service/neovm"
 )
 
 const (
@@ -179,6 +180,9 @@ func newParamInit() *types.Transaction {
 	params := new(global_params.Params)
 	for k, v := range INIT_PARAM {
 		params.SetParam(&global_params.Param{k, v})
+	}
+	for k, v := range neovm.GAS_TABLE {
+		params.SetParam(&global_params.Param{k, string(v)})
 	}
 	bf := new(bytes.Buffer)
 	params.Serialize(bf)
