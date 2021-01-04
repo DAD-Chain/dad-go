@@ -26,6 +26,7 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/constants"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/common/serialization"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/smartcontract/service/native"
@@ -66,7 +67,11 @@ func OntInit(native *native.NativeService) ([]byte, error) {
 	}
 
 	distribute := make(map[common.Address]uint64)
-	input := bytes.NewBuffer(native.Input)
+	buf, err := serialization.ReadVarBytes(bytes.NewBuffer(native.Input))
+	if err != nil {
+		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "serialization.ReadVarBytes, contract params deserialize error!")
+	}
+	input := bytes.NewBuffer(buf)
 	num, err := utils.ReadVarUint(input)
 	if err != nil {
 		return utils.BYTE_FALSE, fmt.Errorf("read number error:%v", err)
