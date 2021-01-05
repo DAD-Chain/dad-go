@@ -29,7 +29,7 @@ var (
 	AppHelpTemplate = `NAME:
    {{.App.Name}} - {{.App.Usage}}
 
-	dad-go CLI is an dad-go node command line Client for starting and managing dad-go nodes, 
+	dad-go CLI is an dad-go node command line Client for starting and managing dad-go nodes,
 	managing user wallets, sending transactions, deploying and invoking contract, and so on.
 
 USAGE:
@@ -107,6 +107,7 @@ var AppHelpFlagGroups = []flagGroup{
 			utils.AccountLowSecurityFlag,
 			utils.AccountMultiMFlag,
 			utils.AccountMultiPubKeyFlag,
+			utils.IdentityFlag,
 		},
 	},
 	{
