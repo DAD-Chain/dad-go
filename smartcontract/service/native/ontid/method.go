@@ -24,6 +24,7 @@ import (
 	"fmt"
 
 	"github.com/ontio/dad-go-crypto/keypair"
+	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/states"
@@ -58,7 +59,7 @@ func regIdWithPublicKey(srvc *native.NativeService) ([]byte, error) {
 		return utils.BYTE_FALSE, errors.New("register ONT ID error: invalid argument")
 	}
 
-	if !verifyID(arg0) {
+	if !account.VerifyID(string(arg0)) {
 		return utils.BYTE_FALSE, errors.New("register ONT ID error: invalid ID")
 	}
 
@@ -104,7 +105,7 @@ func regIdWithAttributes(srvc *native.NativeService) ([]byte, error) {
 	} else if len(arg0) == 0 {
 		return utils.BYTE_FALSE, errors.New("register ID with attributes error: argument 0 error, invalid length")
 	}
-	if !verifyID(arg0) {
+	if !account.VerifyID(string(arg0)) {
 		return utils.BYTE_FALSE, errors.New("register ONT ID error: invalid ID")
 	}
 
