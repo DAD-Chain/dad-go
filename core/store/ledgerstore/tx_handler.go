@@ -66,12 +66,14 @@ func (self *StateStore) HandleDeployTransaction(store store.LedgerStore, stateBa
 		cache := storage.NewCloneCache(stateBatch)
 		createGasPrice, ok := neovm.GAS_TABLE.Load(neovm.CONTRACT_CREATE_NAME)
 		if !ok {
-			return errors.NewErr("[HandleDeployTransaction] get CONTRACT_CREATE_NAME gas failed")
+			stateBatch.SetError(errors.NewErr("[HandleDeployTransaction] get CONTRACT_CREATE_NAME gas failed"))
+			return nil
 		}
 
 		uintCodePrice, ok := neovm.GAS_TABLE.Load(neovm.UINT_DEPLOY_CODE_LEN_NAME)
 		if !ok {
-			return errors.NewErr("[HandleDeployTransaction] get UINT_DEPLOY_CODE_LEN_NAME gas failed")
+			stateBatch.SetError(errors.NewErr("[HandleDeployTransaction] get UINT_DEPLOY_CODE_LEN_NAME gas failed"))
+			return nil
 		}
 
 		gasLimit := createGasPrice.(uint64) + calcGasByCodeLen(len(deploy.Code), uintCodePrice.(uint64))
@@ -105,6 +107,7 @@ func (self *StateStore) HandleDeployTransaction(store store.LedgerStore, stateBa
 	}
 	notify.Notify = append(notify.Notify, notifies...)
 	notify.GasConsumed = gasConsumed
+	notify.State = event.CONTRACT_STATE_SUCCESS
 	return nil
 }
 
@@ -139,7 +142,8 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, stateBa
 	if isCharge {
 		uintCodeGasPrice, ok := neovm.GAS_TABLE.Load(neovm.UINT_INVOKE_CODE_LEN_NAME)
 		if !ok {
-			return errors.NewErr("[HandleInvokeTransaction] get UINT_INVOKE_CODE_LEN_NAME gas failed")
+			stateBatch.SetError(errors.NewErr("[HandleInvokeTransaction] get UINT_INVOKE_CODE_LEN_NAME gas failed"))
+			return nil
 		}
 
 		oldBalance, err = getBalanceFromNative(config, cache, store, tx.Payer)
@@ -228,6 +232,7 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, stateBa
 	notify.Notify = append(notify.Notify, sc.Notifications...)
 	notify.Notify = append(notify.Notify, notifies...)
 	notify.GasConsumed = costGas
+	notify.State = event.CONTRACT_STATE_SUCCESS
 	sc.CloneCache.Commit()
 	return nil
 }
@@ -353,7 +358,6 @@ func costInvalidGas(address common.Address, gas uint64, config *smartcontract.Co
 		return err
 	}
 	cache.Commit()
-	notify.State = event.CONTRACT_STATE_FAIL
 	notify.GasConsumed = gas
 	notify.Notify = append(notify.Notify, notifies...)
 	return nil
