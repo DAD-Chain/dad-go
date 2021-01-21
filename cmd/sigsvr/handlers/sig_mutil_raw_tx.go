@@ -25,7 +25,7 @@ import (
 	"sort"
 
 	"github.com/ontio/dad-go-crypto/keypair"
-	clisvrcom "github.com/ontio/dad-go/cmd/server/common"
+	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
 	cliutil "github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/constants"
@@ -51,7 +51,8 @@ func SigMutilRawTransaction(req *clisvrcom.CliRpcRequest, resp *clisvrcom.CliRpc
 		resp.ErrorCode = clisvrcom.CLIERR_INVALID_PARAMS
 		return
 	}
-	if rawReq.M <= 0 || len(rawReq.PubKeys) < rawReq.M || len(rawReq.PubKeys) > constants.MULTI_SIG_MAX_PUBKEY_SIZE {
+	numkeys := len(rawReq.PubKeys)
+	if rawReq.M <= 0 || numkeys < rawReq.M || numkeys <= 1 || numkeys > constants.MULTI_SIG_MAX_PUBKEY_SIZE {
 		resp.ErrorCode = clisvrcom.CLIERR_INVALID_PARAMS
 		return
 	}
