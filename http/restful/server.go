@@ -16,12 +16,14 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Package restful privides a function to start restful server
 package restful
 
 import (
 	"github.com/ontio/dad-go/http/restful/restful"
 )
 
+//start restful
 func StartServer() {
 	rt := restful.InitRestServer()
 	go rt.Start()

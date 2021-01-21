@@ -16,6 +16,7 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Package jsonrpc privides a function to start json rpc server
 package jsonrpc
 
 import (
