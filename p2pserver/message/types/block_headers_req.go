@@ -23,14 +23,15 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	comm "github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/p2pserver/common"
 )
 
 type HeadersReq struct {
 	Len       uint8
-	HashStart [common.HASH_LEN]byte
-	HashEnd   [common.HASH_LEN]byte
+	HashStart comm.Uint256
+	HashEnd   comm.Uint256
 }
 
 //Serialize message payload
