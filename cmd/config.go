@@ -47,6 +47,7 @@ func Setdad-goConfig(ctx *cli.Context) (*config.dad-goConfig, error) {
 		cfg.P2PNode.NetworkId = config.NETWORK_ID_SOLO_NET
 		cfg.P2PNode.NetworkName = config.GetNetworkName(cfg.P2PNode.NetworkId)
 		cfg.P2PNode.NetworkMagic = config.GetNetworkMagic(cfg.P2PNode.NetworkId)
+		cfg.Common.GasPrice = 0
 	}
 	if cfg.P2PNode.NetworkId == config.NETWORK_ID_MAIN_NET ||
 		cfg.P2PNode.NetworkId == config.NETWORK_ID_POLARIS_NET {
