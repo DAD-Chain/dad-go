@@ -21,7 +21,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/ontio/dad-go/account"
-	clisvrcom "github.com/ontio/dad-go/cmd/server/common"
+	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
 	"testing"
 )
 
@@ -34,7 +34,7 @@ func TestSigTransferTransaction(t *testing.T) {
 		Asset:    "ont",
 		From:     defAcc.Address.ToBase58(),
 		To:       acc.Address.ToBase58(),
-		Amount:   10,
+		Amount:   "10",
 	}
 	data, err := json.Marshal(sigReq)
 	if err != nil {
