@@ -15,19 +15,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
+package handlers
 
-package sigsvr
+import (
+	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
+	"testing"
+)
 
-import "github.com/ontio/dad-go/cmd/sigsvr/handlers"
-
-func init() {
-	DefCliRpcSvr.RegHandler("createaccount", handlers.CreateAccount)
-	DefCliRpcSvr.RegHandler("exportaccount", handlers.ExportAccount)
-	DefCliRpcSvr.RegHandler("sigdata", handlers.SigData)
-	DefCliRpcSvr.RegHandler("sigrawtx", handlers.SigRawTransaction)
-	DefCliRpcSvr.RegHandler("sigmutilrawtx", handlers.SigMutilRawTransaction)
-	DefCliRpcSvr.RegHandler("sigtransfertx", handlers.SigTransferTransaction)
-	DefCliRpcSvr.RegHandler("signeovminvoketx", handlers.SigNeoVMInvokeTx)
-	DefCliRpcSvr.RegHandler("signeovminvokeabitx", handlers.SigNeoVMInvokeAbiTx)
-	DefCliRpcSvr.RegHandler("signativeinvoketx", handlers.SigNativeInvokeTx)
+func TestCreateAccount(t *testing.T) {
+	walletStore := clisvrcom.DefWalletStore
+	req := &clisvrcom.CliRpcRequest{
+		Qid:    "t",
+		Method: "createaccount",
+		Pwd:    string(pwd),
+	}
+	resp := &clisvrcom.CliRpcResponse{}
+	CreateAccount(req, resp)
+	if resp.ErrorCode != 0 {
+		t.Errorf("CreateAccount failed. ErrorCode:%d", resp.ErrorCode)
+		return
+	}
+	createRsp, ok := resp.Result.(*CreateAccountRsp)
+	if !ok {
+		t.Errorf("CreateAccount resp asset to CreateAccountRsp failed")
+		return
+	}
+	_, err := walletStore.GetAccountByAddress(createRsp.Account, pwd)
+	if err != nil {
+		t.Errorf("Test CreateAccount failed GetAccountByAddress error:%s", err)
+		return
+	}
 }

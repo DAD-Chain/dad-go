@@ -20,11 +20,10 @@ package main
 import (
 	"fmt"
 	"github.com/ontio/dad-go/cmd/abi"
-	cmdcom "github.com/ontio/dad-go/cmd/common"
 	cmdsvr "github.com/ontio/dad-go/cmd/sigsvr"
-	cmdsvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
+	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
+	"github.com/ontio/dad-go/cmd/sigsvr/store"
 	"github.com/ontio/dad-go/cmd/utils"
-	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/urfave/cli"
@@ -42,14 +41,14 @@ func setupSigSvr() *cli.App {
 	app.Copyright = "Copyright in 2018 The dad-go Authors"
 	app.Flags = []cli.Flag{
 		utils.LogLevelFlag,
-		//account setting
-		utils.WalletFileFlag,
-		utils.AccountAddressFlag,
-		utils.AccountPassFlag,
+		utils.CliWalletDirFlag,
 		//cli setting
 		utils.CliAddressFlag,
 		utils.CliRpcPortFlag,
 		utils.CliABIPathFlag,
+	}
+	app.Commands = []cli.Command{
+		cmdsvr.ImportWalletCommand,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -62,21 +61,20 @@ func startSigSvr(ctx *cli.Context) {
 	logLevel := ctx.GlobalInt(utils.GetFlagName(utils.LogLevelFlag))
 	log.InitLog(logLevel, log.PATH, log.Stdout)
 
-	walletFile := ctx.GlobalString(utils.GetFlagName(utils.WalletFileFlag))
-	if walletFile == "" {
-		log.Infof("Please specificed wallet file using --wallet flag")
+	walletDirPath := ctx.String(utils.GetFlagName(utils.CliWalletDirFlag))
+	if walletDirPath == "" {
+		log.Infof("Please using --walletdir flag to specific wallet saving path")
 		return
 	}
-	if !common.FileExisted(walletFile) {
-		log.Infof("Cannot find wallet file:%s. Please create wallet first", walletFile)
-		return
-	}
-	acc, err := cmdcom.GetAccount(ctx)
+
+	walletStore, err := store.NewWalletStore(walletDirPath)
 	if err != nil {
-		log.Infof("GetAccount error:%s", err)
+		log.Infof("NewWalletStore error:%s", err)
 		return
 	}
-	log.Infof("Using account:%s", acc.Address.ToBase58())
+	clisvrcom.DefWalletStore = walletStore
+
+	log.Infof("Load wallet data success. Account number:%d", walletStore.GetNextAccountIndex())
 
 	rpcAddress := ctx.String(utils.GetFlagName(utils.CliAddressFlag))
 	rpcPort := ctx.Uint(utils.GetFlagName(utils.CliRpcPortFlag))
@@ -84,7 +82,6 @@ func startSigSvr(ctx *cli.Context) {
 		log.Infof("Please using sig server port by --%s flag", utils.GetFlagName(utils.CliRpcPortFlag))
 		return
 	}
-	cmdsvrcom.DefAccount = acc
 	go cmdsvr.DefCliRpcSvr.Start(rpcAddress, rpcPort)
 
 	abiPath := ctx.GlobalString(utils.GetFlagName(utils.CliABIPathFlag))
