@@ -19,18 +19,16 @@
 package txnpool
 
 import (
-	"bytes"
-	"encoding/hex"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
+	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	tc "github.com/ontio/dad-go/txnpool/common"
 	tp "github.com/ontio/dad-go/txnpool/proc"
@@ -47,15 +45,13 @@ func init() {
 	log.Init(log.PATH, log.Stdout)
 	topic = "TXN"
 
-	tx = &types.Transaction{
-		Version: 0,
+	mutable := &types.MutableTransaction{
+		TxType:  types.Invoke,
+		Nonce:   uint32(time.Now().Unix()),
+		Payload: &payload.InvokeCode{Code: []byte{}},
 	}
 
-	tempStr := "3369930accc1ddd067245e8edadcd9bea207ba5e1753ac18a51df77a343bfe92"
-	hex, _ := hex.DecodeString(tempStr)
-	var hash common.Uint256
-	hash.Deserialize(bytes.NewReader(hex))
-	tx.SetHash(hash)
+	tx, _ = mutable.IntoImmutable()
 }
 
 func startActor(obj interface{}) *actor.PID {
