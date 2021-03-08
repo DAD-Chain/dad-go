@@ -18,14 +18,15 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-crypto/signature"
 	clisvrcom "github.com/ontio/dad-go/cmd/sigsvr/common"
 	"github.com/ontio/dad-go/cmd/utils"
+	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -60,15 +61,14 @@ func TestSigMutilRawTransaction(t *testing.T) {
 		t.Errorf("TransferTx error:%s", err)
 		return
 	}
-	buf := bytes.NewBuffer(nil)
-	err = tx.Serialize(buf)
-	if err != nil {
-		t.Errorf("tx.Serialize error:%s", err)
-		return
-	}
+	immut, err := tx.IntoImmutable()
+	assert.Nil(t, err)
+	sink := common.ZeroCopySink{}
+	err = immut.Serialization(&sink)
+	assert.Nil(t, err)
 
 	rawReq := &SigMutilRawTransactionReq{
-		RawTx:   hex.EncodeToString(buf.Bytes()),
+		RawTx:   hex.EncodeToString(sink.Bytes()),
 		M:       m,
 		PubKeys: []string{acc1.PubKey, acc2.PubKey},
 	}
