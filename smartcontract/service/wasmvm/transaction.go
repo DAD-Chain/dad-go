@@ -18,7 +18,6 @@
 package wasmvm
 
 import (
-	"bytes"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
@@ -37,8 +36,7 @@ func (this *WasmVmService) transactionGetHash(engine *exec.ExecutionEngine) (boo
 		return false, err
 	}
 
-	trans := types.Transaction{}
-	err = trans.Deserialize(bytes.NewBuffer(transbytes))
+	trans, err := types.TransactionFromRawBytes(transbytes)
 	if err != nil {
 		return false, err
 	}
@@ -64,8 +62,7 @@ func (this *WasmVmService) transactionGetType(engine *exec.ExecutionEngine) (boo
 		return false, err
 	}
 
-	trans := types.Transaction{}
-	err = trans.Deserialize(bytes.NewBuffer(transbytes))
+	trans, err := types.TransactionFromRawBytes(transbytes)
 	if err != nil {
 		return false, err
 	}
@@ -88,8 +85,7 @@ func (this *WasmVmService) transactionGetAttributes(engine *exec.ExecutionEngine
 		return false, err
 	}
 
-	trans := types.Transaction{}
-	err = trans.Deserialize(bytes.NewBuffer(transbytes))
+	_, err = types.TransactionFromRawBytes(transbytes)
 	if err != nil {
 		return false, err
 	}
