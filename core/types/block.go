@@ -68,6 +68,17 @@ func (b *Block) Serialization(sink *common.ZeroCopySink) error {
 	return nil
 }
 
+// if no error, ownership of param raw is transfered to Transaction
+func BlockFromRawBytes(raw []byte) (*Block, error) {
+	source := common.NewZeroCopySource(raw)
+	block := &Block{}
+	err := block.Deserialization(source)
+	if err != nil {
+		return nil, err
+	}
+	return block, nil
+}
+
 func (self *Block) Deserialization(source *common.ZeroCopySource) error {
 	if self.Header == nil {
 		self.Header = new(Header)
@@ -100,38 +111,6 @@ func (self *Block) Deserialization(source *common.ZeroCopySource) error {
 	return nil
 }
 
-func (b *Block) Deserialize(r io.Reader) error {
-	if b.Header == nil {
-		b.Header = new(Header)
-	}
-	err := b.Header.Deserialize(r)
-	if err != nil {
-		return err
-	}
-
-	//Transactions
-	length, err := serialization.ReadUint32(r)
-	if err != nil {
-		return err
-	}
-
-	var hashes []common.Uint256
-	for i := uint32(0); i < length; i++ {
-		transaction := new(Transaction)
-		err := transaction.Deserialize(r)
-		if err != nil {
-			return err
-		}
-		txhash := transaction.Hash()
-		b.Transactions = append(b.Transactions, transaction)
-		hashes = append(hashes, txhash)
-	}
-
-	b.Header.TransactionsRoot = common.ComputeMerkleRoot(hashes)
-
-	return nil
-}
-
 func (b *Block) ToArray() []byte {
 	bf := new(bytes.Buffer)
 	b.Serialize(bf)
@@ -148,7 +127,7 @@ func (b *Block) Type() common.InventoryType {
 
 func (b *Block) RebuildMerkleRoot() {
 	txs := b.Transactions
-	hashes := []common.Uint256{}
+	hashes := make([]common.Uint256, 0, len(txs))
 	for _, tx := range txs {
 		hashes = append(hashes, tx.Hash())
 	}

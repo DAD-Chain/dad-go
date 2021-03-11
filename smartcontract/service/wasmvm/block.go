@@ -18,7 +18,6 @@
 package wasmvm
 
 import (
-	"bytes"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
@@ -114,7 +113,7 @@ func (this *WasmVmService) blockGetTransactionCount(engine *exec.ExecutionEngine
 		return false, err
 	}
 	block := &types.Block{}
-	err = block.Deserialize(bytes.NewBuffer(blockbytes))
+	err = block.Deserialization(common.NewZeroCopySource(blockbytes))
 	if err != nil {
 		return false, err
 	}
@@ -140,7 +139,7 @@ func (this *WasmVmService) blockGetTransactions(engine *exec.ExecutionEngine) (b
 		return false, err
 	}
 	block := &types.Block{}
-	err = block.Deserialize(bytes.NewBuffer(blockbytes))
+	err = block.Deserialization(common.NewZeroCopySource(blockbytes))
 	if err != nil {
 		return false, err
 	}
