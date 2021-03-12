@@ -19,12 +19,12 @@
 package types
 
 import (
-	"bytes"
 	"fmt"
 
+	"github.com/ontio/dad-go/common"
 	ct "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/p2pserver/common"
+	comm "github.com/ontio/dad-go/p2pserver/common"
 )
 
 type Block struct {
@@ -32,27 +32,26 @@ type Block struct {
 }
 
 //Serialize message payload
-func (this Block) Serialization() ([]byte, error) {
-	p := bytes.NewBuffer([]byte{})
-	err := this.Blk.Serialize(p)
+func (this *Block) Serialization(sink *common.ZeroCopySink) error {
+	err := this.Blk.Serialization(sink)
 	if err != nil {
-		return nil, errors.NewDetailErr(err, errors.ErrNetPackFail, fmt.Sprintf("serialize error. Blk:%v", this.Blk))
+		return errors.NewDetailErr(err, errors.ErrNetPackFail, fmt.Sprintf("serialize error. err:%v", err))
 	}
 
-	return p.Bytes(), nil
+	return nil
 }
 
 func (this *Block) CmdType() string {
-	return common.BLOCK_TYPE
+	return comm.BLOCK_TYPE
 }
 
 //Deserialize message payload
-func (this *Block) Deserialization(p []byte) error {
-	blk, err := ct.BlockFromRawBytes(p)
+func (this *Block) Deserialization(source *common.ZeroCopySource) error {
+	this.Blk = new(ct.Block)
+	err := this.Blk.Deserialization(source)
 	if err != nil {
-		return err
+		return errors.NewDetailErr(err, errors.ErrNetUnPackFail, fmt.Sprintf("read Blk error. err:%v", err))
 	}
-	this.Blk = blk
 
 	return nil
 }

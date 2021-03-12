@@ -15,37 +15,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package types
+package common
 
 import (
-	"io"
-
-	"github.com/ontio/dad-go/common"
-	comm "github.com/ontio/dad-go/p2pserver/common"
+	"crypto/sha256"
+	"hash"
 )
 
-type NotFound struct {
-	Hash common.Uint256
+// checksum implement hash.Hash interface and io.Writer
+type checksum struct {
+	hash.Hash
 }
 
-//Serialize message payload
-func (this NotFound) Serialization(sink *common.ZeroCopySink) error {
-	sink.WriteHash(this.Hash)
-	return nil
+func (self *checksum) Size() int {
+	return CHECKSUM_LEN
 }
 
-func (this NotFound) CmdType() string {
-	return comm.NOT_FOUND_TYPE
+func (self *checksum) Sum(b []byte) []byte {
+	temp := self.Hash.Sum(nil)
+	h := sha256.Sum256(temp)
+
+	return append(b, h[:CHECKSUM_LEN]...)
 }
 
-//Deserialize message payload
-func (this *NotFound) Deserialization(source *common.ZeroCopySource) error {
-	var eof bool
-	this.Hash, eof = source.NextHash()
-	if eof {
-		return io.ErrUnexpectedEOF
-	}
+func NewChecksum() hash.Hash {
+	return &checksum{sha256.New()}
+}
 
-	return nil
+func Checksum(data []byte) [CHECKSUM_LEN]byte {
+	var checksum [CHECKSUM_LEN]byte
+	t := sha256.Sum256(data)
+	s := sha256.Sum256(t[:])
+
+	copy(checksum[:], s[:])
+
+	return checksum
 }

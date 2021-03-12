@@ -15,37 +15,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package types
+package common
 
 import (
-	"io"
-
-	"github.com/ontio/dad-go/common"
-	comm "github.com/ontio/dad-go/p2pserver/common"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-type NotFound struct {
-	Hash common.Uint256
-}
+func TestChecksum(t *testing.T) {
+	data := []byte{1, 2, 3}
+	cs := Checksum(data)
 
-//Serialize message payload
-func (this NotFound) Serialization(sink *common.ZeroCopySink) error {
-	sink.WriteHash(this.Hash)
-	return nil
-}
+	writer := NewChecksum()
+	writer.Write(data)
+	checksum2 := writer.Sum(nil)
+	assert.Equal(t, cs[:], checksum2)
 
-func (this NotFound) CmdType() string {
-	return comm.NOT_FOUND_TYPE
-}
-
-//Deserialize message payload
-func (this *NotFound) Deserialization(source *common.ZeroCopySource) error {
-	var eof bool
-	this.Hash, eof = source.NextHash()
-	if eof {
-		return io.ErrUnexpectedEOF
-	}
-
-	return nil
 }
