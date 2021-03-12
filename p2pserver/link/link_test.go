@@ -26,7 +26,7 @@ import (
 
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
-	common2 "github.com/ontio/dad-go/common"
+	comm "github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/payload"
 	ct "github.com/ontio/dad-go/core/types"
@@ -95,7 +95,7 @@ func TestNewLink(t *testing.T) {
 	msg := &mt.MsgPayload{
 		Id:      cliLink.id,
 		Addr:    cliLink.addr,
-		Payload: &mt.NotFound{common2.UINT256_EMPTY},
+		Payload: &mt.NotFound{comm.UINT256_EMPTY},
 	}
 	go func() {
 		time.Sleep(5000000)
