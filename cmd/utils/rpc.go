@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ontio/dad-go/common/config"
+	rpcerr "github.com/ontio/dad-go/http/base/error"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -29,6 +30,30 @@ import (
 
 //JsonRpc version
 const JSON_RPC_VERSION = "2.0"
+
+const (
+	ERROR_INVALID_PARAMS   = rpcerr.INVALID_PARAMS
+	ERROR_dad-go_COMMON  = 10000
+	ERROR_dad-go_SUCCESS = 0
+)
+
+type dad-goError struct {
+	ErrorCode int64
+	Error     error
+}
+
+func Newdad-goError(err error, errCode ...int64) *dad-goError {
+	ontErr := &dad-goError{Error: err}
+	if len(errCode) > 0 {
+		ontErr.ErrorCode = errCode[0]
+	} else {
+		ontErr.ErrorCode = ERROR_dad-go_COMMON
+	}
+	if err == nil {
+		ontErr.ErrorCode = ERROR_dad-go_SUCCESS
+	}
+	return ontErr
+}
 
 //JsonRpcRequest object in rpc
 type JsonRpcRequest struct {
@@ -45,7 +70,7 @@ type JsonRpcResponse struct {
 	Result json.RawMessage `json:"result"`
 }
 
-func sendRpcRequest(method string, params []interface{}) ([]byte, error) {
+func sendRpcRequest(method string, params []interface{}) ([]byte, *dad-goError) {
 	rpcReq := &JsonRpcRequest{
 		Version: JSON_RPC_VERSION,
 		Id:      "cli",
@@ -54,27 +79,27 @@ func sendRpcRequest(method string, params []interface{}) ([]byte, error) {
 	}
 	data, err := json.Marshal(rpcReq)
 	if err != nil {
-		return nil, fmt.Errorf("JsonRpcRequest json.Marsha error:%s", err)
+		return nil, Newdad-goError(fmt.Errorf("JsonRpcRequest json.Marshal error:%s", err))
 	}
 
 	addr := fmt.Sprintf("http://localhost:%d", config.DefConfig.Rpc.HttpJsonPort)
 	resp, err := http.Post(addr, "application/json", strings.NewReader(string(data)))
 	if err != nil {
-		return nil, fmt.Errorf("http post request:%s error:%s", data, err)
+		return nil, Newdad-goError(err)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("read rpc response body error:%s", err)
+		return nil, Newdad-goError(fmt.Errorf("read rpc response body error:%s", err))
 	}
 	rpcRsp := &JsonRpcResponse{}
 	err = json.Unmarshal(body, rpcRsp)
 	if err != nil {
-		return nil, fmt.Errorf("json.Unmarshal JsonRpcResponse:%s error:%s", body, err)
+		return nil, Newdad-goError(fmt.Errorf("json.Unmarshal JsonRpcResponse:%s error:%s", body, err))
 	}
 	if rpcRsp.Error != 0 {
-		return nil, fmt.Errorf("error code:%d desc:%s", rpcRsp.Error, rpcRsp.Desc)
+		return nil, Newdad-goError(fmt.Errorf("%s", strings.ToLower(rpcRsp.Desc)), rpcRsp.Error)
 	}
 	return rpcRsp.Result, nil
 }
