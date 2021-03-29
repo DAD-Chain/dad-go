@@ -25,12 +25,16 @@ import (
 	"fmt"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/common/constants"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/common/serialization"
+	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
 	bactor "github.com/ontio/dad-go/http/base/actor"
 	"github.com/ontio/dad-go/smartcontract/event"
+	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 	svrneovm "github.com/ontio/dad-go/smartcontract/service/neovm"
 	"github.com/ontio/dad-go/vm/neovm"
@@ -270,6 +274,24 @@ func GetBalance(address common.Address) (*BalanceOfRsp, error) {
 		Ont: fmt.Sprintf("%d", ont),
 		Ong: fmt.Sprintf("%d", ong),
 	}, nil
+}
+
+func GetGrantOng(addr common.Address) (string, error) {
+	key := append([]byte(ont.UNBOUND_TIME_OFFSET), addr[:]...)
+	value, err := ledger.DefLedger.GetStorageItem(utils.OntContractAddress, key)
+	if err != nil {
+		value = []byte{0, 0, 0, 0}
+	}
+	v, err := serialization.ReadUint32(bytes.NewBuffer(value))
+	if err != nil {
+		return fmt.Sprintf("%v", 0), err
+	}
+	ont, err := GetContractBalance(0, utils.OntContractAddress, addr)
+	if err != nil {
+		return fmt.Sprintf("%v", 0), err
+	}
+	boundong := utils.CalcUnbindOng(ont, v, uint32(time.Now().Unix())-constants.GENESIS_BLOCK_TIMESTAMP)
+	return fmt.Sprintf("%v", boundong), nil
 }
 
 func GetAllowance(asset string, from, to common.Address) (string, error) {
