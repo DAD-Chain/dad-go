@@ -15,27 +15,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package neovm
 
 import (
-	"math/big"
+	"crypto/sha256"
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/ripemd160"
+	"io"
 	"testing"
-	"fmt"
 )
 
-func TestCommon(t *testing.T) {
-	i := ToBigInt(big.NewInt(1))
-	t.Log("i", i)
+func TestHash(t *testing.T) {
+	engine := NewExecutionEngine()
+	engine.OpCode = HASH160
 
-	fmt.Println(ToArrayReverse([]byte{1, 2, 3}))
-}
+	data := []byte{1, 2, 3, 4, 5, 6, 7, 8}
+	hd160 := Hash(data, engine)
 
-func ToArrayReverse(arr []byte) []byte {
-	l := len(arr)
-	x := make([]byte, 0)
-	for i := l - 1; i >= 0; i-- {
-		x = append(x, arr[i])
-	}
-	return x
+	temp := sha256.Sum256(data)
+	md := ripemd160.New()
+	io.WriteString(md, string(temp[:]))
+	assert.Equal(t, hd160, md.Sum(nil))
+
+	temp1 := sha256.Sum256(data)
+	data1 := sha256.Sum256(temp1[:])
+
+	engine.OpCode = HASH256
+	hd256 := Hash(data, engine)
+
+	assert.Equal(t, data1[:], hd256)
 }
