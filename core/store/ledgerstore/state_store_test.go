@@ -23,11 +23,11 @@ import (
 
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
+	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/states"
 	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/core/store/statestore"
-	"github.com/ontio/dad-go/core/types"
 )
 
 func TestContractState(t *testing.T) {
@@ -48,7 +48,7 @@ func TestContractState(t *testing.T) {
 		Description: "",
 	}
 
-	address := types.AddressFromVmCode(testCode)
+	address := common.AddressFromVmCode(testCode)
 	err = batch.TryGetOrAdd(
 		scommon.ST_CONTRACT,
 		address[:],
