@@ -19,12 +19,13 @@ package states
 
 import (
 	"bytes"
-	"github.com/ontio/dad-go/core/types"
 	"testing"
+
+	"github.com/ontio/dad-go/common"
 )
 
 func TestContract_Serialize_Deserialize(t *testing.T) {
-	addr := types.AddressFromVmCode([]byte{1})
+	addr := common.AddressFromVmCode([]byte{1})
 
 	c := &Contract{
 		Version: 0,

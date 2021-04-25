@@ -26,7 +26,6 @@ import (
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/states"
-	"github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/smartcontract/service/native"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 )
@@ -91,7 +90,7 @@ func putAllPk(srvc *native.NativeService, key []byte, val []*owner) error {
 	}
 	var v states.StorageItem
 	v.Value = buf.Bytes()
-	srvc.CloneCache.Add(common.ST_STORAGE, key, &v)
+	srvc.CacheDB.Put(key, v.ToArray())
 	return nil
 }
 
