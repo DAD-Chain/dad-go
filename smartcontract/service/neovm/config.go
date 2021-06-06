@@ -92,16 +92,16 @@ var (
 
 	STORAGECONTEXT_ASREADONLY_NAME = "System.StorageContext.AsReadOnly"
 
-	RUNTIME_GETTIME_NAME         = "System.Runtime.GetTime"
-	RUNTIME_CHECKWITNESS_NAME    = "System.Runtime.CheckWitness"
-	RUNTIME_NOTIFY_NAME          = "System.Runtime.Notify"
-	RUNTIME_LOG_NAME             = "System.Runtime.Log"
-	RUNTIME_GETTRIGGER_NAME      = "System.Runtime.GetTrigger"
-	RUNTIME_SERIALIZE_NAME       = "System.Runtime.Serialize"
-	RUNTIME_DESERIALIZE_NAME     = "System.Runtime.Deserialize"
-	RUNTIME_BASE58TOADDRESS_NAME = "dad-go.Runtime.Base58ToAddress"
-	RUNTIME_ADDRESSTOBASE58_NAME = "dad-go.Runtime.AddressToBase58"
-	RUNTIME_GETRANDOMHASH_NAME   = "dad-go.Runtime.GetRandomHash"
+	RUNTIME_GETTIME_NAME             = "System.Runtime.GetTime"
+	RUNTIME_CHECKWITNESS_NAME        = "System.Runtime.CheckWitness"
+	RUNTIME_NOTIFY_NAME              = "System.Runtime.Notify"
+	RUNTIME_LOG_NAME                 = "System.Runtime.Log"
+	RUNTIME_GETTRIGGER_NAME          = "System.Runtime.GetTrigger"
+	RUNTIME_SERIALIZE_NAME           = "System.Runtime.Serialize"
+	RUNTIME_DESERIALIZE_NAME         = "System.Runtime.Deserialize"
+	RUNTIME_BASE58TOADDRESS_NAME     = "dad-go.Runtime.Base58ToAddress"
+	RUNTIME_ADDRESSTOBASE58_NAME     = "dad-go.Runtime.AddressToBase58"
+	RUNTIME_GETCURRENTBLOCKHASH_NAME = "dad-go.Runtime.GetCurrentBlockHash"
 
 	NATIVE_INVOKE_NAME = "dad-go.Native.Invoke"
 
