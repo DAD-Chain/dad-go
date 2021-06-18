@@ -99,7 +99,7 @@ func sendRpcRequest(method string, params []interface{}) ([]byte, *dad-goError) 
 		return nil, Newdad-goError(fmt.Errorf("json.Unmarshal JsonRpcResponse:%s error:%s", body, err))
 	}
 	if rpcRsp.Error != 0 {
-		return nil, Newdad-goError(fmt.Errorf("%s", strings.ToLower(rpcRsp.Desc)), rpcRsp.Error)
+		return nil, Newdad-goError(fmt.Errorf("\n %s ", string(body)), rpcRsp.Error)
 	}
 	return rpcRsp.Result, nil
 }
