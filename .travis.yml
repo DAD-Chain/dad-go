@@ -1,9 +1,16 @@
 language: go
 
+go_import_path: github.com/ontio/dad-go
+
 install:
   - go get github.com/Masterminds/glide
   - glide install
-  - pwd
-  - echo $GOPATH
+
 go:
   - 1.9.x
+
+script:
+  - make
+  - bash ./.travis.gofmt.sh
+    #  - go test -v ./...
+        
