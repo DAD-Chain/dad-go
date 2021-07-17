@@ -37,6 +37,7 @@ import (
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	cstate "github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/vm/neovm"
 	"strings"
 	"time"
@@ -69,6 +70,13 @@ type ExecuteNotify struct {
 	State       byte
 	GasConsumed uint64
 	Notify      []NotifyEventInfo
+}
+
+type PreExecuteResult struct {
+	State  byte
+	Gas    uint64
+	Result interface{}
+	Notify []NotifyEventInfo
 }
 
 type NotifyEventInfo struct {
@@ -177,6 +185,14 @@ func GetExecuteNotify(obj *event.ExecuteNotify) (map[string]bool, ExecuteNotify)
 	}
 	txhash := obj.TxHash.ToHexString()
 	return contractAddrs, ExecuteNotify{txhash, obj.State, obj.GasConsumed, evts}
+}
+
+func ConvertPreExecuteResult(obj *cstate.PreExecResult) PreExecuteResult {
+	evts := []NotifyEventInfo{}
+	for _, v := range obj.Notify {
+		evts = append(evts, NotifyEventInfo{v.ContractAddress.ToHexString(), v.States})
+	}
+	return PreExecuteResult{obj.State, obj.Gas, obj.Result, evts}
 }
 
 func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
