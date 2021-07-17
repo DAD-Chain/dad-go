@@ -24,6 +24,7 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/errors"
+	"github.com/ontio/dad-go/smartcontract/event"
 )
 
 // Invoke smart contract struct
@@ -113,4 +114,5 @@ type PreExecResult struct {
 	State  byte
 	Gas    uint64
 	Result interface{}
+	Notify []*event.NotifyEventInfo
 }
