@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"strings"
 
+	com "github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
 )
 
@@ -145,9 +146,10 @@ type AppendHeaders struct {
 }
 
 type AppendBlock struct {
-	FromID    uint64       // The peer id
-	BlockSize uint32       // Block size
-	Block     *types.Block // Block to be added to the ledger
+	FromID     uint64       // The peer id
+	BlockSize  uint32       // Block size
+	Block      *types.Block // Block to be added to the ledger
+	MerkleRoot com.Uint256  // MerkleRoot
 }
 
 //ParseIPAddr return ip address
