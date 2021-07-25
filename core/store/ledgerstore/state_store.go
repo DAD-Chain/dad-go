@@ -23,9 +23,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 
 	"encoding/binary"
+
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
