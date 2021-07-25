@@ -21,6 +21,9 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/gosuri/uiprogress"
 	"github.com/ontio/dad-go/cmd/utils"
 	"github.com/ontio/dad-go/common/config"
@@ -30,8 +33,6 @@ import (
 	"github.com/ontio/dad-go/core/ledger"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/urfave/cli"
-	"io"
-	"os"
 )
 
 var ImportCommand = cli.Command{
@@ -157,9 +158,13 @@ func importBlocks(ctx *cli.Context) error {
 		if err != nil {
 			return fmt.Errorf("block height:%d deserialize error:%s", i, err)
 		}
-		err = ledger.DefLedger.AddBlock(block)
+		execResult, err := ledger.DefLedger.ExecuteBlock(block)
 		if err != nil {
-			return fmt.Errorf("add block height:%d error:%s", i, err)
+			return fmt.Errorf("block height:%d ExecuteBlock error:%s", i, err)
+		}
+		err = ledger.DefLedger.SubmitBlock(block, execResult)
+		if err != nil {
+			return fmt.Errorf("SubmitBlock block height:%d error:%s", i, err)
 		}
 		bar.Incr()
 	}
