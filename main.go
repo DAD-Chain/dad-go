@@ -142,6 +142,8 @@ func main() {
 func startdad-go(ctx *cli.Context) {
 	initLog(ctx)
 
+	log.Infof("dad-go version %s", config.Version)
+
 	_, err := initConfig(ctx)
 	if err != nil {
 		log.Errorf("initConfig error:%s", err)
