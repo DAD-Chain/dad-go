@@ -28,6 +28,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/fdlimit"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
 	alog "github.com/ontio/dad-go-eventbus/log"
@@ -143,6 +144,8 @@ func startdad-go(ctx *cli.Context) {
 	initLog(ctx)
 
 	log.Infof("dad-go version %s", config.Version)
+
+	setMaxOpenFiles()
 
 	cfg, err := initConfig(ctx)
 	if err != nil {
@@ -419,6 +422,19 @@ func logCurrBlockHeight() {
 				log.InitLog(int(config.DefConfig.Common.LogLevel), log.PATH, log.Stdout)
 			}
 		}
+	}
+}
+
+func setMaxOpenFiles() {
+	max, err := fdlimit.Maximum()
+	if err != nil {
+		log.Errorf("failed to get maximum open files:%v", err)
+		return
+	}
+	_, err = fdlimit.Raise(uint64(max))
+	if err != nil {
+		log.Errorf("failed to set maximum open files:%v", err)
+		return
 	}
 }
 
