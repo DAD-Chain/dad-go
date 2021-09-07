@@ -33,7 +33,6 @@ import (
 	scom "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/core/store/leveldbstore"
 	"github.com/ontio/dad-go/core/store/overlaydb"
-	"github.com/ontio/dad-go/core/store/statestore"
 	"github.com/ontio/dad-go/merkle"
 	"github.com/ontio/dad-go/smartcontract/service/native/ontid"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
@@ -230,11 +229,6 @@ func (self *StateStore) AddBlockMerkleTreeRoot(txRoot common.Uint256) error {
 //GetMerkleProof return merkle proof of block
 func (self *StateStore) GetMerkleProof(proofHeight, rootHeight uint32) ([]common.Uint256, error) {
 	return self.merkleTree.InclusionProof(proofHeight, rootHeight+1)
-}
-
-//NewStateBatch return state commit bathe. Usually using in smart contract execution
-func (self *StateStore) NewStateBatch() *statestore.StateBatch {
-	return statestore.NewStateStoreBatch(statestore.NewMemDatabase(), self.store)
 }
 
 func (self *StateStore) NewOverlayDB() *overlaydb.OverlayDB {

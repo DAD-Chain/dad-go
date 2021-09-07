@@ -19,10 +19,8 @@ package wasmvm
 
 import (
 	"bytes"
-
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/states"
-	scommon "github.com/ontio/dad-go/core/store/common"
 	"github.com/ontio/dad-go/errors"
 	"github.com/ontio/dad-go/vm/wasmvm/exec"
 	"github.com/ontio/dad-go/vm/wasmvm/memory"
@@ -54,7 +52,7 @@ func (this *WasmVmService) putstore(engine *exec.ExecutionEngine) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-	this.CloneCache.Add(scommon.ST_STORAGE, k, &states.StorageItem{Value: value})
+	this.CacheDB.Put(k, states.GenRawStorageItem(value))
 
 	vm.RestoreCtx()
 
@@ -78,7 +76,7 @@ func (this *WasmVmService) getstore(engine *exec.ExecutionEngine) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-	item, err := this.CloneCache.Get(scommon.ST_STORAGE, k)
+	item, err := this.CacheDB.Get(k)
 	if err != nil {
 		return false, err
 	}
@@ -90,7 +88,11 @@ func (this *WasmVmService) getstore(engine *exec.ExecutionEngine) (bool, error) 
 		}
 		return true, nil
 	}
-	idx, err := vm.SetPointerMemory(item.(*states.StorageItem).Value)
+	value, err := states.GetValueFromRawStorageItem(item)
+	if err != nil {
+		return false, err
+	}
+	idx, err := vm.SetPointerMemory(value)
 	if err != nil {
 		return false, err
 	}
@@ -122,7 +124,7 @@ func (this *WasmVmService) deletestore(engine *exec.ExecutionEngine) (bool, erro
 		return false, err
 	}
 
-	this.CloneCache.Delete(scommon.ST_STORAGE, k)
+	this.CacheDB.Delete(k)
 	vm.RestoreCtx()
 
 	return true, nil
