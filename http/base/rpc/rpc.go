@@ -16,7 +16,7 @@
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Package rpc privides functions to for rpc server call
+// Package rpc provides functions to for rpc server call
 package rpc
 
 import (
