@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
@@ -40,7 +39,6 @@ var (
 )
 
 func init() {
-	log.Init(log.PATH, log.Stdout)
 	topic = "TXN"
 
 	code := []byte("ont")

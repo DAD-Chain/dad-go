@@ -19,13 +19,14 @@
 package utils
 
 import (
+	"testing"
+
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/p2pserver/message/types"
 	"github.com/ontio/dad-go/p2pserver/net/netserver"
 	"github.com/ontio/dad-go/p2pserver/net/protocol"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func testHandler(data *types.MsgPayload, p2p p2p.P2P, pid *actor.PID, args ...interface{}) {

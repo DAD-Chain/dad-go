@@ -22,7 +22,9 @@ package txnpool
 
 import (
 	"fmt"
+
 	"github.com/ontio/dad-go-eventbus/actor"
+	"github.com/ontio/dad-go-eventbus/mailbox"
 	"github.com/ontio/dad-go/events"
 	"github.com/ontio/dad-go/events/message"
 	tc "github.com/ontio/dad-go/txnpool/common"
@@ -35,6 +37,7 @@ func startActor(obj interface{}, id string) (*actor.PID, error) {
 	props := actor.FromProducer(func() actor.Actor {
 		return obj.(actor.Actor)
 	})
+	props.WithMailbox(mailbox.BoundedDropping(tc.MAX_LIMITATION))
 
 	pid, _ := actor.SpawnNamed(props, id)
 	if pid == nil {
