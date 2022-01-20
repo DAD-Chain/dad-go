@@ -19,15 +19,14 @@
 package vbft
 
 import (
-	"os"
-	"testing"
-
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/genesis"
 	"github.com/ontio/dad-go/core/ledger"
+	"os"
+	"testing"
 )
 
 func newTestChainStore(t *testing.T) *ChainStore {
@@ -37,7 +36,7 @@ func newTestChainStore(t *testing.T) *ChainStore {
 	if acct == nil {
 		t.Fatalf("GetDefaultAccount error: acc is nil")
 	}
-
+	os.RemoveAll(config.DEFAULT_DATA_DIR)
 	db, err := ledger.NewLedger(config.DEFAULT_DATA_DIR, 0)
 	if err != nil {
 		t.Fatalf("NewLedger error %s", err)
