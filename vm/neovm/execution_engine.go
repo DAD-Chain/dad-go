@@ -22,13 +22,12 @@ import (
 	"github.com/ontio/dad-go/vm/neovm/errors"
 )
 
-func NewExecutionEngine(BlockHeight uint32) *ExecutionEngine {
+func NewExecutionEngine() *ExecutionEngine {
 	var engine ExecutionEngine
 	engine.EvaluationStack = NewRandAccessStack()
 	engine.AltStack = NewRandAccessStack()
 	engine.State = BREAK
 	engine.OpCode = 0
-	engine.BlockHeight = BlockHeight
 	return &engine
 }
 
@@ -38,7 +37,6 @@ type ExecutionEngine struct {
 	State           VMState
 	Contexts        []*ExecutionContext
 	Context         *ExecutionContext
-	BlockHeight     uint32
 	OpCode          OpCode
 	OpExec          OpExec
 }
@@ -67,7 +65,18 @@ func (this *ExecutionEngine) Execute() error {
 		if this.State == FAULT || this.State == HALT || this.State == BREAK {
 			break
 		}
-		err := this.StepInto()
+		err := this.ExecuteCode()
+		if err != nil {
+			break
+		}
+
+		err = this.ValidateOp()
+		if err != nil {
+			this.State = FAULT
+			return err
+		}
+
+		err = this.StepInto()
 		if err != nil {
 			return err
 		}
