@@ -28,15 +28,13 @@ type ExecutionContext struct {
 	Code               []byte
 	OpReader           *utils.VmReader
 	InstructionPointer int
-	engine             *ExecutionEngine
 }
 
-func NewExecutionContext(engine *ExecutionEngine, code []byte) *ExecutionContext {
+func NewExecutionContext(code []byte) *ExecutionContext {
 	var executionContext ExecutionContext
 	executionContext.Code = code
 	executionContext.OpReader = utils.NewVmReader(code)
 	executionContext.InstructionPointer = 0
-	executionContext.engine = engine
 	return &executionContext
 }
 
@@ -52,8 +50,18 @@ func (ec *ExecutionContext) NextInstruction() OpCode {
 	return OpCode(ec.Code[ec.OpReader.Position()])
 }
 
+func (self *ExecutionContext) ReadOpCode() (val OpCode, eof bool) {
+	code, err := self.OpReader.ReadByte()
+	if err != nil {
+		eof = true
+		return
+	}
+	val = OpCode(code)
+	return val, false
+}
+
 func (ec *ExecutionContext) Clone() *ExecutionContext {
-	executionContext := NewExecutionContext(ec.engine, ec.Code)
+	executionContext := NewExecutionContext(ec.Code)
 	executionContext.InstructionPointer = ec.InstructionPointer
 	executionContext.SetInstructionPointer(int64(ec.GetInstructionPointer()))
 	return executionContext
