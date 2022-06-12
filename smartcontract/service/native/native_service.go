@@ -20,7 +20,6 @@ package native
 
 import (
 	"fmt"
-
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
@@ -59,16 +58,16 @@ func (this *NativeService) Register(methodad-gome string, handler Handler) {
 	this.ServiceMap[methodad-gome] = handler
 }
 
-func (this *NativeService) Invoke() (interface{}, error) {
+func (this *NativeService) Invoke() ([]byte, error) {
 	contract := this.InvokeParam
 	services, ok := Contracts[contract.Address]
 	if !ok {
-		return false, fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
+		return BYTE_FALSE, fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
 	}
 	services(this)
 	service, ok := this.ServiceMap[contract.Method]
 	if !ok {
-		return false, fmt.Errorf("Native contract %x doesn't support this function %s.",
+		return BYTE_FALSE, fmt.Errorf("Native contract %x doesn't support this function %s.",
 			contract.Address, contract.Method)
 	}
 	args := this.Input
