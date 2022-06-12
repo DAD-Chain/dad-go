@@ -21,6 +21,7 @@ package neovm
 import (
 	"crypto/sha1"
 	"crypto/sha256"
+	"fmt"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/core/signature"
 	"github.com/ontio/dad-go/vm/neovm/errors"
@@ -891,24 +892,96 @@ func (self *Executor) ExecuteOp(opcode OpCode, context *ExecutionContext) (VMSta
 			data[i], data[j] = data[j], data[i]
 		}
 	case REMOVE:
-		mapVal, index, err := self.EvalStack.PopPair()
+		item, index, err := self.EvalStack.PopPair()
 		if err != nil {
 			return FAULT, err
 		}
-		value, err := mapVal.AsMapValue()
+		switch item.GetType() {
+		case types.MapType:
+			value, err := item.AsMapValue()
+			if err != nil {
+				return FAULT, err
+			}
+			err = value.Remove(index)
+			if err != nil {
+				return FAULT, err
+			}
+		case types.ArrayType:
+			value, err := item.AsArrayValue()
+			if err != nil {
+				return FAULT, err
+			}
+			i, err := index.AsInt64()
+			if err != nil {
+				return FAULT, err
+			}
+			err = value.RemoveAt(i)
+			if err != nil {
+				return FAULT, err
+			}
+		default:
+			return FAULT, fmt.Errorf("[REMOVE] not support datatype")
+		}
+	case HASKEY:
+		item, key, err := self.EvalStack.PopPair()
 		if err != nil {
 			return FAULT, err
 		}
-
-		err = value.Remove(index)
+		mapValue, err := item.AsMapValue()
 		if err != nil {
 			return FAULT, err
 		}
-		/*
-			HASKEY    OpCode = 0xCB
-			KEYS      OpCode = 0xCC
-			VALUES    OpCode = 0xCD
-		*/
+		_, ok, err := mapValue.Get(key)
+		if err != nil {
+			return FAULT, err
+		}
+		err = self.EvalStack.Push(types.VmValueFromBool(ok))
+		if err != nil {
+			return FAULT, err
+		}
+	case KEYS:
+		item, err := self.EvalStack.Pop()
+		if err != nil {
+			return FAULT, err
+		}
+		mapValue, err := item.AsMapValue()
+		if err != nil {
+			return FAULT, err
+		}
+		keys, err := mapValue.GetMapSortedKey()
+		if err != nil {
+			return FAULT, err
+		}
+		arr := types.NewArrayValue()
+		for _, v := range keys {
+			t, err := types.VmValueFromBytes([]byte(v))
+			if err != nil {
+				return FAULT, err
+			}
+			arr.Append(t)
+		}
+		err = self.EvalStack.Push(types.VmValueFromArrayVal(arr))
+		if err != nil {
+			return FAULT, err
+		}
+	case VALUES:
+		item, err := self.EvalStack.Pop()
+		if err != nil {
+			return FAULT, err
+		}
+		mapVal, err := item.AsMapValue()
+		if err != nil {
+			return FAULT, err
+		}
+		vals, err := mapVal.GetValues()
+		arr := types.NewArrayValue()
+		for _, v := range vals {
+			arr.Append(v)
+		}
+		err = self.EvalStack.Push(types.VmValueFromArrayVal(arr))
+		if err != nil {
+			return FAULT, err
+		}
 	case THROW:
 		return FAULT, nil
 	case THROWIFNOT:
