@@ -22,7 +22,6 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/vm/neovm/types"
 )
 
 // ContextRef is a interface of smart context
@@ -45,7 +44,7 @@ type ContextRef interface {
 }
 
 type Engine interface {
-	Invoke() (*types.VmValue, error)
+	Invoke() (interface{}, error)
 }
 
 // Context describe smart contract execute context struct
