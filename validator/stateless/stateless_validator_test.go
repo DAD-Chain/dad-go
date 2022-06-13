@@ -19,18 +19,19 @@ package stateless
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go-eventbus/actor"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common/log"
+	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/signature"
 	ctypes "github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/core/utils"
 	"github.com/ontio/dad-go/errors"
 	types2 "github.com/ontio/dad-go/validator/types"
 	"github.com/stretchr/testify/assert"
-	"time"
 )
 
 func signTransaction(signer *account.Account, tx *ctypes.MutableTransaction) error {
@@ -50,7 +51,7 @@ func TestStatelessValidator(t *testing.T) {
 
 	code := []byte{1, 2, 3}
 
-	mutable := utils.NewDeployTransaction(code, "test", "1", "author", "author@123.com", "test desp", false)
+	mutable := utils.NewDeployTransaction(code, "test", "1", "author", "author@123.com", "test desp", payload.NEOVM_TYPE)
 
 	mutable.Payer = acc.Address
 
