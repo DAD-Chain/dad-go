@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/ontio/dad-go/common"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract"
 	"github.com/ontio/dad-go/vm/neovm"
 	"github.com/stretchr/testify/assert"
@@ -45,7 +46,7 @@ func TestConvertNeoVmTypeHexString(t *testing.T) {
 		Config: config,
 		Gas:    100000,
 	}
-	engine, err := sc.NewExecuteEngine(hex)
+	engine, err := sc.NewExecuteEngine(hex, types.InvokeNeo)
 
 	_, err = engine.Invoke()
 

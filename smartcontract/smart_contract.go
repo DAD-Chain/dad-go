@@ -28,12 +28,13 @@ import (
 	"github.com/ontio/dad-go/smartcontract/event"
 	"github.com/ontio/dad-go/smartcontract/service/native"
 	"github.com/ontio/dad-go/smartcontract/service/neovm"
+	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
 	"github.com/ontio/dad-go/smartcontract/storage"
 	vm "github.com/ontio/dad-go/vm/neovm"
 )
 
 const (
-	MAX_EXECUTE_ENGINE = 1024
+	MAX_EXECUTE_ENGINE = 128
 )
 
 // SmartContract describe smart contract execute engine
@@ -123,23 +124,43 @@ func (this *SmartContract) checkContexts() bool {
 
 // Execute is smart contract execute manager
 // According different vm type to launch different service
-func (this *SmartContract) NewExecuteEngine(code []byte) (context.Engine, error) {
+func (this *SmartContract) NewExecuteEngine(code []byte, txtype ctypes.TransactionType) (context.Engine, error) {
 	if !this.checkContexts() {
 		return nil, fmt.Errorf("%s", "engine over max limit!")
 	}
-	service := &neovm.NeoVmService{
-		Store:      this.Store,
-		CacheDB:    this.CacheDB,
-		ContextRef: this,
+
+	var service context.Engine
+	if txtype == ctypes.InvokeNeo {
+
+		service = &neovm.NeoVmService{
+			Store:      this.Store,
+			CacheDB:    this.CacheDB,
+			ContextRef: this,
 		GasTable:   this.GasTable,
-		Code:       code,
-		Tx:         this.Config.Tx,
-		Time:       this.Config.Time,
-		Height:     this.Config.Height,
-		BlockHash:  this.Config.BlockHash,
+			Code:       code,
+			Tx:         this.Config.Tx,
+			Time:       this.Config.Time,
+			Height:     this.Config.Height,
+			BlockHash:  this.Config.BlockHash,
 		Engine:     vm.NewExecutor(code),
-		PreExec:    this.PreExec,
+			PreExec:    this.PreExec,
+		}
 	}
+	if txtype == ctypes.InvokeWasm {
+		service = &wasmvm.WasmVmService{
+			Store:      this.Store,
+			CacheDB:    this.CacheDB,
+			ContextRef: this,
+			Code:       code,
+			Tx:         this.Config.Tx,
+			Time:       this.Config.Time,
+			Height:     this.Config.Height,
+			BlockHash:  this.Config.BlockHash,
+			PreExec:    this.PreExec,
+			GasLimit:   this.Gas,
+		}
+	}
+
 	return service, nil
 }
 
