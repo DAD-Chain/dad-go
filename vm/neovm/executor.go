@@ -179,6 +179,17 @@ func (self *Executor) ExecuteOp(opcode OpCode, context *ExecutionContext) (VMSta
 		if needJmp {
 			context.SetInstructionPointer(int64(offset))
 		}
+	case DCALL:
+		caller := context.Clone()
+		self.PushContext(caller)
+		target, err := self.EvalStack.PopAsInt64()
+		if err != nil {
+			return FAULT, err
+		}
+		if target < 0 || target >= int64(len(self.Context.Code)) {
+			return FAULT, errors.ERR_DCALL_OFFSET_ERROR
+		}
+		self.Context.SetInstructionPointer(target)
 	case RET:
 		self.Context, _ = self.PopContext()
 
@@ -188,7 +199,6 @@ func (self *Executor) ExecuteOp(opcode OpCode, context *ExecutionContext) (VMSta
 				SYSCALL  OpCode = 0x68
 		*/
 		// Stack
-
 	case DUPFROMALTSTACK:
 		val, err := self.AltStack.Peek(0)
 		if err != nil {
@@ -876,11 +886,17 @@ func (self *Executor) ExecuteOp(opcode OpCode, context *ExecutionContext) (VMSta
 		if err != nil {
 			return FAULT, err
 		}
-		array, err := self.EvalStack.PopAsArray()
-		if err != nil {
-			return FAULT, err
+		val, err := self.EvalStack.Pop()
+		switch val.GetType() {
+		case types.StructType:
+			array, _ := val.AsStructValue()
+			array.Append(item)
+		case types.ArrayType:
+			array, _ := val.AsArrayValue()
+			array.Append(item)
+		default:
+			return FAULT, fmt.Errorf("[executor] ExecuteOp APPEND error, unknown datatype")
 		}
-		array.Append(item)
 	case REVERSE:
 		array, err := self.EvalStack.PopAsArray()
 		if err != nil {

@@ -34,7 +34,7 @@ type VmValue struct {
 	integer   int64
 	bigInt    *big.Int
 	byteArray []byte
-	structval StructValue
+	structval *StructValue
 	array     *ArrayValue
 	mapval    *MapValue
 	interop   InteropValue
@@ -86,7 +86,7 @@ func VmValueFromArrayVal(array *ArrayValue) VmValue {
 	return VmValue{valType: arrayType, array: array}
 }
 
-func VmValueFromStructVal(val StructValue) VmValue {
+func VmValueFromStructVal(val *StructValue) VmValue {
 	return VmValue{valType: structType, structval: val}
 }
 
@@ -327,7 +327,7 @@ func (self *VmValue) Deserialize(source *common.ZeroCopySource) error {
 			if err != nil {
 				return err
 			}
-			structValue = structValue.Append(v)
+			structValue.Append(v)
 		}
 		*self = VmValueFromStructVal(structValue)
 	default:
@@ -541,12 +541,12 @@ func (self *VmValue) AsMapValue() (*MapValue, error) {
 	}
 }
 
-func (self *VmValue) AsStructValue() (StructValue, error) {
+func (self *VmValue) AsStructValue() (*StructValue, error) {
 	switch self.valType {
 	case structType:
 		return self.structval, nil
 	default:
-		return StructValue{}, errors.ERR_BAD_TYPE
+		return nil, errors.ERR_BAD_TYPE
 	}
 }
 
@@ -679,7 +679,7 @@ func (self *VmValue) dump() string {
 	case bigintType:
 		return fmt.Sprintf("int(%d)", self.bigInt)
 	case bytearrayType:
-		return fmt.Sprintf("bytes(hex:%d)", self.byteArray)
+		return fmt.Sprintf("bytes(hex:%x)", self.byteArray)
 	case arrayType:
 		data := ""
 		for _, v := range self.array.Data {
@@ -704,6 +704,8 @@ func (self *VmValue) dump() string {
 			data += v.dump() + ", "
 		}
 		return fmt.Sprintf("struct[%d]{%s}", len(self.structval.Data), data)
+	case interopType:
+		return fmt.Sprintf("interop[%x]", self.interop.Data)
 	default:
 		panic("unreacheable!")
 	}
