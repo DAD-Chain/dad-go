@@ -24,6 +24,7 @@ import (
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/signature"
+	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/smartcontract"
 	svm "github.com/ontio/dad-go/smartcontract/service/neovm"
 	"github.com/ontio/dad-go/vm/neovm"
@@ -78,7 +79,7 @@ func TestVerifySig(t *testing.T) {
 		Config: config,
 		Gas:    100000,
 	}
-	engine, err := sc.NewExecuteEngine(hex)
+	engine, err := sc.NewExecuteEngine(hex, types.InvokeNeo)
 
 	if err != nil {
 		t.Fatal("hex to byte error:", err)
