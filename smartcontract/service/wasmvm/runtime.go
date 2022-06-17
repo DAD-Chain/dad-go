@@ -30,7 +30,6 @@ import (
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/context"
 	"github.com/ontio/dad-go/smartcontract/event"
 	native2 "github.com/ontio/dad-go/smartcontract/service/native"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
@@ -235,12 +234,6 @@ func CallContract(proc *exec.Process, contractAddr uint32, inputPtr uint32, inpu
 		panic(err)
 	}
 
-	currentCtx := &context.Context{
-		Code:            self.Service.Code,
-		ContractAddress: self.Service.ContextRef.CurrentContext().ContractAddress,
-	}
-	self.Service.ContextRef.PushContext(currentCtx)
-
 	var result []byte
 
 	switch contracttype {
@@ -331,7 +324,6 @@ func CallContract(proc *exec.Process, contractAddr uint32, inputPtr uint32, inpu
 	default:
 		panic(errors.NewErr("Not a supported contract type"))
 	}
-	self.Service.ContextRef.PopContext()
 
 	self.CallOutPut = result
 	return uint32(len(self.CallOutPut))
