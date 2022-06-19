@@ -30,6 +30,7 @@ import (
 	"github.com/ontio/dad-go/core/signature"
 	"github.com/ontio/dad-go/core/types"
 	ontErrors "github.com/ontio/dad-go/errors"
+	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
 )
 
 // VerifyTransaction verifys received single transaction
@@ -114,6 +115,11 @@ func checkTransactionPayload(tx *types.Transaction) error {
 
 	switch pld := tx.Payload.(type) {
 	case *payload.DeployCode:
+		deploy := tx.Payload.(*payload.DeployCode)
+		_, err := wasmvm.ReadWasmModule(deploy, true)
+		if deploy.VmType == payload.WASMVM_TYPE && err != nil {
+			return err
+		}
 		return nil
 	case *payload.InvokeCode:
 		return nil
