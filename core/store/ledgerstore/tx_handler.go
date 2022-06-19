@@ -41,6 +41,7 @@ import (
 	"github.com/ontio/dad-go/smartcontract/service/native/ont"
 	"github.com/ontio/dad-go/smartcontract/service/native/utils"
 	"github.com/ontio/dad-go/smartcontract/service/neovm"
+	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
 	"github.com/ontio/dad-go/smartcontract/storage"
 )
 
@@ -53,6 +54,11 @@ func (self *StateStore) HandleDeployTransaction(store store.LedgerStore, overlay
 		gasConsumed uint64
 		err         error
 	)
+
+	_, err = wasmvm.ReadWasmModule(deploy, true)
+	if deploy.VmType == payload.WASMVM_TYPE && err != nil {
+		return err
+	}
 
 	if tx.GasPrice != 0 {
 		// init smart contract configuration info
