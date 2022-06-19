@@ -17,27 +17,26 @@
  */
 package wasmvm
 
-import "testing"
+var (
+	TIME_STAMP_GAS       uint64 = 1
+	BLOCK_HEGHT_GAS      uint64 = 1
+	SELF_ADDRESS_GAS     uint64 = 1
+	CALLER_ADDRESS_GAS   uint64 = 1
+	ENTRY_ADDRESS_GAS    uint64 = 1
+	CHECKWITNESS_GAS     uint64 = 200
+	CALL_CONTRACT_GAS    uint64 = 10
+	CONTRACT_CREATE_GAS  uint64 = 20000000
+	CONTRACT_MIGRATE_GAS uint64 = 20000000
+	NATIVE_INVOKE_GAS    uint64 = 1000
 
-func TestNewWasmStateMachine(t *testing.T) {
-	sm := NewWasmStateMachine()
-	if sm == nil {
-		t.Fatal("NewWasmStateMachine should return a non nil state machine")
-	}
+	CURRENT_BLOCK_HASH_GAS uint64 = 100
+	CURRENT_TX_HASH_GAS    uint64 = 100
 
-	if sm.WasmStateReader == nil {
-		t.Fatal("NewWasmStateMachine should return a non nil state reader")
-	}
+	STORAGE_GET_GAS          uint64 = 200
+	STORAGE_PUT_GAS          uint64 = 4000
+	STORAGE_DELETE_GAS       uint64 = 100
+	UINT_DEPLOY_CODE_LEN_GAS uint64 = 200000
+	PER_UNIT_CODE_LEN        uint64 = 1024
 
-	if !sm.Exists("ContractLogDebug") {
-		t.Error("NewWasmStateMachine should has ContractLogDebug service")
-	}
-
-	if !sm.Exists("ContractLogInfo") {
-		t.Error("NewWasmStateMachine should has ContractLogInfo service")
-	}
-
-	if !sm.Exists("ContractLogError") {
-		t.Error("NewWasmStateMachine should has ContractLogError service")
-	}
-}
+	SHA256_GAS uint64 = 10
+)
