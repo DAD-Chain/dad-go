@@ -21,7 +21,6 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/ontio/dad-go/smartcontract/states"
 	"math"
 	"math/big"
 	"reflect"
@@ -30,9 +29,11 @@ import (
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
-	neovm "github.com/ontio/dad-go/smartcontract/service/neovm"
+	"github.com/ontio/dad-go/smartcontract/states"
 	vm "github.com/ontio/dad-go/vm/neovm"
 )
+
+const NATIVE_INVOKE_NAME = "dad-go.Native.Invoke" // copy from smartcontract/service/neovm/config.go to avoid cycle dependences
 
 // NewDeployTransaction returns a deploy Transaction
 func NewDeployTransaction(code []byte, name, version, author, email, desp string, vmType byte) *types.MutableTransaction {
@@ -74,7 +75,7 @@ func Buildad-gotiveTransaction(addr common.Address, initMethod string, args []by
 	builder.EmitPushByteArray(addr[:])
 	builder.EmitPushInteger(big.NewInt(0))
 	builder.Emit(vm.SYSCALL)
-	builder.EmitPushByteArray([]byte(neovm.NATIVE_INVOKE_NAME))
+	builder.EmitPushByteArray([]byte(NATIVE_INVOKE_NAME))
 
 	tx := NewInvokeTransaction(builder.ToArray())
 	tx.GasLimit = math.MaxUint64
@@ -91,8 +92,20 @@ func Buildad-gotiveInvokeCode(contractAddress common.Address, version byte, meth
 	builder.EmitPushByteArray(contractAddress[:])
 	builder.EmitPushInteger(new(big.Int).SetInt64(int64(version)))
 	builder.Emit(vm.SYSCALL)
-	builder.EmitPushByteArray([]byte(neovm.NATIVE_INVOKE_NAME))
+	builder.EmitPushByteArray([]byte(NATIVE_INVOKE_NAME))
 	return builder.ToArray(), nil
+}
+
+//BuildNeoVMInvokeCode build NeoVM Invoke code for params
+func BuildNeoVMInvokeCode(smartContractAddress common.Address, params []interface{}) ([]byte, error) {
+	builder := vm.NewParamsBuilder(new(bytes.Buffer))
+	err := BuildNeoVMParam(builder, params)
+	if err != nil {
+		return nil, err
+	}
+	args := append(builder.ToArray(), 0x67)
+	args = append(args, smartContractAddress[:]...)
+	return args, nil
 }
 
 //buildNeoVMParamInter build neovm invoke param code
@@ -189,7 +202,6 @@ func BuildWasmVMInvokeCode(contractAddress common.Address, params []interface{})
 	sink := common.NewZeroCopySink(nil)
 	contract.Serialization(sink)
 	return sink.Bytes(), nil
-
 }
 
 //build param bytes for wasm contract
@@ -200,15 +212,15 @@ func BuildWasmContractParam(params []interface{}) ([]byte, error) {
 		case string:
 			bf.WriteString(val)
 		case int:
-			bf.WriteU128(common.U128FromInt64(int64(val)))
+			bf.WriteI128(common.I128FromInt64(int64(val)))
 		case int64:
-			bf.WriteU128(common.U128FromInt64(int64(val)))
+			bf.WriteI128(common.I128FromInt64(int64(val)))
 		case uint16:
-			bf.WriteU128(common.U128FromUint64(uint64(val)))
+			bf.WriteI128(common.I128FromUint64(uint64(val)))
 		case uint32:
-			bf.WriteU128(common.U128FromUint64(uint64(val)))
+			bf.WriteI128(common.I128FromUint64(uint64(val)))
 		case uint64:
-			bf.WriteU128(common.U128FromUint64(uint64(val)))
+			bf.WriteI128(common.I128FromUint64(uint64(val)))
 		case []byte:
 			bf.WriteVarBytes(val)
 		case common.Uint256:
@@ -217,6 +229,8 @@ func BuildWasmContractParam(params []interface{}) ([]byte, error) {
 			bf.WriteAddress(val)
 		case byte:
 			bf.WriteByte(val)
+		case bool:
+			bf.WriteBool(val)
 		case []interface{}:
 			value, err := BuildWasmContractParam(val)
 			if err != nil {

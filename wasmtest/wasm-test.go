@@ -169,6 +169,7 @@ func main() {
 	config.DefConfig.Genesis.ConsensusType = "solo"
 	config.DefConfig.Genesis.SOLO.GenBlockTime = 3
 	config.DefConfig.Genesis.SOLO.Bookkeepers = []string{hex.EncodeToString(buf)}
+	config.DefConfig.P2PNode.NetworkId = 0
 
 	bookkeepers := []keypair.PublicKey{acct.PublicKey}
 	//Init event hub
@@ -288,6 +289,10 @@ func checkExecResult(testCase common3.TestCase, result *states.PreExecResult, ex
 			exp, err := utils2.BuildWasmContractParam(expect)
 			checkErr(err)
 			assertEq(ret, hex.EncodeToString(exp))
+		}
+		if len(testCase.Notify) != 0 {
+			js, _ := json.Marshal(result.Notify)
+			assertEq(true, strings.Contains(string(js), testCase.Notify))
 		}
 	}
 }
