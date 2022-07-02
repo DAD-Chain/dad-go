@@ -15,26 +15,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-package util
+
+package crossvm_codec
 
 import (
-	"errors"
+	"bytes"
+
 	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/core/utils"
-	"github.com/ontio/dad-go/vm/crossvm_codec"
 )
 
-//create paramters for neovm contract
-func CreateNeoInvokeParam(contractAddress common.Address, input []byte) ([]byte, error) {
-	params, err := crossvm_codec.DeserializeCallParam(input)
-	if err != nil {
-		return nil, err
+//input byte array should be the following format
+// version(1byte) + type(1byte) + data...
+func DeserializeCallParam(input []byte) (interface{}, error) {
+	if bytes.HasPrefix(input, []byte{0}) == false {
+		return nil, ERROR_PARAM_FORMAT
 	}
 
-	list, ok := params.([]interface{})
-	if ok == false {
-		return nil, errors.New("invoke neovm param is not list type")
-	}
-
-	return utils.BuildNeoVMInvokeCode(contractAddress, list)
+	source := common.NewZeroCopySource(input[1:])
+	return DecodeValue(source)
 }
