@@ -79,8 +79,12 @@ func ContractCreate(proc *exec.Process,
 		panic(err)
 	}
 
-	_, err = ReadWasmModule(dep, true)
-	if dep.VmType() == payload.WASMVM_TYPE && err != nil {
+	if dep.VmType() != payload.WASMVM_TYPE {
+		panic("[Contract] expect WASMVM_TYPE. get NEOVM_TYPE")
+	}
+
+	_, err = ReadWasmModule(dep.Code, true)
+	if err != nil {
 		panic(err)
 	}
 
@@ -89,10 +93,7 @@ func ContractCreate(proc *exec.Process,
 		panic(errors.NewErr("contract has been deployed"))
 	}
 
-	err = self.Service.CacheDB.PutContract(dep)
-	if err != nil {
-		panic(err)
-	}
+	self.Service.CacheDB.PutContract(dep)
 
 	length, err := proc.WriteAt(contractAddr[:], int64(newAddressPtr))
 	return uint32(length)
@@ -155,8 +156,12 @@ func ContractMigrate(proc *exec.Process,
 		panic(err)
 	}
 
-	_, err = ReadWasmModule(dep, true)
-	if dep.VmType() == payload.WASMVM_TYPE && err != nil {
+	if dep.VmType() != payload.WASMVM_TYPE {
+		panic("[Contract] expect WASMVM_TYPE. get NEOVM_TYPE")
+	}
+
+	_, err = ReadWasmModule(dep.Code, true)
+	if err != nil {
 		panic(err)
 	}
 
@@ -166,10 +171,7 @@ func ContractMigrate(proc *exec.Process,
 	}
 	oldAddress := self.Service.ContextRef.CurrentContext().ContractAddress
 
-	err = self.Service.CacheDB.PutContract(dep)
-	if err != nil {
-		panic(err)
-	}
+	self.Service.CacheDB.PutContract(dep)
 	self.Service.CacheDB.DeleteContract(oldAddress)
 
 	iter := self.Service.CacheDB.NewIterator(oldAddress[:])
