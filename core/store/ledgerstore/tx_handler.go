@@ -25,7 +25,7 @@ import (
 	"strconv"
 
 	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
+	sysconfig "github.com/ontio/dad-go/common/config"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/payload"
@@ -197,12 +197,13 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, overlay
 
 	//init smart contract info
 	sc := smartcontract.SmartContract{
-		Config:   config,
-		CacheDB:  cache,
-		Store:    store,
-		GasTable: gasTable,
-		Gas:      availableGasLimit - codeLenGasLimit,
-		PreExec:  false,
+		Config:       config,
+		CacheDB:      cache,
+		Store:        store,
+		GasTable:     gasTable,
+		Gas:          availableGasLimit - codeLenGasLimit,
+		WasmExecStep: sysconfig.DEFAULT_WASM_MAX_STEPCOUNT,
+		PreExec:      false,
 	}
 
 	//start the smart contract executive function
@@ -254,7 +255,7 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, overlay
 }
 
 func SaveNotify(eventStore scommon.EventStore, txHash common.Uint256, notify *event.ExecuteNotify) error {
-	if !config.DefConfig.Common.EnableEventLog {
+	if !sysconfig.DefConfig.Common.EnableEventLog {
 		return nil
 	}
 	if err := eventStore.SaveEventNotifyByTx(txHash, notify); err != nil {
