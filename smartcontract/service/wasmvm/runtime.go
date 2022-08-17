@@ -27,7 +27,6 @@ import (
 	"github.com/go-interpreter/wagon/wasm"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/common/serialization"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/core/types"
 	"github.com/ontio/dad-go/errors"
@@ -38,6 +37,7 @@ import (
 	"github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/vm/crossvm_codec"
 	neotypes "github.com/ontio/dad-go/vm/neovm/types"
+	"io"
 )
 
 type ContractType byte
@@ -259,20 +259,25 @@ func CallContract(proc *exec.Process, contractAddr uint32, inputPtr uint32, inpu
 
 	switch contracttype {
 	case NATIVE_CONTRACT:
-		bf := bytes.NewBuffer(inputs)
-		ver, err := serialization.ReadByte(bf)
-		if err != nil {
-			panic(err)
+		source := common.NewZeroCopySource(inputs)
+		ver, eof := source.NextByte()
+		if eof {
+			panic(io.ErrUnexpectedEOF)
+		}
+		method, _, irregular, eof := source.NextString()
+		if irregular {
+			panic(common.ErrIrregularData)
+		}
+		if eof {
+			panic(io.ErrUnexpectedEOF)
 		}
 
-		method, err := serialization.ReadString(bf)
-		if err != nil {
-			panic(err)
+		args, _, irregular, eof := source.NextVarBytes()
+		if irregular {
+			panic(common.ErrIrregularData)
 		}
-
-		args, err := serialization.ReadVarBytes(bf)
-		if err != nil {
-			panic(err)
+		if eof {
+			panic(io.ErrUnexpectedEOF)
 		}
 
 		contract := states.ContractInvokeParam{
@@ -302,10 +307,9 @@ func CallContract(proc *exec.Process, contractAddr uint32, inputPtr uint32, inpu
 
 	case WASMVM_CONTRACT:
 		conParam := states.WasmContractParam{Address: contractAddress, Args: inputs}
-		sink := common.NewZeroCopySink(nil)
-		conParam.Serialization(sink)
+		param := common.SerializeToBytes(&conParam)
 
-		newservice, err := self.Service.ContextRef.NewExecuteEngine(sink.Bytes(), types.InvokeWasm)
+		newservice, err := self.Service.ContextRef.NewExecuteEngine(param, types.InvokeWasm)
 		if err != nil {
 			panic(err)
 		}
