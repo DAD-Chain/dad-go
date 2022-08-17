@@ -15,23 +15,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
  */
-package states
+package common
 
-import (
-	"github.com/ontio/dad-go/common"
-	"testing"
-)
+type Serializable interface {
+	Serialization(sink *ZeroCopySink)
+}
 
-func TestStateBase_Serialize_Deserialize(t *testing.T) {
-
-	st := &StateBase{byte(1)}
-
-	bf := common.NewZeroCopySink(nil)
-	st.Serialization(bf)
-
-	var st2 = new(StateBase)
-	source := common.NewZeroCopySource(bf.Bytes())
-	if err := st2.Deserialization(source); err != nil {
-		t.Fatalf("StateBase deserialize error: %v", err)
+func SerializeToBytes(values ...Serializable) []byte {
+	sink := NewZeroCopySink(nil)
+	for _, val := range values {
+		val.Serialization(sink)
 	}
+
+	return sink.Bytes()
 }
