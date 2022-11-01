@@ -52,6 +52,7 @@ type NativeService struct {
 	Time          uint32
 	BlockHash     common.Uint256
 	ContextRef    context.ContextRef
+	PreExec       bool
 }
 
 func (this *NativeService) Register(methodad-gome string, handler Handler) {
