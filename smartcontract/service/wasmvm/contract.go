@@ -19,10 +19,10 @@
 package wasmvm
 
 import (
-	"github.com/go-interpreter/wagon/exec"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/core/payload"
 	"github.com/ontio/dad-go/errors"
+	"github.com/ontio/wagon/exec"
 )
 
 func ContractCreate(proc *exec.Process,
