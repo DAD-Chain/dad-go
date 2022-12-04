@@ -23,8 +23,6 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/go-interpreter/wagon/exec"
-	"github.com/go-interpreter/wagon/wasm"
 	"github.com/ontio/dad-go/common"
 	"github.com/ontio/dad-go/common/log"
 	"github.com/ontio/dad-go/core/payload"
@@ -37,6 +35,8 @@ import (
 	"github.com/ontio/dad-go/smartcontract/states"
 	"github.com/ontio/dad-go/vm/crossvm_codec"
 	neotypes "github.com/ontio/dad-go/vm/neovm/types"
+	"github.com/ontio/wagon/exec"
+	"github.com/ontio/wagon/wasm"
 	"io"
 )
 

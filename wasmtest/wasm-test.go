@@ -31,8 +31,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/go-interpreter/wagon/exec"
-	"github.com/go-interpreter/wagon/wasm"
 	"github.com/ontio/dad-go-crypto/keypair"
 	"github.com/ontio/dad-go/account"
 	"github.com/ontio/dad-go/cmd/utils"
@@ -52,6 +50,8 @@ import (
 	"github.com/ontio/dad-go/smartcontract/states"
 	vmtypes "github.com/ontio/dad-go/vm/neovm/types"
 	common3 "github.com/ontio/dad-go/wasmtest/common"
+	"github.com/ontio/wagon/exec"
+	"github.com/ontio/wagon/wasm"
 )
 
 const contractDir = "testwasmdata"
