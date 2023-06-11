@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 package wasmvm
 
@@ -21,32 +21,25 @@ import (
 	"errors"
 	"math"
 
-	"github.com/ontio/dad-go/core/states"
+	"github.com/ontio/ontology/core/states"
 	"github.com/ontio/wagon/exec"
 )
 
-func StorageRead(proc *exec.Process, keyPtr uint32, klen uint32, val uint32, vlen uint32, offset uint32) uint32 {
-	self := proc.HostData().(*Runtime)
-	self.checkGas(STORAGE_GET_GAS)
-	keybytes, err := ReadWasmMemory(proc, keyPtr, klen)
-	if err != nil {
-		panic(err)
-	}
+func storageRead(service *WasmVmService, keybytes []byte, klen uint32, vlen uint32, offset uint32) ([]byte, uint32, error) {
+	key := serializeStorageKey(service.ContextRef.CurrentContext().ContractAddress, keybytes)
 
-	key := serializeStorageKey(self.Service.ContextRef.CurrentContext().ContractAddress, keybytes)
-
-	raw, err := self.Service.CacheDB.Get(key)
+	raw, err := service.CacheDB.Get(key)
 	if err != nil {
-		panic(err)
+		return []byte{}, 0, err
 	}
 
 	if raw == nil {
-		return math.MaxUint32
+		return []byte{}, math.MaxUint32, nil
 	}
 
 	item, err := states.GetValueFromRawStorageItem(raw)
 	if err != nil {
-		panic(err)
+		return []byte{}, 0, err
 	}
 
 	length := vlen
@@ -56,14 +49,34 @@ func StorageRead(proc *exec.Process, keyPtr uint32, klen uint32, val uint32, vle
 	}
 
 	if uint32(len(item)) < offset {
-		panic(errors.New("offset is invalid"))
+		return []byte{}, 0, errors.New("offset is invalid")
 	}
-	_, err = proc.WriteAt(item[offset:offset+length], int64(val))
 
+	return item[offset : offset+length], uint32(len(item)), nil
+}
+
+func StorageRead(proc *exec.Process, keyPtr uint32, klen uint32, val uint32, vlen uint32, offset uint32) uint32 {
+	self := proc.HostData().(*Runtime)
+	self.checkGas(STORAGE_GET_GAS)
+	keybytes, err := ReadWasmMemory(proc, keyPtr, klen)
 	if err != nil {
 		panic(err)
 	}
-	return uint32(len(item))
+
+	itemWrite, originLen, err := storageRead(self.Service, keybytes, klen, vlen, offset)
+	if err != nil {
+		panic(err)
+	}
+
+	if originLen != math.MaxUint32 {
+		_, err = proc.WriteAt(itemWrite[:], int64(val))
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return originLen
 }
 
 func StorageWrite(proc *exec.Process, keyPtr uint32, keyLen uint32, valPtr uint32, valLen uint32) {

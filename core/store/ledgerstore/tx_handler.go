@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package ledgerstore
@@ -24,24 +24,24 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/ontio/dad-go/common"
-	sysconfig "github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/store"
-	scommon "github.com/ontio/dad-go/core/store/common"
-	"github.com/ontio/dad-go/core/store/overlaydb"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract"
-	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/service/native/global_params"
-	ninit "github.com/ontio/dad-go/smartcontract/service/native/init"
-	"github.com/ontio/dad-go/smartcontract/service/native/ont"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
-	"github.com/ontio/dad-go/smartcontract/service/neovm"
-	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
-	"github.com/ontio/dad-go/smartcontract/storage"
+	"github.com/ontio/ontology/common"
+	sysconfig "github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/store"
+	scommon "github.com/ontio/ontology/core/store/common"
+	"github.com/ontio/ontology/core/store/overlaydb"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/errors"
+	"github.com/ontio/ontology/smartcontract"
+	"github.com/ontio/ontology/smartcontract/event"
+	"github.com/ontio/ontology/smartcontract/service/native/global_params"
+	ninit "github.com/ontio/ontology/smartcontract/service/native/init"
+	"github.com/ontio/ontology/smartcontract/service/native/ont"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
+	"github.com/ontio/ontology/smartcontract/service/neovm"
+	"github.com/ontio/ontology/smartcontract/service/wasmvm"
+	"github.com/ontio/ontology/smartcontract/storage"
 )
 
 //HandleDeployTransaction deal with smart contract deploy transaction
@@ -55,7 +55,8 @@ func (self *StateStore) HandleDeployTransaction(store store.LedgerStore, overlay
 	)
 
 	if deploy.VmType() == payload.WASMVM_TYPE {
-		_, err = wasmvm.ReadWasmModule(deploy.GetRawCode(), true)
+		code := deploy.GetRawCode()
+		err := wasmvm.WasmjitValidate(code)
 		if err != nil {
 			return err
 		}

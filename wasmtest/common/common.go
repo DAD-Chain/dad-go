@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 package common
 
@@ -21,16 +21,16 @@ import (
 	"bytes"
 
 	"encoding/json"
-	utils2 "github.com/ontio/dad-go/cmd/utils"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/utils"
-	common2 "github.com/ontio/dad-go/http/base/common"
-	"github.com/ontio/dad-go/smartcontract/states"
+	utils2 "github.com/ontio/ontology/cmd/utils"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/utils"
+	common2 "github.com/ontio/ontology/http/base/common"
+	"github.com/ontio/ontology/smartcontract/states"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/core/types"
-	// neovms "github.com/ontio/dad-go/smartcontract/service/neovm"
-	neovm "github.com/ontio/dad-go/vm/neovm"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/core/types"
+	// neovms "github.com/ontio/ontology/smartcontract/service/neovm"
+	"github.com/ontio/ontology/vm/neovm"
 )
 
 type TestEnv struct {
@@ -80,9 +80,14 @@ type TestCase struct {
 	Notify      string  `json:"notify"`
 }
 
+type ConAddr struct {
+	File    string
+	Address common.Address
+}
+
 type TestContext struct {
 	Admin   common.Address
-	AddrMap map[string]common.Address
+	AddrMap []ConAddr
 }
 
 func GenWasmTransaction(testCase TestCase, contract common.Address, testConext *TestContext) (*types.Transaction, error) {
@@ -135,7 +140,9 @@ func buildTestConextForNeo(testConext *TestContext) []byte {
 	// construct [admin, map] array
 	builder.EmitPushByteArray(testConext.Admin[:])
 	builder.Emit(neovm.NEWMAP)
-	for file, addr := range addrMap {
+	for _, item := range addrMap {
+		file := item.File
+		addr := item.Address
 		builder.Emit(neovm.DUP)
 		builder.EmitPushByteArray(addr[:])
 		builder.Emit(neovm.SWAP)
@@ -199,7 +206,9 @@ func buildTestConext(testConext *TestContext) []byte {
 
 	bf.WriteAddress(testConext.Admin)
 	bf.WriteVarUint(uint64(len(addrMap)))
-	for file, addr := range addrMap {
+	for _, item := range addrMap {
+		file := item.File
+		addr := item.Address
 		bf.WriteString(file)
 		bf.WriteAddress(addr)
 	}
