@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package types
@@ -24,11 +24,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/constants"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/program"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/constants"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/program"
 )
 
 const MAX_TX_SIZE = 1024 * 1024 // The max size of a transaction to prevent DOS attacks
@@ -171,7 +171,7 @@ func (tx *Transaction) deserializationUnsigned(source *common.ZeroCopySource) er
 		}
 		tx.Payload = pl
 	default:
-		return fmt.Errorf("unsupported tx type %v", tx.Type())
+		return fmt.Errorf("unsupported tx type %v", tx.TxType)
 	}
 
 	var length uint64
@@ -278,7 +278,7 @@ func (self *Sig) Serialization(sink *common.ZeroCopySink) error {
 	return nil
 }
 
-func (self *Transaction) GetSignatureAddresses() ([]common.Address, error) {
+func (self *Transaction) GetSignatureAddresses() []common.Address {
 	if len(self.SignedAddr) == 0 {
 		addrs := make([]common.Address, 0, len(self.Sigs))
 		for _, prog := range self.Sigs {
@@ -289,7 +289,7 @@ func (self *Transaction) GetSignatureAddresses() ([]common.Address, error) {
 	//if len(self.SignedAddr) != len(self.Sigs) {
 	//	return nil, errors.New("mismatched sigs and signed address")
 	//}
-	return self.SignedAddr, nil
+	return self.SignedAddr
 }
 
 type TransactionType byte
@@ -322,10 +322,6 @@ func (tx *Transaction) ToArray() []byte {
 
 func (tx *Transaction) Hash() common.Uint256 {
 	return tx.hash
-}
-
-func (tx *Transaction) Type() common.InventoryType {
-	return common.TRANSACTION
 }
 
 func (tx *Transaction) Verify() error {

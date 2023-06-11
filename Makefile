@@ -1,7 +1,7 @@
 GOFMT=gofmt
 GC=go build
 VERSION := $(shell git describe --always --tags --long)
-BUILD_NODE_PAR = -ldflags "-X github.com/ontio/dad-go/common/config.Version=$(VERSION)" #-race
+BUILD_NODE_PAR = -ldflags "-X github.com/ontio/ontology/common/config.Version=$(VERSION)" #-race
 
 ARCH=$(shell uname -m)
 DBUILD=docker build
@@ -14,8 +14,8 @@ TOOLS=./tools
 ABI=$(TOOLS)/abi
 NATIVE_ABI_SCRIPT=./cmd/abi/native_abi_script
 
-dad-go: $(SRC_FILES)
-	$(GC)  $(BUILD_NODE_PAR) -o dad-go main.go
+ontology: $(SRC_FILES)
+	CGO_ENABLED=1 $(GC)  $(BUILD_NODE_PAR) -o ontology main.go
  
 sigsvr: $(SRC_FILES) abi 
 	$(GC)  $(BUILD_NODE_PAR) -o sigsvr sigsvr.go
@@ -28,18 +28,18 @@ abi:
 
 tools: sigsvr abi
 
-all: dad-go tools
+all: ontology tools
 
-dad-go-cross: dad-go-windows dad-go-linux dad-go-darwin
+ontology-cross: ontology-windows ontology-linux ontology-darwin
 
-dad-go-windows:
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GC) $(BUILD_NODE_PAR) -o dad-go-windows-amd64.exe main.go
+ontology-windows:
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GC) $(BUILD_NODE_PAR) -o ontology-windows-amd64.exe main.go
 
-dad-go-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GC) $(BUILD_NODE_PAR) -o dad-go-linux-amd64 main.go
+ontology-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GC) $(BUILD_NODE_PAR) -o ontology-linux-amd64 main.go
 
-dad-go-darwin:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GC) $(BUILD_NODE_PAR) -o dad-go-darwin-amd64 main.go
+ontology-darwin:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GC) $(BUILD_NODE_PAR) -o ontology-darwin-amd64 main.go
 
 tools-cross: tools-windows tools-linux tools-darwin
 
@@ -58,37 +58,37 @@ tools-darwin: abi
 	@if [ ! -d $(TOOLS) ];then mkdir -p $(TOOLS) ;fi
 	@mv sigsvr-darwin-amd64 $(TOOLS)
 
-all-cross: dad-go-cross tools-cross abi
+all-cross: ontology-cross tools-cross abi
 
 format:
 	$(GOFMT) -w main.go
 
-docker/payload: docker/build/bin/dad-go docker/Dockerfile
-	@echo "Building dad-go payload"
+docker/payload: docker/build/bin/ontology docker/Dockerfile
+	@echo "Building ontology payload"
 	@mkdir -p $@
 	@cp docker/Dockerfile $@
-	@cp docker/build/bin/dad-go $@
+	@cp docker/build/bin/ontology $@
 	@touch $@
 
 docker/build/bin/%: Makefile
-	@echo "Building dad-go in docker"
+	@echo "Building ontology in docker"
 	@mkdir -p docker/build/bin docker/build/pkg
 	@$(DRUN) --rm \
 		-v $(abspath docker/build/bin):/go/bin \
 		-v $(abspath docker/build/pkg):/go/pkg \
 		-v $(GOPATH)/src:/go/src \
-		-w /go/src/github.com/ontio/dad-go \
+		-w /go/src/github.com/ontio/ontology \
 		golang:1.9.5-stretch \
-		$(GC)  $(BUILD_NODE_PAR) -o docker/build/bin/dad-go main.go
+		$(GC)  $(BUILD_NODE_PAR) -o docker/build/bin/ontology main.go
 	@touch $@
 
 docker: Makefile docker/payload docker/Dockerfile 
-	@echo "Building dad-go docker"
-	@$(DBUILD) -t $(DOCKER_NS)/dad-go docker/payload
-	@docker tag $(DOCKER_NS)/dad-go $(DOCKER_NS)/dad-go:$(DOCKER_TAG)
+	@echo "Building ontology docker"
+	@$(DBUILD) -t $(DOCKER_NS)/ontology docker/payload
+	@docker tag $(DOCKER_NS)/ontology $(DOCKER_NS)/ontology:$(DOCKER_TAG)
 	@touch $@
 
 clean:
 	rm -rf *.8 *.o *.out *.6 *exe coverage
-	rm -rf dad-go dad-go-* tools docker/payload docker/build
+	rm -rf ontology ontology-* tools docker/payload docker/build
 

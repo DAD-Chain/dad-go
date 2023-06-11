@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 //Storage of ledger
 package ledgerstore
@@ -22,7 +22,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
-	types2 "github.com/ontio/dad-go/vm/neovm/types"
+	types2 "github.com/ontio/ontology/vm/neovm/types"
 	"hash"
 	"math"
 	"os"
@@ -31,27 +31,27 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/consensus/vbft/config"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go/core/states"
-	"github.com/ontio/dad-go/core/store"
-	scom "github.com/ontio/dad-go/core/store/common"
-	"github.com/ontio/dad-go/core/store/overlaydb"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/events"
-	"github.com/ontio/dad-go/events/message"
-	"github.com/ontio/dad-go/smartcontract"
-	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/service/neovm"
-	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
-	sstate "github.com/ontio/dad-go/smartcontract/states"
-	"github.com/ontio/dad-go/smartcontract/storage"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/consensus/vbft/config"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/signature"
+	"github.com/ontio/ontology/core/states"
+	"github.com/ontio/ontology/core/store"
+	scom "github.com/ontio/ontology/core/store/common"
+	"github.com/ontio/ontology/core/store/overlaydb"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/errors"
+	"github.com/ontio/ontology/events"
+	"github.com/ontio/ontology/events/message"
+	"github.com/ontio/ontology/smartcontract"
+	"github.com/ontio/ontology/smartcontract/event"
+	"github.com/ontio/ontology/smartcontract/service/neovm"
+	"github.com/ontio/ontology/smartcontract/service/wasmvm"
+	sstate "github.com/ontio/ontology/smartcontract/states"
+	"github.com/ontio/ontology/smartcontract/storage"
 )
 
 const (
@@ -66,6 +66,12 @@ var (
 	DBDirState          = "states"
 	MerkleTreeStorePath = "merkle_tree.db"
 )
+
+type PrexecuteParam struct {
+	JitMode    bool
+	WasmFactor uint64
+	MinGas     bool
+}
 
 //LedgerStoreImp is main store struct fo ledger
 type LedgerStoreImp struct {
@@ -1031,7 +1037,7 @@ func (this *LedgerStoreImp) PreExecuteContractBatch(txes []*types.Transaction, a
 }
 
 //PreExecuteContract return the result of smart contract execution without commit to store
-func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.PreExecResult, error) {
+func (this *LedgerStoreImp) PreExecuteContractWithParam(tx *types.Transaction, preParam PrexecuteParam) (*sstate.PreExecResult, error) {
 	height := this.GetCurrentBlockHeight()
 	// use previous block time to make it predictable for easy test
 	blockTime := uint32(time.Now().Unix())
@@ -1053,7 +1059,11 @@ func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.P
 	neovm.GAS_TABLE.Range(func(k, value interface{}) bool {
 		key := k.(string)
 		val := value.(uint64)
-		gasTable[key] = val
+		if key == config.WASM_GAS_FACTOR && preParam.WasmFactor != 0 {
+			gasTable[key] = preParam.WasmFactor
+		} else {
+			gasTable[key] = val
+		}
 
 		return true
 	})
@@ -1068,6 +1078,7 @@ func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.P
 			GasTable:     gasTable,
 			Gas:          math.MaxUint64 - calcGasByCodeLen(len(invoke.Code), gasTable[neovm.UINT_INVOKE_CODE_LEN_NAME]),
 			WasmExecStep: config.DEFAULT_WASM_MAX_STEPCOUNT,
+			JitMode:      preParam.JitMode,
 			PreExec:      true,
 		}
 		//start the smart contract executive function
@@ -1078,9 +1089,12 @@ func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.P
 			return stf, err
 		}
 		gasCost := math.MaxUint64 - sc.Gas
-		mixGas := neovm.MIN_TRANSACTION_GAS
-		if gasCost < mixGas {
-			gasCost = mixGas
+
+		if preParam.MinGas {
+			mixGas := neovm.MIN_TRANSACTION_GAS
+			if gasCost < mixGas {
+				gasCost = mixGas
+			}
 		}
 
 		var cv interface{}
@@ -1101,7 +1115,8 @@ func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.P
 		deploy := tx.Payload.(*payload.DeployCode)
 
 		if deploy.VmType() == payload.WASMVM_TYPE {
-			_, err := wasmvm.ReadWasmModule(deploy.GetRawCode(), true)
+			wasmCode := deploy.GetRawCode()
+			err := wasmvm.WasmjitValidate(wasmCode)
 			if err != nil {
 				return stf, err
 			}
@@ -1119,6 +1134,17 @@ func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.P
 	} else {
 		return stf, errors.NewErr("transaction type error")
 	}
+}
+
+//PreExecuteContract return the result of smart contract execution without commit to store
+func (this *LedgerStoreImp) PreExecuteContract(tx *types.Transaction) (*sstate.PreExecResult, error) {
+	param := PrexecuteParam{
+		JitMode:    false,
+		WasmFactor: 0,
+		MinGas:     true,
+	}
+
+	return this.PreExecuteContractWithParam(tx, param)
 }
 
 //Close ledger store.

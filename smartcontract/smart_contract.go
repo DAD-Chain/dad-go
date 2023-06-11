@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 package smartcontract
 
@@ -21,18 +21,17 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/store"
-	ctypes "github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/smartcontract/context"
-	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/service/native"
-	"github.com/ontio/dad-go/smartcontract/service/neovm"
-	"github.com/ontio/dad-go/smartcontract/service/wasmvm"
-	"github.com/ontio/dad-go/smartcontract/storage"
-	vm "github.com/ontio/dad-go/vm/neovm"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/core/store"
+	ctypes "github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/smartcontract/context"
+	"github.com/ontio/ontology/smartcontract/event"
+	"github.com/ontio/ontology/smartcontract/service/native"
+	"github.com/ontio/ontology/smartcontract/service/neovm"
+	"github.com/ontio/ontology/smartcontract/service/wasmvm"
+	"github.com/ontio/ontology/smartcontract/storage"
+	vm "github.com/ontio/ontology/vm/neovm"
 )
 
 const (
@@ -50,6 +49,7 @@ type SmartContract struct {
 	Gas           uint64
 	ExecStep      int
 	WasmExecStep  uint64
+	JitMode       bool
 	PreExec       bool
 }
 
@@ -177,6 +177,7 @@ func (this *SmartContract) NewExecuteEngine(code []byte, txtype ctypes.Transacti
 			ExecStep:   &this.WasmExecStep,
 			GasLimit:   &this.Gas,
 			GasFactor:  gasFactor,
+			JitMode:    this.JitMode,
 		}
 	default:
 		return nil, errors.New("failed to construct execute engine, wrong transaction type")
@@ -214,11 +215,8 @@ func (this *SmartContract) CheckWitness(address common.Address) bool {
 }
 
 func (this *SmartContract) checkAccountAddress(address common.Address) bool {
-	addresses, err := this.Config.Tx.GetSignatureAddresses()
-	if err != nil {
-		log.Errorf("get signature address error:%v", err)
-		return false
-	}
+	addresses := this.Config.Tx.GetSignatureAddresses()
+
 	for _, v := range addresses {
 		if v == address {
 			return true
@@ -232,4 +230,14 @@ func (this *SmartContract) checkContractAddress(address common.Address) bool {
 		return true
 	}
 	return false
+}
+
+func (this *SmartContract) GetCallerAddress() []common.Address {
+	callersNum := len(this.Contexts)
+	addrs := make([]common.Address, 0, callersNum)
+
+	for _, ctx := range this.Contexts {
+		addrs = append(addrs, ctx.ContractAddress)
+	}
+	return addrs
 }
