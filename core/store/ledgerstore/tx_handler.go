@@ -55,8 +55,7 @@ func (self *StateStore) HandleDeployTransaction(store store.LedgerStore, overlay
 	)
 
 	if deploy.VmType() == payload.WASMVM_TYPE {
-		code := deploy.GetRawCode()
-		err := wasmvm.WasmjitValidate(code)
+		_, err = wasmvm.ReadWasmModule(deploy.GetRawCode(), sysconfig.DefConfig.Common.WasmVerifyMethod)
 		if err != nil {
 			return err
 		}
@@ -210,6 +209,10 @@ func (self *StateStore) HandleInvokeTransaction(store store.LedgerStore, overlay
 	engine, _ := sc.NewExecuteEngine(invoke.Code, tx.TxType)
 
 	_, err = engine.Invoke()
+	if sc.IsInternalErr() {
+		overlay.SetError(fmt.Errorf("[HandleInvokeTransaction] %s", err))
+		return nil
+	}
 
 	costGasLimit = availableGasLimit - sc.Gas
 	if costGasLimit < neovm.MIN_TRANSACTION_GAS {

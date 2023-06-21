@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package main
@@ -29,35 +29,35 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common/fdlimit"
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-eventbus/actor"
-	alog "github.com/ontio/dad-go-eventbus/log"
-	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/cmd"
-	cmdcom "github.com/ontio/dad-go/cmd/common"
-	"github.com/ontio/dad-go/cmd/utils"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/consensus"
-	"github.com/ontio/dad-go/core/genesis"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/events"
-	bactor "github.com/ontio/dad-go/http/base/actor"
-	hserver "github.com/ontio/dad-go/http/base/actor"
-	"github.com/ontio/dad-go/http/jsonrpc"
-	"github.com/ontio/dad-go/http/localrpc"
-	"github.com/ontio/dad-go/http/nodeinfo"
-	"github.com/ontio/dad-go/http/restful"
-	"github.com/ontio/dad-go/http/websocket"
-	"github.com/ontio/dad-go/p2pserver"
-	netreqactor "github.com/ontio/dad-go/p2pserver/actor/req"
-	p2pactor "github.com/ontio/dad-go/p2pserver/actor/server"
-	"github.com/ontio/dad-go/txnpool"
-	tc "github.com/ontio/dad-go/txnpool/common"
-	"github.com/ontio/dad-go/txnpool/proc"
-	"github.com/ontio/dad-go/validator/stateful"
-	"github.com/ontio/dad-go/validator/stateless"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology-eventbus/actor"
+	alog "github.com/ontio/ontology-eventbus/log"
+	"github.com/ontio/ontology/account"
+	"github.com/ontio/ontology/cmd"
+	cmdcom "github.com/ontio/ontology/cmd/common"
+	"github.com/ontio/ontology/cmd/utils"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/consensus"
+	"github.com/ontio/ontology/core/genesis"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/events"
+	bactor "github.com/ontio/ontology/http/base/actor"
+	hserver "github.com/ontio/ontology/http/base/actor"
+	"github.com/ontio/ontology/http/jsonrpc"
+	"github.com/ontio/ontology/http/localrpc"
+	"github.com/ontio/ontology/http/nodeinfo"
+	"github.com/ontio/ontology/http/restful"
+	"github.com/ontio/ontology/http/websocket"
+	"github.com/ontio/ontology/p2pserver"
+	netreqactor "github.com/ontio/ontology/p2pserver/actor/req"
+	p2pactor "github.com/ontio/ontology/p2pserver/actor/server"
+	"github.com/ontio/ontology/txnpool"
+	tc "github.com/ontio/ontology/txnpool/common"
+	"github.com/ontio/ontology/txnpool/proc"
+	"github.com/ontio/ontology/validator/stateful"
+	"github.com/ontio/ontology/validator/stateless"
 	"github.com/urfave/cli"
 )
 
@@ -88,6 +88,7 @@ func setupAPP() *cli.App {
 		utils.DisableLogFileFlag,
 		utils.DisableEventLogFlag,
 		utils.DataDirFlag,
+		utils.WasmVerifyMethodFlag,
 		//account setting
 		utils.WalletFileFlag,
 		utils.AccountAddressFlag,
@@ -143,7 +144,7 @@ func main() {
 func startdad-go(ctx *cli.Context) {
 	initLog(ctx)
 
-	log.Infof("dad-go version %s", config.Version)
+	log.Infof("ontology version %s", config.Version)
 
 	setMaxOpenFiles()
 
@@ -210,7 +211,7 @@ func initLog(ctx *cli.Context) {
 }
 
 func initConfig(ctx *cli.Context) (*config.dad-goConfig, error) {
-	//init dad-go config from cli
+	//init ontology config from cli
 	cfg, err := cmd.Setdad-goConfig(ctx)
 	if err != nil {
 		return nil, err
