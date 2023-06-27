@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package vbft
@@ -26,25 +26,25 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-crypto/vrf"
-	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/log"
-	actorTypes "github.com/ontio/dad-go/consensus/actor"
-	"github.com/ontio/dad-go/consensus/vbft/config"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/core/utils"
-	"github.com/ontio/dad-go/events"
-	"github.com/ontio/dad-go/events/message"
-	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
-	gover "github.com/ontio/dad-go/smartcontract/service/native/governance"
-	ninit "github.com/ontio/dad-go/smartcontract/service/native/init"
-	nutils "github.com/ontio/dad-go/smartcontract/service/native/utils"
-	"github.com/ontio/dad-go/validator/increment"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology-crypto/vrf"
+	"github.com/ontio/ontology-eventbus/actor"
+	"github.com/ontio/ontology/account"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/log"
+	actorTypes "github.com/ontio/ontology/consensus/actor"
+	"github.com/ontio/ontology/consensus/vbft/config"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/core/utils"
+	"github.com/ontio/ontology/events"
+	"github.com/ontio/ontology/events/message"
+	p2pmsg "github.com/ontio/ontology/p2pserver/message/types"
+	gover "github.com/ontio/ontology/smartcontract/service/native/governance"
+	ninit "github.com/ontio/ontology/smartcontract/service/native/init"
+	nutils "github.com/ontio/ontology/smartcontract/service/native/utils"
+	"github.com/ontio/ontology/validator/increment"
 )
 
 type BftActionType uint8
@@ -1081,11 +1081,31 @@ func (self *Server) onConsensusMsg(peerIdx uint32, msg ConsensusMsg, msgHash com
 	}
 }
 
+func (self *Server) verifyCrossChainMsg(msg *blockProposalMsg) bool {
+	root, err := self.blockPool.getCrossStatesRoot(msg.Block.Block.Header.Height - 1)
+	if err != nil {
+		log.Errorf("verifyCrossChainMsg:%s", err)
+		return false
+	}
+	//malicious consensus node may create a nil cross chain msg proposal, but it is actual not nil.
+	if root != common.UINT256_EMPTY && msg.Block.CrossChainMsg == nil {
+		return false
+	}
+	if msg.Block.CrossChainMsg == nil {
+		return true
+	}
+	if msg.Block.CrossChainMsg.StatesRoot != root ||
+		msg.Block.CrossChainMsg.Version != types.CURR_CROSS_STATES_VERSION {
+		return false
+	}
+	return true
+}
+
 func (self *Server) processProposalMsg(msg *blockProposalMsg) {
 	msgBlkNum := msg.GetBlockNum()
 	blk, prevBlkHash := self.blockPool.getSealedBlock(msg.GetBlockNum() - 1)
 	if blk == nil {
-		log.Errorf("BlockProposal failed to GetPreBlock:%d", (msg.GetBlockNum() - 1))
+		log.Errorf("BlockProposal failed to GetPreBlock:%d", msg.GetBlockNum()-1)
 		return
 	}
 
@@ -1101,7 +1121,7 @@ func (self *Server) processProposalMsg(msg *blockProposalMsg) {
 	}
 	merkleRoot, err := self.blockPool.getExecMerkleRoot(msgBlkNum - 1)
 	if err != nil {
-		log.Errorf("failed to GetExecMerkleRoot: %s,blkNum:%d", err, (msgBlkNum - 1))
+		log.Errorf("failed to GetExecMerkleRoot: %s,blkNum:%d", err, msgBlkNum-1)
 		return
 	}
 	if msg.Block.getPrevBlockMerkleRoot() != merkleRoot {
@@ -1143,10 +1163,13 @@ func (self *Server) processProposalMsg(msg *blockProposalMsg) {
 		self.msgPool.DropMsg(msg)
 		return
 	}
-
+	if !self.verifyCrossChainMsg(msg) {
+		log.Errorf("verify cross chain message error:%+v\n", msg.Block.CrossChainMsg)
+		return
+	}
 	txs := msg.Block.Block.Transactions
 	if len(txs) > 0 && self.nonSystxs(txs, msgBlkNum) {
-		height := uint32(msgBlkNum) - 1
+		height := msgBlkNum - 1
 		start, end := self.incrValidator.BlockRange()
 
 		validHeight := height
@@ -2129,7 +2152,7 @@ func (self *Server) msgSendLoop() {
 
 //creategovernaceTransaction invoke governance native contract commit_pos
 func (self *Server) creategovernaceTransaction(blkNum uint32) (*types.Transaction, error) {
-	mutable := utils.Buildad-gotiveTransaction(nutils.GovernanceContractAddress, gover.COMMIT_DPOS, []byte{})
+	mutable := utils.BuildNativeTransaction(nutils.GovernanceContractAddress, gover.COMMIT_DPOS, []byte{})
 	mutable.Nonce = blkNum
 	tx, err := mutable.IntoImmutable()
 	return tx, err

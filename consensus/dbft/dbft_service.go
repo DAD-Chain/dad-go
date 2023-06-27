@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package dbft
@@ -23,21 +23,21 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	actorTypes "github.com/ontio/dad-go/consensus/actor"
-	"github.com/ontio/dad-go/core/genesis"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/core/vote"
-	"github.com/ontio/dad-go/events"
-	"github.com/ontio/dad-go/events/message"
-	p2pmsg "github.com/ontio/dad-go/p2pserver/message/types"
-	"github.com/ontio/dad-go/validator/increment"
+	"github.com/ontio/ontology-eventbus/actor"
+	"github.com/ontio/ontology/account"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	actorTypes "github.com/ontio/ontology/consensus/actor"
+	"github.com/ontio/ontology/core/genesis"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/signature"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/core/vote"
+	"github.com/ontio/ontology/events"
+	"github.com/ontio/ontology/events/message"
+	p2pmsg "github.com/ontio/ontology/p2pserver/message/types"
+	"github.com/ontio/ontology/validator/increment"
 )
 
 type DbftService struct {
@@ -225,7 +225,7 @@ func (ds *DbftService) CheckSignatures() error {
 			if err != nil {
 				return fmt.Errorf("CheckSignatures DefLedgerPid.RequestFuture Height:%d error:%s", block.Header.Height, err)
 			}
-			err = ds.ledger.SubmitBlock(block, result)
+			err = ds.ledger.SubmitBlock(block, nil, result)
 			if err != nil {
 				return fmt.Errorf("CheckSignatures DefLedgerPid.RequestFuture Height:%d error:%s", block.Header.Height, err)
 			}
@@ -307,18 +307,6 @@ func (ds *DbftService) InitializeConsensus(viewNum byte) error {
 		ds.timer.Reset(genesis.GenBlockTime << (viewNum + 1))
 	}
 	return nil
-}
-
-func (ds *DbftService) LocalNodeNewInventory(v interface{}) {
-	log.Debug()
-	if inventory, ok := v.(common.Inventory); ok {
-		if inventory.Type() == common.CONSENSUS {
-			payload, ret := inventory.(*p2pmsg.ConsensusPayload)
-			if ret == true {
-				ds.NewConsensusPayload(payload)
-			}
-		}
-	}
 }
 
 func (ds *DbftService) NewConsensusPayload(payload *p2pmsg.ConsensusPayload) {

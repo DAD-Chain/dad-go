@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package vbft
@@ -23,9 +23,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/consensus/vbft/config"
-	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/consensus/vbft/config"
+	"github.com/ontio/ontology/core/types"
 )
 
 type Block struct {
@@ -33,6 +33,7 @@ type Block struct {
 	EmptyBlock          *types.Block
 	Info                *vconfig.VbftBlockInfo
 	PrevBlockMerkleRoot common.Uint256
+	CrossChainMsg       *types.CrossChainMsg
 }
 
 func (blk *Block) getProposer() uint32 {
@@ -79,6 +80,10 @@ func (blk *Block) Serialize() []byte {
 		payload.WriteVarBytes(common.SerializeToBytes(blk.EmptyBlock))
 	}
 	payload.WriteHash(blk.PrevBlockMerkleRoot)
+	payload.WriteBool(blk.CrossChainMsg != nil)
+	if blk.CrossChainMsg != nil {
+		blk.CrossChainMsg.Serialization(payload)
+	}
 	return payload.Bytes()
 }
 
@@ -128,14 +133,27 @@ func (blk *Block) Deserialize(data []byte) error {
 	if eof {
 		return fmt.Errorf("block deserialize merkleRoot: %s", io.ErrUnexpectedEOF)
 	}
+
+	var crossChainMsg *types.CrossChainMsg
+	hasEmptyCCM, irr, eof := source.NextBool()
+	if irr || eof {
+		return fmt.Errorf("read empty-crosschainmsg-bool.")
+	}
+	if hasEmptyCCM {
+		crossChainMsg = new(types.CrossChainMsg)
+		if err := crossChainMsg.Deserialization(source); err != nil {
+			return err
+		}
+	}
 	blk.Block = block
 	blk.EmptyBlock = emptyBlock
 	blk.Info = info
 	blk.PrevBlockMerkleRoot = merkleRoot
+	blk.CrossChainMsg = crossChainMsg
 	return nil
 }
 
-func initVbftBlock(block *types.Block, prevMerkleRoot common.Uint256) (*Block, error) {
+func initVbftBlock(block *types.Block, ccMsg *types.CrossChainMsg, prevMerkleRoot common.Uint256) (*Block, error) {
 	if block == nil {
 		return nil, fmt.Errorf("nil block in initVbftBlock")
 	}
@@ -149,5 +167,6 @@ func initVbftBlock(block *types.Block, prevMerkleRoot common.Uint256) (*Block, e
 		Block:               block,
 		Info:                blkInfo,
 		PrevBlockMerkleRoot: prevMerkleRoot,
+		CrossChainMsg:       ccMsg,
 	}, nil
 }

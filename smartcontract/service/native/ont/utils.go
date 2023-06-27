@@ -1,33 +1,32 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package ont
 
 import (
 	"fmt"
-
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	cstates "github.com/ontio/dad-go/core/states"
-	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/service/native"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	cstates "github.com/ontio/ontology/core/states"
+	"github.com/ontio/ontology/errors"
+	"github.com/ontio/ontology/smartcontract/event"
+	"github.com/ontio/ontology/smartcontract/service/native"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
 )
 
 const (
@@ -55,7 +54,6 @@ func AddNotifications(native *native.NativeService, contract common.Address, sta
 			States:          []interface{}{TRANSFER_NAME, state.From.ToBase58(), state.To.ToBase58(), state.Value},
 		})
 }
-
 func GetToUInt64StorageItem(toBalance, value uint64) *cstates.StorageItem {
 	sink := common.NewZeroCopySink(nil)
 	sink.WriteUint64(toBalance + value)

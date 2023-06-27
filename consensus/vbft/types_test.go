@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package vbft
@@ -22,9 +22,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ontio/dad-go/common"
-	vconfig "github.com/ontio/dad-go/consensus/vbft/config"
-	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/ontology/common"
+	vconfig "github.com/ontio/ontology/consensus/vbft/config"
+	"github.com/ontio/ontology/core/types"
 )
 
 func TestBlock_getProposer(t *testing.T) {
@@ -207,7 +207,7 @@ func TestInitVbftBlock(t *testing.T) {
 	if err != nil {
 		t.Errorf("constructBlock failed: %v", err)
 	}
-	_, err = initVbftBlock(blk.Block, common.Uint256{})
+	_, err = initVbftBlock(blk.Block, nil, common.Uint256{})
 	if err != nil {
 		t.Errorf("initVbftBlock failed: %v", err)
 		return

@@ -1,30 +1,30 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
 
 import (
 	"bytes"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/serialization"
-	cstates "github.com/ontio/dad-go/core/states"
-	"github.com/ontio/dad-go/errors"
-	"github.com/ontio/dad-go/smartcontract/service/native"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/serialization"
+	cstates "github.com/ontio/ontology/core/states"
+	"github.com/ontio/ontology/errors"
+	"github.com/ontio/ontology/smartcontract/service/native"
 )
 
 func GetStorageItem(native *native.NativeService, key []byte) (*cstates.StorageItem, error) {
@@ -87,4 +87,25 @@ func GenUInt32StorageItem(value uint32) *cstates.StorageItem {
 
 func PutBytes(native *native.NativeService, key []byte, value []byte) {
 	native.CacheDB.Put(key, cstates.GenRawStorageItem(value))
+}
+
+func GetStorageVarBytes(native *native.NativeService, key []byte) ([]byte, error) {
+	item, err := GetStorageItem(native, key)
+	if err != nil {
+		return []byte{}, err
+	}
+	if item == nil {
+		return []byte{}, nil
+	}
+	v, err := serialization.ReadVarBytes(bytes.NewBuffer(item.Value))
+	if err != nil {
+		return []byte{}, err
+	}
+	return v, nil
+}
+
+func GenVarBytesStorageItem(value []byte) *cstates.StorageItem {
+	bf := new(bytes.Buffer)
+	serialization.WriteVarBytes(bf, value)
+	return &cstates.StorageItem{Value: bf.Bytes()}
 }

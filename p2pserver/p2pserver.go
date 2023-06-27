@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package p2pserver
@@ -31,19 +31,19 @@ import (
 	"sync"
 	"time"
 
-	evtActor "github.com/ontio/dad-go-eventbus/actor"
-	comm "github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/p2pserver/common"
-	"github.com/ontio/dad-go/p2pserver/message/msg_pack"
-	msgtypes "github.com/ontio/dad-go/p2pserver/message/types"
-	"github.com/ontio/dad-go/p2pserver/message/utils"
-	"github.com/ontio/dad-go/p2pserver/net/netserver"
-	p2pnet "github.com/ontio/dad-go/p2pserver/net/protocol"
-	"github.com/ontio/dad-go/p2pserver/peer"
+	evtActor "github.com/ontio/ontology-eventbus/actor"
+	comm "github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/p2pserver/common"
+	"github.com/ontio/ontology/p2pserver/message/msg_pack"
+	msgtypes "github.com/ontio/ontology/p2pserver/message/types"
+	"github.com/ontio/ontology/p2pserver/message/utils"
+	"github.com/ontio/ontology/p2pserver/net/netserver"
+	p2pnet "github.com/ontio/ontology/p2pserver/net/protocol"
+	"github.com/ontio/ontology/p2pserver/peer"
 )
 
 //P2PServer control all network activities
@@ -206,8 +206,8 @@ func (this *P2PServer) OnHeaderReceive(fromID uint64, headers []*types.Header) {
 
 // OnBlockReceive adds the block from network
 func (this *P2PServer) OnBlockReceive(fromID uint64, blockSize uint32,
-	block *types.Block, merkleRoot comm.Uint256) {
-	this.blockSync.OnBlockReceive(fromID, blockSize, block, merkleRoot)
+	block *types.Block, ccMsg *types.CrossChainMsg, merkleRoot comm.Uint256) {
+	this.blockSync.OnBlockReceive(fromID, blockSize, block, ccMsg, merkleRoot)
 }
 
 // Todo: remove it if no use
@@ -229,44 +229,6 @@ func (this *P2PServer) SetPID(pid *evtActor.PID) {
 // GetPID returns p2p actor
 func (this *P2PServer) GetPID() *evtActor.PID {
 	return this.pid
-}
-
-//blockSyncFinished compare all nbr peers and self height at beginning
-func (this *P2PServer) blockSyncFinished() bool {
-	peers := this.network.GetNeighbors()
-	if len(peers) == 0 {
-		return false
-	}
-
-	blockHeight := this.ledger.GetCurrentBlockHeight()
-
-	for _, v := range peers {
-		if blockHeight < uint32(v.GetHeight()) {
-			return false
-		}
-	}
-	return true
-}
-
-//WaitForSyncBlkFinish compare the height of self and remote peer in loop
-func (this *P2PServer) WaitForSyncBlkFinish() {
-	consensusType := strings.ToLower(config.DefConfig.Genesis.ConsensusType)
-	if consensusType == "solo" {
-		return
-	}
-
-	for {
-		headerHeight := this.ledger.GetCurrentHeaderHeight()
-		currentBlkHeight := this.ledger.GetCurrentBlockHeight()
-		log.Info("[p2p]WaitForSyncBlkFinish... current block height is ",
-			currentBlkHeight, " ,current header height is ", headerHeight)
-
-		if this.blockSyncFinished() {
-			break
-		}
-
-		<-time.After(time.Second * (time.Duration(common.SYNC_BLK_WAIT)))
-	}
 }
 
 //WaitForPeersStart check whether enough peer linked in loop

@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package vbft
@@ -23,13 +23,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/consensus/vbft/config"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go/core/types"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/consensus/vbft/config"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/signature"
+	"github.com/ontio/ontology/core/types"
 )
 
 type ConsensusMsgPayload struct {
@@ -202,7 +202,7 @@ func (self *Server) constructBlock(blkNum uint32, prevBlkHash common.Uint256, tx
 		TransactionsRoot: txRoot,
 		BlockRoot:        blockRoot,
 		Timestamp:        blocktimestamp,
-		Height:           uint32(blkNum),
+		Height:           blkNum,
 		ConsensusData:    common.GetNonce(),
 		ConsensusPayload: consensusPayload,
 	}
@@ -219,6 +219,29 @@ func (self *Server) constructBlock(blkNum uint32, prevBlkHash common.Uint256, tx
 	blkHeader.SigData = [][]byte{sig}
 
 	return blk, nil
+}
+
+func (self *Server) constructCrossChainMsg(blkNum uint32) (*types.CrossChainMsg, error) {
+	root, err := self.blockPool.getCrossStatesRoot(blkNum)
+	if err != nil {
+		return nil, err
+	}
+	log.Errorf("submitBlock height:%d statesroot:%+v", blkNum, root)
+	if root == common.UINT256_EMPTY {
+		return nil, nil
+	}
+	msg := &types.CrossChainMsg{
+		Version:    types.CURR_CROSS_STATES_VERSION,
+		Height:     blkNum,
+		StatesRoot: root,
+	}
+	hash := msg.Hash()
+	sig, err := signature.Sign(self.account, hash[:])
+	if err != nil {
+		return nil, fmt.Errorf("sign cross chain msg root failed,msg hash:%s,err:%s", hash.ToHexString(), err)
+	}
+	msg.SigData = append(msg.SigData, sig)
+	return msg, nil
 }
 
 func (self *Server) constructProposalMsg(blkNum uint32, sysTxs, userTxs []*types.Transaction, chainconfig *vconfig.ChainConfig) (*blockProposalMsg, error) {
@@ -266,18 +289,21 @@ func (self *Server) constructProposalMsg(blkNum uint32, sysTxs, userTxs []*types
 	}
 	merkleRoot, err := self.blockPool.getExecMerkleRoot(blkNum - 1)
 	if err != nil {
-		return nil, fmt.Errorf("failed to GetExecMerkleRoot: %s,blkNum:%d", err, (blkNum - 1))
+		return nil, fmt.Errorf("failed to GetExecMerkleRoot: %s,blkNum:%d", err, blkNum-1)
 	}
-
+	crossChainMsg, err := self.constructCrossChainMsg(blkNum - 1)
+	if err != nil {
+		return nil, fmt.Errorf("failed to crossChainMsgHash :%s,blkNum:%d", err, (blkNum - 1))
+	}
 	msg := &blockProposalMsg{
 		Block: &Block{
 			Block:               blk,
 			EmptyBlock:          emptyBlk,
 			Info:                vbftBlkInfo,
 			PrevBlockMerkleRoot: merkleRoot,
+			CrossChainMsg:       crossChainMsg,
 		},
 	}
-
 	return msg, nil
 }
 
@@ -315,7 +341,15 @@ func (self *Server) constructEndorseMsg(proposal *blockProposalMsg, forEmpty boo
 		ProposerSig:       proposerSig,
 		EndorserSig:       endorserSig,
 	}
-
+	if proposal.Block.CrossChainMsg != nil {
+		hash := proposal.Block.CrossChainMsg.Hash()
+		sig, err := signature.Sign(self.account, hash[:])
+		if err != nil {
+			return nil, fmt.Errorf("sign cross chain msg root failed,msg hash:%s,err:%s", hash.ToHexString(), err)
+		}
+		msg.CrossChainMsgEndorserSig = sig
+		msg.CrossChainMsgHash = hash
+	}
 	return msg, nil
 }
 
@@ -344,22 +378,45 @@ func (self *Server) constructCommitMsg(proposal *blockProposalMsg, endorses []*b
 		return nil, fmt.Errorf("endorser failed to sign block. hash:%x, caused by: %s", blkHash, err)
 	}
 
+	commitCrossChain := true
 	endorsersSig := make(map[uint32][]byte)
+	crossChainEndorserSig := make(map[uint32][]byte)
+	var ccmCommitSig []byte
 	for _, e := range endorses {
 		endorsersSig[e.Endorser] = e.EndorserSig
+		crossChainEndorserSig[e.Endorser] = e.CrossChainMsgEndorserSig
+		if e.Endorser == self.Index {
+			commitCrossChain = false
+			ccmCommitSig = e.CrossChainMsgEndorserSig
+		}
+	}
+
+	var hash common.Uint256
+	if proposal.Block.CrossChainMsg != nil {
+		hash = proposal.Block.CrossChainMsg.Hash()
 	}
 
 	msg := &blockCommitMsg{
-		Committer:       self.Index,
-		BlockProposer:   proposal.Block.getProposer(),
-		BlockNum:        proposal.Block.getBlockNum(),
-		CommitBlockHash: blkHash,
-		CommitForEmpty:  forEmpty,
-		ProposerSig:     proposerSig,
-		EndorsersSig:    endorsersSig,
-		CommitterSig:    committerSig,
+		Committer:                 self.Index,
+		BlockProposer:             proposal.Block.getProposer(),
+		BlockNum:                  proposal.Block.getBlockNum(),
+		CommitBlockHash:           blkHash,
+		CommitForEmpty:            forEmpty,
+		ProposerSig:               proposerSig,
+		EndorsersSig:              endorsersSig,
+		CommitterSig:              committerSig,
+		CommitCCMHash:             hash,
+		CrossChainMsgEndorserSig:  crossChainEndorserSig,
+		CrossChainMsgCommitterSig: ccmCommitSig,
 	}
 
+	if proposal.Block.CrossChainMsg != nil && commitCrossChain {
+		sig, err := signature.Sign(self.account, hash[:])
+		if err != nil {
+			return nil, fmt.Errorf("sign cross chain msg root failed,msg hash:%s,err:%s", hash.ToHexString(), err)
+		}
+		msg.CrossChainMsgCommitterSig = sig
+	}
 	return msg, nil
 }
 
