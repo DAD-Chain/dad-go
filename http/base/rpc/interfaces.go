@@ -1,36 +1,36 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package rpc
 
 import (
 	"encoding/hex"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/payload"
-	scom "github.com/ontio/dad-go/core/store/common"
-	"github.com/ontio/dad-go/core/types"
-	ontErrors "github.com/ontio/dad-go/errors"
-	bactor "github.com/ontio/dad-go/http/base/actor"
-	bcomn "github.com/ontio/dad-go/http/base/common"
-	berr "github.com/ontio/dad-go/http/base/error"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/core/payload"
+	scom "github.com/ontio/ontology/core/store/common"
+	"github.com/ontio/ontology/core/types"
+	ontErrors "github.com/ontio/ontology/errors"
+	bactor "github.com/ontio/ontology/http/base/actor"
+	bcomn "github.com/ontio/ontology/http/base/common"
+	berr "github.com/ontio/ontology/http/base/error"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
 )
 
 //get best block hash
@@ -593,4 +593,51 @@ func GetGrantOng(params []interface{}) map[string]interface{} {
 		return responsePack(berr.INTERNAL_ERROR, "")
 	}
 	return responseSuccess(rsp)
+}
+
+//get cross chain message by height
+func GetCrossChainMsg(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return responsePack(berr.INVALID_PARAMS, "")
+	}
+	height, ok := (params[0]).(float64)
+	if !ok {
+		return responsePack(berr.INVALID_PARAMS, "")
+	}
+	msg, err := bactor.GetCrossChainMsg(uint32(height))
+	if err != nil {
+		log.Errorf("GetCrossChainMsg, get cross chain msg from db error:%s", err)
+		return responsePack(berr.INTERNAL_ERROR, "")
+	}
+	header, err := bactor.GetHeaderByHeight(uint32(height) + 1)
+	if err != nil {
+		log.Errorf("GetCrossChainMsg, get block by height from db error:%s", err)
+		return responsePack(berr.INTERNAL_ERROR, "")
+	}
+	return responseSuccess(bcomn.TransferCrossChainMsg(msg, header.Bookkeepers))
+}
+
+//get cross chain state proof
+func GetCrossStatesProof(params []interface{}) map[string]interface{} {
+	if len(params) < 1 {
+		return responsePack(berr.INVALID_PARAMS, nil)
+	}
+	height, ok := params[0].(float64)
+	if !ok {
+		return responsePack(berr.INVALID_PARAMS, "")
+	}
+	str, ok := params[1].(string)
+	if !ok {
+		return responsePack(berr.INVALID_PARAMS, "")
+	}
+	key, err := hex.DecodeString(str)
+	if err != nil {
+		return responsePack(berr.INVALID_PARAMS, "")
+	}
+	proof, err := bactor.GetCrossStatesProof(uint32(height), key)
+	if err != nil {
+		log.Errorf("GetCrossStatesProof, bactor.GetCrossStatesProof error:%s", err)
+		return responsePack(berr.INTERNAL_ERROR, "")
+	}
+	return responseSuccess(bcomn.CrossStatesProof{"CrossStatesProof", hex.EncodeToString(proof)})
 }

@@ -1,39 +1,41 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package store
 
 import (
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/states"
-	"github.com/ontio/dad-go/core/store/overlaydb"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/smartcontract/event"
-	cstates "github.com/ontio/dad-go/smartcontract/states"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/states"
+	"github.com/ontio/ontology/core/store/overlaydb"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/smartcontract/event"
+	cstates "github.com/ontio/ontology/smartcontract/states"
 )
 
 type ExecuteResult struct {
-	WriteSet   *overlaydb.MemDB
-	Hash       common.Uint256
-	MerkleRoot common.Uint256
-	Notify     []*event.ExecuteNotify
+	WriteSet        *overlaydb.MemDB
+	Hash            common.Uint256
+	MerkleRoot      common.Uint256
+	CrossStates     []common.Uint256
+	CrossStatesRoot common.Uint256
+	Notify          []*event.ExecuteNotify
 }
 
 // LedgerStore provides func with store package.
@@ -41,9 +43,9 @@ type LedgerStore interface {
 	InitLedgerStoreWithGenesisBlock(genesisblock *types.Block, defaultBookkeeper []keypair.PublicKey) error
 	Close() error
 	AddHeaders(headers []*types.Header) error
-	AddBlock(block *types.Block, stateMerkleRoot common.Uint256) error
-	ExecuteBlock(b *types.Block) (ExecuteResult, error)   // called by consensus
-	SubmitBlock(b *types.Block, exec ExecuteResult) error // called by consensus
+	AddBlock(block *types.Block, ccMsg *types.CrossChainMsg, stateMerkleRoot common.Uint256) error
+	ExecuteBlock(b *types.Block) (ExecuteResult, error)                                       // called by consensus
+	SubmitBlock(b *types.Block, crossChainMsg *types.CrossChainMsg, exec ExecuteResult) error // called by consensus
 	GetStateMerkleRoot(height uint32) (result common.Uint256, err error)
 	GetCurrentBlockHash() common.Uint256
 	GetCurrentBlockHeight() uint32
@@ -67,4 +69,9 @@ type LedgerStore interface {
 	PreExecuteContractBatch(txes []*types.Transaction, atomic bool) ([]*cstates.PreExecResult, uint32, error)
 	GetEventNotifyByTx(tx common.Uint256) (*event.ExecuteNotify, error)
 	GetEventNotifyByBlock(height uint32) ([]*event.ExecuteNotify, error)
+
+	//cross chain states root
+	GetCrossStatesRoot(height uint32) (common.Uint256, error)
+	GetCrossChainMsg(height uint32) (*types.CrossChainMsg, error)
+	GetCrossStatesProof(height uint32, key []byte) ([]byte, error)
 }

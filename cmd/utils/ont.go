@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
@@ -23,21 +23,20 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/ontio/dad-go-crypto/keypair"
-	sig "github.com/ontio/dad-go-crypto/signature"
-	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/constants"
-	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go/core/types"
-	cutils "github.com/ontio/dad-go/core/utils"
-	httpcom "github.com/ontio/dad-go/http/base/common"
-	rpccommon "github.com/ontio/dad-go/http/base/common"
-	"github.com/ontio/dad-go/smartcontract/service/native/ont"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
-	cstates "github.com/ontio/dad-go/smartcontract/states"
+	"github.com/ontio/ontology-crypto/keypair"
+	sig "github.com/ontio/ontology-crypto/signature"
+	"github.com/ontio/ontology/account"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/constants"
+	"github.com/ontio/ontology/common/serialization"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/signature"
+	"github.com/ontio/ontology/core/types"
+	cutils "github.com/ontio/ontology/core/utils"
+	httpcom "github.com/ontio/ontology/http/base/common"
+	rpccommon "github.com/ontio/ontology/http/base/common"
+	"github.com/ontio/ontology/smartcontract/service/native/ont"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
 	"io"
 	"math/rand"
 	"sort"
@@ -201,7 +200,7 @@ func ApproveTx(gasPrice, gasLimit uint64, asset string, from, to string, amount 
 	default:
 		return nil, fmt.Errorf("Unsupport asset:%s", asset)
 	}
-	invokeCode, err := cutils.Buildad-gotiveInvokeCode(contractAddr, version, CONTRACT_APPROVE, []interface{}{state})
+	invokeCode, err := cutils.BuildNativeInvokeCode(contractAddr, version, CONTRACT_APPROVE, []interface{}{state})
 	if err != nil {
 		return nil, fmt.Errorf("build invoke code error:%s", err)
 	}
@@ -236,7 +235,7 @@ func TransferTx(gasPrice, gasLimit uint64, asset, from, to string, amount uint64
 	default:
 		return nil, fmt.Errorf("unsupport asset:%s", asset)
 	}
-	invokeCode, err := cutils.Buildad-gotiveInvokeCode(contractAddr, version, CONTRACT_TRANSFER, []interface{}{sts})
+	invokeCode, err := cutils.BuildNativeInvokeCode(contractAddr, version, CONTRACT_TRANSFER, []interface{}{sts})
 	if err != nil {
 		return nil, fmt.Errorf("build invoke code error:%s", err)
 	}
@@ -275,7 +274,7 @@ func TransferFromTx(gasPrice, gasLimit uint64, asset, sender, from, to string, a
 	default:
 		return nil, fmt.Errorf("unsupport asset:%s", asset)
 	}
-	invokeCode, err := cutils.Buildad-gotiveInvokeCode(contractAddr, version, CONTRACT_TRANSFER_FROM, []interface{}{transferFrom})
+	invokeCode, err := cutils.BuildNativeInvokeCode(contractAddr, version, CONTRACT_TRANSFER_FROM, []interface{}{transferFrom})
 	if err != nil {
 		return nil, fmt.Errorf("build invoke code error:%s", err)
 	}
@@ -435,7 +434,7 @@ func Sign(data []byte, signer *account.Account) ([]byte, error) {
 	return sigData, nil
 }
 
-//SendRawTransaction send a transaction to dad-go network, and return hash of the transaction
+//SendRawTransaction send a transaction to ontology network, and return hash of the transaction
 func SendRawTransaction(tx *types.Transaction) (string, error) {
 	txData := hex.EncodeToString(common.SerializeToBytes(tx))
 	return SendRawTransactionData(txData)
@@ -454,12 +453,12 @@ func SendRawTransactionData(txData string) (string, error) {
 	return hexHash, nil
 }
 
-func PrepareSendRawTransaction(txData string) (*cstates.PreExecResult, error) {
+func PrepareSendRawTransaction(txData string) (*rpccommon.PreExecuteResult, error) {
 	data, ontErr := sendRpcRequest("sendrawtransaction", []interface{}{txData, 1})
 	if ontErr != nil {
 		return nil, ontErr.Error
 	}
-	preResult := &cstates.PreExecResult{}
+	preResult := &rpccommon.PreExecuteResult{}
 	err := json.Unmarshal(data, &preResult)
 	if err != nil {
 		return nil, fmt.Errorf("json.Unmarshal PreExecResult:%s error:%s", data, err)
@@ -555,6 +554,27 @@ func GetBlockData(hashOrHeight interface{}) ([]byte, error) {
 	return blockData, nil
 }
 
+func GetCrossChainMsg(height uint32) ([]byte, error) {
+	data, ontErr := sendRpcRequest("getcrosschainmsg", []interface{}{height})
+	if ontErr != nil {
+		switch ontErr.ErrorCode {
+		case ERROR_INVALID_PARAMS:
+			return nil, fmt.Errorf("invalid block hash or block height:%d", height)
+		}
+		return nil, ontErr.Error
+	}
+	hexStr := ""
+	err := json.Unmarshal(data, &hexStr)
+	if err != nil {
+		return nil, fmt.Errorf("json.Unmarshal error:%s", err)
+	}
+	crossChainMsg, err := hex.DecodeString(hexStr)
+	if err != nil {
+		return nil, fmt.Errorf("hex.DecodeString error:%s", err)
+	}
+	return crossChainMsg, nil
+}
+
 func GetBlockCount() (uint32, error) {
 	data, ontErr := sendRpcRequest("getblockcount", []interface{}{})
 	if ontErr != nil {
@@ -628,7 +648,7 @@ func PrepareDeployContract(
 	cversion,
 	cauthor,
 	cemail,
-	cdesc string) (*cstates.PreExecResult, error) {
+	cdesc string) (*httpcom.PreExecuteResult, error) {
 	c, err := hex.DecodeString(code)
 	if err != nil {
 		return nil, fmt.Errorf("hex.DecodeString error:%s", err)
@@ -693,7 +713,7 @@ func InvokeSmartContract(signer *account.Account, tx *types.MutableTransaction) 
 func PrepareInvokeNeoVMContract(
 	contractAddress common.Address,
 	params []interface{},
-) (*cstates.PreExecResult, error) {
+) (*rpccommon.PreExecuteResult, error) {
 	mutable, err := httpcom.NewNeovmInvokeTransaction(0, 0, contractAddress, params)
 	if err != nil {
 		return nil, err
@@ -708,7 +728,7 @@ func PrepareInvokeNeoVMContract(
 	return PrepareSendRawTransaction(txData)
 }
 
-func PrepareInvokeCodeNeoVMContract(code []byte) (*cstates.PreExecResult, error) {
+func PrepareInvokeCodeNeoVMContract(code []byte) (*rpccommon.PreExecuteResult, error) {
 	mutable, err := httpcom.NewSmartContractTransaction(0, 0, code)
 	if err != nil {
 		return nil, err
@@ -722,7 +742,7 @@ func PrepareInvokeCodeNeoVMContract(code []byte) (*cstates.PreExecResult, error)
 }
 
 //prepare invoke wasm
-func PrepareInvokeWasmVMContract(contractAddress common.Address, params []interface{}) (*cstates.PreExecResult, error) {
+func PrepareInvokeWasmVMContract(contractAddress common.Address, params []interface{}) (*rpccommon.PreExecuteResult, error) {
 	mutable, err := cutils.NewWasmVMInvokeTransaction(0, 0, contractAddress, params)
 	if err != nil {
 		return nil, err
@@ -741,7 +761,7 @@ func PrepareInvokeNativeContract(
 	contractAddress common.Address,
 	version byte,
 	method string,
-	params []interface{}) (*cstates.PreExecResult, error) {
+	params []interface{}) (*httpcom.PreExecuteResult, error) {
 	mutable, err := httpcom.NewNativeInvokeTransaction(0, 0, contractAddress, version, method, params)
 	if err != nil {
 		return nil, err

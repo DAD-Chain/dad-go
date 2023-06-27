@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package test
@@ -25,12 +25,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/types"
-	. "github.com/ontio/dad-go/smartcontract"
-	neovm2 "github.com/ontio/dad-go/smartcontract/service/neovm"
-	"github.com/ontio/dad-go/vm/neovm"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/core/types"
+	. "github.com/ontio/ontology/smartcontract"
+	neovm2 "github.com/ontio/ontology/smartcontract/service/neovm"
+	"github.com/ontio/ontology/vm/neovm"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -112,7 +112,7 @@ func TestOpReadMemAttack(t *testing.T) {
 	builder.Emit(neovm.SYSCALL)
 	sink := common.NewZeroCopySink(builder.ToArray())
 	builder.EmitPushByteArray([]byte(neovm2.NATIVE_INVOKE_NAME))
-	l := 0X7fffffc7 - 1
+	l := 0x7fffffc7 - 1
 	sink.WriteVarUint(uint64(l))
 	b := make([]byte, 4)
 	sink.WriteBytes(b)

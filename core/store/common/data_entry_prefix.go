@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package common
@@ -38,11 +38,12 @@ const (
 	IX_HEADER_HASH_LIST DataEntryPrefix = 0x09 //Block height => block hash key prefix
 
 	//SYSTEM
-	SYS_CURRENT_BLOCK      DataEntryPrefix = 0x10 //Current block key prefix
-	SYS_VERSION            DataEntryPrefix = 0x11 //Store version key prefix
-	SYS_CURRENT_STATE_ROOT DataEntryPrefix = 0x12 //no use
-	SYS_BLOCK_MERKLE_TREE  DataEntryPrefix = 0x13 // Block merkle tree root key prefix
-	SYS_STATE_MERKLE_TREE  DataEntryPrefix = 0x20 // state merkle tree root key prefix
+	SYS_CURRENT_BLOCK        DataEntryPrefix = 0x10 //Current block key prefix
+	SYS_VERSION              DataEntryPrefix = 0x11 //Store version key prefix
+	SYS_CURRENT_CROSS_STATES DataEntryPrefix = 0x12 //Block cross states
+	SYS_BLOCK_MERKLE_TREE    DataEntryPrefix = 0x13 // Block merkle tree root key prefix
+	SYS_STATE_MERKLE_TREE    DataEntryPrefix = 0x20 // state merkle tree root key prefix
+	SYS_CROSS_CHAIN_MSG      DataEntryPrefix = 0x22 // state merkle tree root key prefix
 
 	EVENT_NOTIFY DataEntryPrefix = 0x14 //Event notify key prefix
 )

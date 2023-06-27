@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package ledgerstore
@@ -25,17 +25,17 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/states"
-	scom "github.com/ontio/dad-go/core/store/common"
-	"github.com/ontio/dad-go/core/store/leveldbstore"
-	"github.com/ontio/dad-go/core/store/overlaydb"
-	"github.com/ontio/dad-go/merkle"
-	"github.com/ontio/dad-go/smartcontract/service/native/ontid"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/common/serialization"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/states"
+	scom "github.com/ontio/ontology/core/store/common"
+	"github.com/ontio/ontology/core/store/leveldbstore"
+	"github.com/ontio/ontology/core/store/overlaydb"
+	"github.com/ontio/ontology/merkle"
+	"github.com/ontio/ontology/smartcontract/service/native/ontid"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
 )
 
 var (
@@ -342,6 +342,57 @@ func (self *StateStore) SaveCurrentBlock(height uint32, blockHash common.Uint256
 	return nil
 }
 
+func (self *StateStore) GetCrossStates(height uint32) ([]common.Uint256, error) {
+	key := self.genCrossStatesKey(height)
+	data, err := self.store.Get(key)
+	if err != nil {
+		return []common.Uint256{}, err
+	}
+	source := common.NewZeroCopySource(data)
+	l := len(data) / common.UINT256_SIZE
+	hashes := make([]common.Uint256, 0, l)
+	for i := 0; i < l; i++ {
+		u256, eof := source.NextHash()
+		if eof {
+			return []common.Uint256{}, fmt.Errorf("%s", "Get states hash error!")
+		}
+		hashes = append(hashes, u256)
+	}
+	return hashes, nil
+}
+
+func (self *StateStore) GetCrossStatesRoot(height uint32) (common.Uint256, error) {
+	states, err := self.GetCrossStates(height)
+	if err != nil && err != scom.ErrNotFound {
+		return common.UINT256_EMPTY, err
+	}
+	if err == scom.ErrNotFound {
+		return common.UINT256_EMPTY, nil
+	}
+	return merkle.TreeHasher{}.HashFullTreeWithLeafHash(states), nil
+}
+
+func (self *StateStore) SaveCrossStates(height uint32, crossStates []common.Uint256) error {
+	//save cross states hash
+	if len(crossStates) == 0 {
+		return nil
+	}
+	key := self.genCrossStatesKey(height)
+	sink := common.NewZeroCopySink(make([]byte, 0, len(crossStates)*common.UINT256_SIZE))
+	for _, v := range crossStates {
+		sink.WriteHash(v)
+	}
+	self.store.BatchPut(key, sink.Bytes())
+	return nil
+}
+
+func (self *StateStore) genCrossStatesKey(height uint32) []byte {
+	key := make([]byte, 5)
+	key[0] = byte(scom.SYS_CURRENT_CROSS_STATES)
+	binary.LittleEndian.PutUint32(key[1:], height)
+	return key
+}
+
 func (self *StateStore) getCurrentBlockKey() []byte {
 	return []byte{byte(scom.SYS_CURRENT_BLOCK)}
 }
@@ -349,7 +400,7 @@ func (self *StateStore) getCurrentBlockKey() []byte {
 func (self *StateStore) getBookkeeperKey() ([]byte, error) {
 	key := make([]byte, 1+len(BOOKKEEPER))
 	key[0] = byte(scom.ST_BOOKKEEPER)
-	copy(key[1:], []byte(BOOKKEEPER))
+	copy(key[1:], BOOKKEEPER)
 	return key, nil
 }
 
@@ -357,7 +408,7 @@ func (self *StateStore) getContractStateKey(contractHash common.Address) ([]byte
 	data := contractHash[:]
 	key := make([]byte, 1+len(data))
 	key[0] = byte(scom.ST_CONTRACT)
-	copy(key[1:], []byte(data))
+	copy(key[1:], data)
 	return key, nil
 }
 

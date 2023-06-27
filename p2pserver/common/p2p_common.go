@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package common
@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"strings"
 
-	com "github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/core/types"
+	com "github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/core/types"
 )
 
 //peer capability
@@ -148,10 +148,11 @@ type AppendHeaders struct {
 }
 
 type AppendBlock struct {
-	FromID     uint64       // The peer id
-	BlockSize  uint32       // Block size
-	Block      *types.Block // Block to be added to the ledger
-	MerkleRoot com.Uint256  // MerkleRoot
+	FromID     uint64               // The peer id
+	BlockSize  uint32               // Block size
+	Block      *types.Block         // Block to be added to the ledger
+	CCMsg      *types.CrossChainMsg // Cross chain message in ledger
+	MerkleRoot com.Uint256          // MerkleRoot
 }
 
 //ParseIPAddr return ip address

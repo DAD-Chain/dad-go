@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Package common privides functions for http handler call
@@ -23,24 +23,25 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/constants"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/payload"
-	"github.com/ontio/dad-go/core/types"
-	cutils "github.com/ontio/dad-go/core/utils"
-	ontErrors "github.com/ontio/dad-go/errors"
-	bactor "github.com/ontio/dad-go/http/base/actor"
-	"github.com/ontio/dad-go/smartcontract/event"
-	"github.com/ontio/dad-go/smartcontract/service/native/ont"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
-	cstate "github.com/ontio/dad-go/smartcontract/states"
-	"github.com/ontio/dad-go/vm/neovm"
 	"io"
 	"strings"
 	"time"
+
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/constants"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/types"
+	cutils "github.com/ontio/ontology/core/utils"
+	ontErrors "github.com/ontio/ontology/errors"
+	bactor "github.com/ontio/ontology/http/base/actor"
+	"github.com/ontio/ontology/smartcontract/event"
+	"github.com/ontio/ontology/smartcontract/service/native/ont"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
+	cstate "github.com/ontio/ontology/smartcontract/states"
+	"github.com/ontio/ontology/vm/neovm"
 )
 
 const MAX_SEARCH_HEIGHT uint32 = 100
@@ -106,6 +107,12 @@ type Sig struct {
 	M       uint16
 	SigData []string
 }
+
+type CrossStatesProof struct {
+	Type      string
+	AuditPath string
+}
+
 type Transactions struct {
 	Version    byte
 	Nonce      uint32
@@ -224,6 +231,20 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 	mhash := ptx.Hash()
 	trans.Hash = mhash.ToHexString()
 	return trans
+}
+
+func TransferCrossChainMsg(msg *types.CrossChainMsg, pks []keypair.PublicKey) string {
+	if msg == nil {
+		return ""
+	}
+	sink := common.NewZeroCopySink(nil)
+	msg.Serialization(sink)
+	sink.WriteVarUint(uint64(len(pks)))
+	for _, pk := range pks {
+		key := keypair.SerializePublicKey(pk)
+		sink.WriteVarBytes(key)
+	}
+	return common.ToHexString(sink.Bytes())
 }
 
 func SendTxToPool(txn *types.Transaction) (ontErrors.ErrCode, string) {
@@ -447,7 +468,7 @@ func GetBlockTransactions(block *types.Block) interface{} {
 //NewNativeInvokeTransaction return native contract invoke transaction
 func NewNativeInvokeTransaction(gasPirce, gasLimit uint64, contractAddress common.Address, version byte,
 	method string, params []interface{}) (*types.MutableTransaction, error) {
-	invokeCode, err := cutils.Buildad-gotiveInvokeCode(contractAddress, version, method, params)
+	invokeCode, err := cutils.BuildNativeInvokeCode(contractAddress, version, method, params)
 	if err != nil {
 		return nil, err
 	}

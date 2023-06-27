@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package governance
@@ -23,16 +23,16 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/ontio/dad-go-crypto/vrf"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/serialization"
-	vbftconfig "github.com/ontio/dad-go/consensus/vbft/config"
-	cstates "github.com/ontio/dad-go/core/states"
-	"github.com/ontio/dad-go/smartcontract/service/native"
-	"github.com/ontio/dad-go/smartcontract/service/native/auth"
-	"github.com/ontio/dad-go/smartcontract/service/native/ont"
-	"github.com/ontio/dad-go/smartcontract/service/native/utils"
+	"github.com/ontio/ontology-crypto/vrf"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/serialization"
+	vbftconfig "github.com/ontio/ontology/consensus/vbft/config"
+	cstates "github.com/ontio/ontology/core/states"
+	"github.com/ontio/ontology/smartcontract/service/native"
+	"github.com/ontio/ontology/smartcontract/service/native/auth"
+	"github.com/ontio/ontology/smartcontract/service/native/ont"
+	"github.com/ontio/ontology/smartcontract/service/native/utils"
 )
 
 func GetPeerPoolMap(native *native.NativeService, contract common.Address, view uint32) (*PeerPoolMap, error) {
@@ -183,7 +183,7 @@ func getOngBalance(native *native.NativeService, address common.Address) (uint64
 	if err != nil {
 		return 0, fmt.Errorf("getOngBalance, appCall error: %v", err)
 	}
-	balance := common.BigIntFromNeoBytes(value.([]byte)).Uint64()
+	balance := common.BigIntFromNeoBytes(value).Uint64()
 	return balance, nil
 }
 
@@ -301,7 +301,7 @@ func putGlobalParam2(native *native.NativeService, contract common.Address, glob
 func validatePeerPubKeyFormat(pubkey string) error {
 	pk, err := vbftconfig.Pubkey(pubkey)
 	if err != nil {
-		return fmt.Errorf("failed to parse pubkey")
+		return fmt.Errorf("failed to parse pubkey, %s", err)
 	}
 	if !vrf.ValidatePublicKey(pk) {
 		return fmt.Errorf("invalid for VRF")
@@ -364,7 +364,7 @@ func CheckVBFTConfig(configuration *config.VBFTConfig) error {
 		}
 		//check peerPubkey
 		if err := validatePeerPubKeyFormat(peer.PeerPubkey); err != nil {
-			return fmt.Errorf("invalid peer pubkey")
+			return fmt.Errorf("invalid peer pubkey, %s", err)
 		}
 		_, err := common.AddressFromBase58(peer.Address)
 		if err != nil {
@@ -650,7 +650,7 @@ func appCallVerifyToken(native *native.NativeService, contract common.Address, c
 	if err != nil {
 		return fmt.Errorf("appCallVerifyToken, appCall error: %v", err)
 	}
-	if !bytes.Equal(ok.([]byte), utils.BYTE_TRUE) {
+	if !bytes.Equal(ok, utils.BYTE_TRUE) {
 		return fmt.Errorf("appCallVerifyToken, verifyToken failed")
 	}
 	return nil

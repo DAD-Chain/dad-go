@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package msgpack
@@ -21,13 +21,13 @@ package msgpack
 import (
 	"time"
 
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	ct "github.com/ontio/dad-go/core/types"
-	msgCommon "github.com/ontio/dad-go/p2pserver/common"
-	mt "github.com/ontio/dad-go/p2pserver/message/types"
-	p2pnet "github.com/ontio/dad-go/p2pserver/net/protocol"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	ct "github.com/ontio/ontology/core/types"
+	msgCommon "github.com/ontio/ontology/p2pserver/common"
+	mt "github.com/ontio/ontology/p2pserver/message/types"
+	p2pnet "github.com/ontio/ontology/p2pserver/net/protocol"
 )
 
 //Peer address package
@@ -47,11 +47,12 @@ func NewAddrReq() mt.Message {
 }
 
 ///block package
-func NewBlock(bk *ct.Block, merkleRoot common.Uint256) mt.Message {
+func NewBlock(bk *ct.Block, ccMsg *ct.CrossChainMsg, merkleRoot common.Uint256) mt.Message {
 	log.Trace()
 	var blk mt.Block
 	blk.Blk = bk
 	blk.MerkleRoot = merkleRoot
+	blk.CCMsg = ccMsg
 
 	return &blk
 }

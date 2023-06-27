@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
@@ -23,7 +23,7 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ontio/dad-go/common"
+	"github.com/ontio/ontology/common"
 )
 
 func EncodeAddress(sink *common.ZeroCopySink, addr common.Address) (size uint64) {
@@ -32,6 +32,14 @@ func EncodeAddress(sink *common.ZeroCopySink, addr common.Address) (size uint64)
 
 func EncodeVarUint(sink *common.ZeroCopySink, value uint64) (size uint64) {
 	return sink.WriteVarBytes(common.BigIntToNeoBytes(big.NewInt(int64(value))))
+}
+
+func EncodeVarBytes(sink *common.ZeroCopySink, v []byte) (size uint64) {
+	return sink.WriteVarBytes(v)
+}
+
+func EncodeString(sink *common.ZeroCopySink, str string) (size uint64) {
+	return sink.WriteVarBytes([]byte(str))
 }
 
 func DecodeVarUint(source *common.ZeroCopySource) (uint64, error) {

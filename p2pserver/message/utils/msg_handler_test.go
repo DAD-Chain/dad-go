@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
@@ -28,21 +28,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/core/genesis"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/payload"
-	ct "github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/events"
-	msgCommon "github.com/ontio/dad-go/p2pserver/common"
-	"github.com/ontio/dad-go/p2pserver/message/msg_pack"
-	"github.com/ontio/dad-go/p2pserver/message/types"
-	"github.com/ontio/dad-go/p2pserver/net/netserver"
-	"github.com/ontio/dad-go/p2pserver/net/protocol"
-	"github.com/ontio/dad-go/p2pserver/peer"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/core/genesis"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/payload"
+	ct "github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/events"
+	msgCommon "github.com/ontio/ontology/p2pserver/common"
+	"github.com/ontio/ontology/p2pserver/message/msg_pack"
+	"github.com/ontio/ontology/p2pserver/message/types"
+	"github.com/ontio/ontology/p2pserver/net/netserver"
+	"github.com/ontio/ontology/p2pserver/net/protocol"
+	"github.com/ontio/ontology/p2pserver/peer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -521,7 +521,7 @@ func TestBlockHandle(t *testing.T) {
 
 	mr, err := common.Uint256FromHexString("1b8fa7f242d0eeb4395f89cbb59e4c29634047e33245c4914306e78a88e14ce5")
 	assert.Nil(t, err)
-	buf := msgpack.NewBlock(block, mr)
+	buf := msgpack.NewBlock(block, nil, mr)
 
 	msg := &types.MsgPayload{
 		Id:      testID,

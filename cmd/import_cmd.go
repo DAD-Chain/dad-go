@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package cmd
@@ -25,14 +25,16 @@ import (
 	"os"
 
 	"github.com/gosuri/uiprogress"
-	"github.com/ontio/dad-go/cmd/utils"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	"github.com/ontio/dad-go/common/serialization"
-	"github.com/ontio/dad-go/core/genesis"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/types"
 	"github.com/urfave/cli"
+
+	"github.com/ontio/ontology/cmd/utils"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	"github.com/ontio/ontology/common/serialization"
+	"github.com/ontio/ontology/core/genesis"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/types"
 )
 
 var ImportCommand = cli.Command{
@@ -136,21 +138,31 @@ func importBlocks(ctx *cli.Context) error {
 
 	PrintInfoMsg("Start import blocks.")
 
-	for i := uint32(startBlockHeight); i <= endBlockHeight; i++ {
+	for i := startBlockHeight; i <= endBlockHeight; i++ {
 		size, err := serialization.ReadUint32(fReader)
 		if err != nil {
-			return fmt.Errorf("read block height:%d error:%s", i, err)
+			return fmt.Errorf("read block size:%d error:%s", i, err)
 		}
 		compressData := make([]byte, size)
 		_, err = io.ReadFull(fReader, compressData)
 		if err != nil {
 			return fmt.Errorf("read block data height:%d error:%s", i, err)
 		}
-
+		crossMsgSize, err := serialization.ReadUint32(fReader)
+		if err != nil {
+			return fmt.Errorf("read cross chain msg height:%d error:%s", i, err)
+		}
+		var crossMsgCompressData []byte
+		if crossMsgSize != 0 {
+			crossMsgCompressData = make([]byte, size)
+			_, err = io.ReadFull(fReader, crossMsgCompressData)
+			if err != nil {
+				return fmt.Errorf("read block data height:%d error:%s", i, err)
+			}
+		}
 		if i <= currBlockHeight {
 			continue
 		}
-
 		blockData, err := utils.DecompressBlockData(compressData, metadata.CompressType)
 		if err != nil {
 			return fmt.Errorf("block height:%d decompress error:%s", i, err)
@@ -163,7 +175,19 @@ func importBlocks(ctx *cli.Context) error {
 		if err != nil {
 			return fmt.Errorf("block height:%d ExecuteBlock error:%s", i, err)
 		}
-		err = ledger.DefLedger.SubmitBlock(block, execResult)
+
+		var crossChainMsg *types.CrossChainMsg
+		if crossMsgSize != 0 {
+			crossChainMsg = new(types.CrossChainMsg)
+			crossChainData, err := utils.DecompressBlockData(crossMsgCompressData, metadata.CompressType)
+			if err != nil {
+				return fmt.Errorf("block height:%d decompress error:%s", i, err)
+			}
+			if err := crossChainMsg.Deserialization(common.NewZeroCopySource(crossChainData)); err != nil {
+				return fmt.Errorf("block height:%d decompress error:%s", i, err)
+			}
+		}
+		err = ledger.DefLedger.SubmitBlock(block, crossChainMsg, execResult)
 		if err != nil {
 			return fmt.Errorf("SubmitBlock block height:%d error:%s", i, err)
 		}

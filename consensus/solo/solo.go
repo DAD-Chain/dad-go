@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The dad-go Authors
- * This file is part of The dad-go library.
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
  *
- * The dad-go is free software: you can redistribute it and/or modify
+ * The ontology is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The dad-go is distributed in the hope that it will be useful,
+ * The ontology is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The dad-go.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package solo
@@ -23,19 +23,19 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/ontio/dad-go-crypto/keypair"
-	"github.com/ontio/dad-go-eventbus/actor"
-	"github.com/ontio/dad-go/account"
-	"github.com/ontio/dad-go/common"
-	"github.com/ontio/dad-go/common/config"
-	"github.com/ontio/dad-go/common/log"
-	actorTypes "github.com/ontio/dad-go/consensus/actor"
-	"github.com/ontio/dad-go/core/ledger"
-	"github.com/ontio/dad-go/core/signature"
-	"github.com/ontio/dad-go/core/types"
-	"github.com/ontio/dad-go/events"
-	"github.com/ontio/dad-go/events/message"
-	"github.com/ontio/dad-go/validator/increment"
+	"github.com/ontio/ontology-crypto/keypair"
+	"github.com/ontio/ontology-eventbus/actor"
+	"github.com/ontio/ontology/account"
+	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/common/config"
+	"github.com/ontio/ontology/common/log"
+	actorTypes "github.com/ontio/ontology/consensus/actor"
+	"github.com/ontio/ontology/core/ledger"
+	"github.com/ontio/ontology/core/signature"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/events"
+	"github.com/ontio/ontology/events/message"
+	"github.com/ontio/ontology/validator/increment"
 )
 
 /*
@@ -151,7 +151,23 @@ func (self *SoloService) genBlock() error {
 	if err != nil {
 		return fmt.Errorf("genBlock DefLedgerPid.RequestFuture Height:%d error:%s", block.Header.Height, err)
 	}
-	err = ledger.DefLedger.SubmitBlock(block, result)
+
+	var msg *types.CrossChainMsg
+	if result.CrossStatesRoot != common.UINT256_EMPTY {
+		msg = &types.CrossChainMsg{
+			Version:    types.CURR_CROSS_STATES_VERSION,
+			Height:     block.Header.Height,
+			StatesRoot: result.CrossStatesRoot,
+		}
+		hash := msg.Hash()
+		sig, err := signature.Sign(self.Account, hash[:])
+		if err != nil {
+			return fmt.Errorf("[Signature],Sign error:%s.", err)
+		}
+		msg.SigData = [][]byte{sig}
+	}
+
+	err = ledger.DefLedger.SubmitBlock(block, msg, result)
 	if err != nil {
 		return fmt.Errorf("genBlock DefLedgerPid.RequestFuture Height:%d error:%s", block.Header.Height, err)
 	}
