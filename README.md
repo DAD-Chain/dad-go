@@ -17,3 +17,5 @@ c. [**10 Million DAD Token Released-Inviting Users to Build a New Ecosystem of B
 
 # Mail
 For tech discussing or patch submit, please send email to dev@dad.one
+
+Rebrand DAD
